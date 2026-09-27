@@ -3,6 +3,7 @@
  * 启动时自动建表 + 播种演示数据
  * ========================================================================== */
 import { DatabaseSync } from 'node:sqlite';
+import 'dotenv/config';
 import path from 'node:path';
 import fs from 'node:fs';
 import { fileURLToPath } from 'node:url';
@@ -27,13 +28,24 @@ const SCHEMA = `
 CREATE TABLE IF NOT EXISTS users (
   id INTEGER PRIMARY KEY AUTOINCREMENT,
   username TEXT NOT NULL UNIQUE,
-  passwordHash TEXT NOT NULL,
+  passwordHash TEXT NOT NULL DEFAULT '!',
   name TEXT NOT NULL,
   role TEXT NOT NULL DEFAULT 'student',
   email TEXT, phone TEXT, avatar TEXT, studentId TEXT, college TEXT,
   isActive INTEGER NOT NULL DEFAULT 1,
   lastLoginAt TEXT,
-  createdAt TEXT NOT NULL DEFAULT (datetime('now','localtime'))
+  createdAt TEXT NOT NULL DEFAULT (datetime('now','localtime')),
+  oidcIssuer TEXT,
+  oidcSubject TEXT
+);
+
+CREATE TABLE IF NOT EXISTS oidc_login_flows (
+  stateHash TEXT PRIMARY KEY,
+  browserHash TEXT NOT NULL,
+  codeVerifier TEXT NOT NULL,
+  nonce TEXT NOT NULL,
+  redirectPath TEXT NOT NULL,
+  expiresAt INTEGER NOT NULL
 );
 
 CREATE TABLE IF NOT EXISTS articles (
@@ -264,6 +276,8 @@ db.exec(SCHEMA);
 /* -------------------------------------------------------------------------- */
 const MIGRATIONS: [string, string, string][] = [
   ['users', 'lastLoginAt', 'TEXT'],
+  ['users', 'oidcIssuer', 'TEXT'],
+  ['users', 'oidcSubject', 'TEXT'],
   ['articles', 'rejectReason', 'TEXT'],
   ['project_applications', 'reviewNote', 'TEXT'],
 ];
@@ -276,6 +290,7 @@ function migrate() {
       console.log(`[db] migrate: ${table}.${column} added`);
     }
   }
+  db.exec('CREATE UNIQUE INDEX IF NOT EXISTS users_oidc_identity ON users (oidcIssuer, oidcSubject) WHERE oidcIssuer IS NOT NULL AND oidcSubject IS NOT NULL');
 }
 
 /* -------------------------------------------------------------------------- */
@@ -385,16 +400,16 @@ export function seed() {
   console.log('[db] seeding demo data …');
 
   /* ---- 用户 ---- */
-  const users: [string, string, string, string, string, string][] = [
-    ['admin', 'admin123', '系统管理员', 'superadmin', 'admin@sti.edu.cn', '13800000001'],
-    ['zhangwei', 'sti123456', '张伟', 'admin', 'zhangwei@sti.edu.cn', '13800000002'],
-    ['liyan', 'sti123456', '李岩', 'member', 'liyan@stu.edu.cn', '13800000003'],
-    ['chenxi', 'sti123456', '陈曦', 'student', 'chenxi@stu.edu.cn', '13800000004'],
+  const users: [string, string, string, string, string][] = [
+    ['admin', '系统管理员', 'superadmin', 'admin@sti.edu.cn', '13800000001'],
+    ['zhangwei', '张伟', 'admin', 'zhangwei@sti.edu.cn', '13800000002'],
+    ['liyan', '李岩', 'member', 'liyan@stu.edu.cn', '13800000003'],
+    ['chenxi', '陈曦', 'student', 'chenxi@stu.edu.cn', '13800000004'],
   ];
-  for (const [username, pwd, name, role, email, phone] of users) {
+  for (const [username, name, role, email, phone] of users) {
     insert('users', {
       username,
-      passwordHash: hashPasswordSync(pwd),
+      passwordHash: '!',
       name,
       role,
       email,
@@ -1079,6 +1094,7 @@ export function seed() {
     ['竞赛现场', null, '各大赛事的备赛与比赛瞬间'],
     ['创新工坊', null, '动手实践与设备开放的日常'],
     ['讲座与沙龙', null, '技术分享与思想碰撞'],
+    ['活动影像', null, '活动影像'],
   ];
   const areaIds: number[] = [];
   areas.forEach(([name, parent, description], i) =>
@@ -1098,20 +1114,29 @@ export function seed() {
     insert('gallery_areas', { name, slug: slugify(name) + '-' + i, parentId: areaIds[p], description: null, sortOrder: i })
   );
 
-  const allAreas = [...areaIds, ...subIds];
-  for (let i = 0; i < 24; i++) {
-    const areaId = allAreas[i % allAreas.length];
+  const galleryUrls = [
+    'https://img.paperchan.cn/file/1790516050075_mmexport1790515697554.jpg',
+    'https://img.paperchan.cn/file/1790516050727_mmexport1790515714530.jpg',
+    'https://img.paperchan.cn/file/1790516054418_mmexport1780060287028.jpg',
+    'https://img.paperchan.cn/file/1790516049861_mmexport1780942762321.jpg',
+    'https://img.paperchan.cn/file/1790516053634_mmexport1780942777500.jpg',
+    'https://img.paperchan.cn/file/1790516061586_mmexport1786772298690.jpg',
+    'https://img.paperchan.cn/file/1790516054133_mmexport1787490907083.jpg',
+    'https://img.paperchan.cn/file/1790516057018_mmexport1790515668613.jpg',
+    'https://img.paperchan.cn/file/1790516056935_mmexport1790515673147.jpg',
+    'https://img.paperchan.cn/file/1790516061279_mmexport1790515693630.jpg',
+  ];
+  galleryUrls.forEach((url, i) => {
     insert('gallery_images', {
-      areaId,
-      url: `https://picsum.photos/seed/sti${i}/1200/800`,
-      title: ['成果展现场', '作品演示', '团队答辩', '设备操作', '交流讨论', '颁奖时刻'][i % 6] + ` #${i + 1}`,
-      description: '科技创新部活动记录',
-      width: 1200,
-      height: 800,
+      areaId: areaIds[4],
+      url,
+      title: `活动影像 ${String(i + 1).padStart(2, '0')}`,
+      description: null,
+      width: 0,
+      height: 0,
       sortOrder: i,
-      createdAt: daysAgo(i * 3),
     });
-  }
+  });
 
   /* ---- Status ---- */
   const targets: [string, string, string, string, string][] = [
@@ -1186,24 +1211,7 @@ export function seed() {
 /* -------------------------------------------------------------------------- */
 /*  小工具                                                                     */
 /* -------------------------------------------------------------------------- */
-import { createHash, randomBytes, scryptSync, timingSafeEqual } from 'node:crypto';
-
-export function hashPasswordSync(pwd: string): string {
-  const salt = randomBytes(16).toString('hex');
-  const hash = scryptSync(pwd, salt, 32).toString('hex');
-  return `s2:${salt}:${hash}`;
-}
-export function verifyPassword(pwd: string, stored: string): boolean {
-  try {
-    const [, salt, hash] = stored.split(':');
-    if (!salt || !hash) return false;
-    const calc = scryptSync(pwd, salt, 32);
-    const want = Buffer.from(hash, 'hex');
-    return calc.length === want.length && timingSafeEqual(calc, want);
-  } catch {
-    return false;
-  }
-}
+import { createHash } from 'node:crypto';
 
 export function slugify(input: string): string {
   const ascii = input

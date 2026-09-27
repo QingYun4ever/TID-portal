@@ -17,11 +17,10 @@ echo   ============================================
 echo.
 echo   访问地址： http://127.0.0.1:8787
 echo.
-echo   测试账号：
-echo     admin    / admin123     超级管理员
-echo     zhangwei / sti123456   管理员
-echo     liyan    / sti123456   部门成员
-echo     chenxi   / sti123456   学生
+echo   登录方式：统一身份认证（OIDC）
+echo     浏览器将跳转到统一认证登录；首次登录会自动创建门户账号，
+echo     账号角色由管理员在「后台管理 → 用户与权限」中调整。
+echo     请先在 .env 配置 OIDC_CLIENT_ID / OIDC_CLIENT_SECRET / OIDC_REDIRECT_URI / JWT_SECRET。
 echo.
 echo   正在启动，请稍候...
 echo.

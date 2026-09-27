@@ -543,7 +543,7 @@ export function Drawer({
       <div className="absolute inset-0 bg-black/70 backdrop-blur-md" onClick={onClose} style={{ animation: 'sti-fade .25s ease both' }} />
       <div
         className={cn(
-          'relative z-10 ml-auto flex h-full w-full flex-col border-l border-white/10 bg-[#07090e]/85 backdrop-blur-2xl',
+          'surface-drawer relative z-10 ml-auto flex h-full w-full flex-col border-l border-white/10 backdrop-blur-2xl',
           width,
           side === 'left' && 'mr-auto ml-0 border-l-0 border-r'
         )}
@@ -778,7 +778,7 @@ export function Skeleton({ className }: { className?: string }) {
   return (
     <div
       className={cn('relative overflow-hidden rounded-2xl bg-white/[0.045]', className)}
-      style={{ backgroundImage: 'linear-gradient(90deg, transparent, rgba(255,255,255,.055), transparent)', backgroundSize: '200% 100%', animation: 'sti-shimmer 1.6s linear infinite' }}
+      style={{ backgroundImage: 'linear-gradient(90deg, transparent, rgb(var(--tw-white) / .055), transparent)', backgroundSize: '200% 100%', animation: 'sti-shimmer 1.6s linear infinite' }}
     />
   );
 }

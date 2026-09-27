@@ -8,14 +8,14 @@ import {
   CalendarDays,
   ChevronDown,
   FileText,
-  Layers,
   LayoutDashboard,
   LogIn,
   LogOut,
   Menu,
   MessageSquare,
-  Search,
+  Moon,
   Sparkles,
+  Sun,
   Trophy,
   User as UserIcon,
   Users,
@@ -23,7 +23,8 @@ import {
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useActiveSection, useBodyLock, useScrollProgress } from '@/lib/hooks';
-import { useAuth, useSettings } from '@/lib/store';
+import { useAuth, useToast } from '@/lib/store';
+import { useTheme } from '@/lib/theme';
 import { BrandWordmark } from './Brand';
 import { Avatar, Button, Dot, Glass, LinkButton } from './ui';
 import { AuthApi } from '@/lib/api';
@@ -53,17 +54,15 @@ const OTHER_LINKS = [
   { icon: MessageSquare, label: '互动与反馈', desc: '留言板 · 在线咨询', to: '/feedback' },
   { icon: BookOpen, label: '创新成果库', desc: '优秀项目与获奖成果', to: '/projects?category=excellent' },
   { icon: Trophy, label: '竞赛日历', desc: '竞赛截止时间一览', to: '/competitions' },
-  { icon: Layers, label: '全景搜索', desc: '全站内容检索', to: '/search' },
 ];
 
 export function Nav() {
   const { scrolled } = useScrollProgress();
   const { user, isAdmin, logout } = useAuth();
-  const { settings } = useSettings();
+  const toast = useToast();
   const location = useLocation();
   const [openMenu, setOpenMenu] = useState<null | 'quick' | 'user'>(null);
   const [mobileOpen, setMobileOpen] = useState(false);
-  const [searchOpen, setSearchOpen] = useState(false);
   const [unread, setUnread] = useState(0);
   const navRef = useRef<HTMLDivElement>(null);
   const isHome = location.pathname === '/';
@@ -83,7 +82,6 @@ export function Nav() {
   useEffect(() => {
     setMobileOpen(false);
     setOpenMenu(null);
-    setSearchOpen(false);
   }, [location.pathname, location.search]);
 
   /* 未读消息 */
@@ -151,14 +149,8 @@ export function Nav() {
             </nav>
 
             <div className="ml-auto flex items-center gap-1.5">
-              {/* 搜索 */}
-              <button
-                onClick={() => setSearchOpen(true)}
-                className="rounded-full p-2.5 text-muted-foreground transition hover:bg-white/8 hover:text-foreground"
-                aria-label="搜索"
-              >
-                <Search className="h-[17px] w-[17px]" />
-              </button>
+              {/* 深浅主题切换 */}
+              <ThemeToggle />
 
               {/* 快速入口（文档要求的下拉菜单） */}
               <div className="relative hidden sm:block">
@@ -190,7 +182,7 @@ export function Nav() {
                       </span>
                     )}
                   </button>
-                  {openMenu === 'user' && <UserMenu onClose={() => setOpenMenu(null)} onLogout={logout} />}
+                  {openMenu === 'user' && <UserMenu onClose={() => setOpenMenu(null)} onLogout={() => void logout().catch(() => toast.error('退出登录失败', '请稍后重试'))} />}
                 </div>
               ) : (
                 <Button
@@ -217,9 +209,40 @@ export function Nav() {
         </div>
       </header>
 
-      {mobileOpen && <MobileMenu onClose={() => setMobileOpen(false)} user={user} isAdmin={isAdmin} onLogout={logout} />}
-      {searchOpen && <SearchOverlay onClose={() => setSearchOpen(false)} />}
+      {mobileOpen && <MobileMenu onClose={() => setMobileOpen(false)} user={user} isAdmin={isAdmin} onLogout={() => void logout().catch(() => toast.error('退出登录失败', '请稍后重试'))} />}
     </>
+  );
+}
+
+/* -------------------------------------------------------------------------- */
+/** 深浅主题切换：两个图标叠在一起，用旋转 + 缩放交叉淡入，纯 transform/opacity */
+function ThemeToggle() {
+  const { theme, toggle } = useTheme();
+  const light = theme === 'light';
+  return (
+    <button
+      type="button"
+      onClick={toggle}
+      aria-label={light ? '切换到深色主题' : '切换到浅色主题'}
+      title={light ? '深色主题' : '浅色主题'}
+      className="relative flex h-9 w-9 items-center justify-center rounded-full border border-white/10 bg-white/[0.05] text-muted-foreground transition-colors duration-300 hover:border-white/20 hover:bg-white/[0.09] hover:text-foreground"
+    >
+      {/* data-keep-transition：切换主题那一帧全站过渡被关掉，这两个图标例外 */}
+      <Sun
+        data-keep-transition
+        className={cn(
+          'absolute h-[16px] w-[16px] transition-all duration-500 ease-[cubic-bezier(.22,1,.36,1)]',
+          light ? 'rotate-0 scale-100 opacity-100' : '-rotate-90 scale-50 opacity-0'
+        )}
+      />
+      <Moon
+        data-keep-transition
+        className={cn(
+          'absolute h-[15px] w-[15px] transition-all duration-500 ease-[cubic-bezier(.22,1,.36,1)]',
+          light ? 'rotate-90 scale-50 opacity-0' : 'rotate-0 scale-100 opacity-100'
+        )}
+      />
+    </button>
   );
 }
 
@@ -283,17 +306,6 @@ function QuickMenu({ onClose }: { onClose: () => void }) {
               </span>
             </Link>
           ))}
-        </div>
-        <div className="hairline my-2" />
-        <div className="flex items-center justify-between px-3.5 py-1.5">
-          <span className="text-[11px] text-muted-foreground">找不到需要的入口？</span>
-          <Link
-            to="/search"
-            onClick={onClose}
-            className="text-[11px] font-medium text-primary transition hover:underline"
-          >
-            全站搜索 →
-          </Link>
         </div>
       </Glass>
     </div>
@@ -406,7 +418,7 @@ function MobileMenu({
     <div className="fixed inset-0 z-[85] xl:hidden">
       <div className="absolute inset-0 bg-black/75 backdrop-blur-md" onClick={onClose} style={{ animation: 'sti-fade .25s ease both' }} />
       <div
-        className="absolute inset-y-0 right-0 flex w-[min(90vw,380px)] flex-col border-l border-white/10 bg-[#070a0f]/92 backdrop-blur-2xl"
+        className="surface-drawer absolute inset-y-0 right-0 flex w-[min(90vw,380px)] flex-col border-l border-white/10 backdrop-blur-2xl"
         style={{ animation: 'sti-slide-right .35s cubic-bezier(.22,1,.36,1) both' }}
       >
         <div className="flex items-center justify-between border-b border-white/8 px-5 py-4">
@@ -470,26 +482,20 @@ function MobileMenu({
                 <LinkButton to="/account" size="sm" variant="glass" className="w-full">
                   用户中心
                 </LinkButton>
-                {isAdmin ? (
+                {isAdmin && (
                   <LinkButton to="/admin" size="sm" variant="primary" className="w-full">
                     后台管理
                   </LinkButton>
-                ) : (
-                  <Button size="sm" variant="glass" onClick={() => { onLogout(); onClose(); }}>
-                    退出登录
-                  </Button>
                 )}
+                <Button size="sm" variant="glass" className={isAdmin ? 'col-span-2' : 'w-full'} onClick={() => { onLogout(); onClose(); }}>
+                  退出登录
+                </Button>
               </div>
             </div>
           ) : (
-            <div className="grid grid-cols-2 gap-2">
-              <LinkButton to="/login" size="sm" variant="glass" className="w-full">
-                登录
-              </LinkButton>
-              <LinkButton to="/register" size="sm" variant="primary" className="w-full">
-                注册
-              </LinkButton>
-            </div>
+            <LinkButton to="/login" size="sm" variant="primary" className="w-full">
+              登录
+            </LinkButton>
           )}
         </div>
       </div>
@@ -497,66 +503,3 @@ function MobileMenu({
   );
 }
 
-/* -------------------------------------------------------------------------- */
-function SearchOverlay({ onClose }: { onClose: () => void }) {
-  const [q, setQ] = useState('');
-  const inputRef = useRef<HTMLInputElement>(null);
-  useBodyLock(true);
-  useEffect(() => {
-    const t = setTimeout(() => inputRef.current?.focus(), 60);
-    const onKey = (e: KeyboardEvent) => e.key === 'Escape' && onClose();
-    window.addEventListener('keydown', onKey);
-    return () => {
-      clearTimeout(t);
-      window.removeEventListener('keydown', onKey);
-    };
-  }, [onClose]);
-
-  const go = () => {
-    if (!q.trim()) return;
-    window.location.href = `/search?q=${encodeURIComponent(q.trim())}`;
-  };
-
-  const hints = ['大创项目', '挑战杯', '电子设计竞赛', '创新工坊', '学分认定'];
-
-  return (
-    <div className="fixed inset-0 z-[95]">
-      <div className="absolute inset-0 bg-black/80 backdrop-blur-xl" onClick={onClose} style={{ animation: 'sti-fade .22s ease both' }} />
-      <div className="shell relative pt-[16vh]" style={{ animation: 'sti-pop .3s cubic-bezier(.22,1,.36,1) both' }}>
-        <Glass tone="strong" className="mx-auto max-w-2xl p-2">
-          <div className="flex items-center gap-3 px-4">
-            <Search className="h-5 w-5 shrink-0 text-muted-foreground" />
-            <input
-              ref={inputRef}
-              value={q}
-              onChange={(e) => setQ(e.target.value)}
-              onKeyDown={(e) => e.key === 'Enter' && go()}
-              placeholder="搜索新闻、活动、项目、竞赛、资源…"
-              className="h-14 w-full bg-transparent text-base outline-none placeholder:text-muted-foreground/70"
-            />
-            <kbd className="mono hidden shrink-0 rounded-md border border-white/12 bg-white/5 px-2 py-1 text-[10px] text-muted-foreground sm:block">
-              ESC
-            </kbd>
-          </div>
-        </Glass>
-        <div className="mx-auto mt-5 flex max-w-2xl flex-wrap items-center gap-2 px-1">
-          <span className="text-[11px] text-muted-foreground">热门搜索</span>
-          {hints.map((h) => (
-            <button
-              key={h}
-              onClick={() => setQ(h)}
-              className="rounded-full border border-white/10 bg-white/[0.045] px-3 py-1.5 text-[11px] text-muted-foreground transition hover:border-white/22 hover:text-foreground"
-            >
-              {h}
-            </button>
-          ))}
-        </div>
-        <div className="mx-auto mt-6 flex max-w-2xl justify-center">
-          <Button variant="primary" onClick={go} disabled={!q.trim()}>
-            搜索
-          </Button>
-        </div>
-      </div>
-    </div>
-  );
-}

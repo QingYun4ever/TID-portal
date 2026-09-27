@@ -1,10 +1,12 @@
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { Link } from 'react-router';
 import {
   ArrowRight,
   ArrowUpRight,
   Bell,
   CalendarDays,
+  ChevronLeft,
+  ChevronRight,
   Compass,
   Eye,
   FileText,
@@ -135,7 +137,7 @@ export default function Home() {
       />
       <ActivityApply activities={d.activities ?? []} loading={loading} dens={dens} />
       <ProjectCompetition projects={d.projects ?? []} competitions={d.competitions ?? []} loading={loading} dens={dens} />
-      <GalleryBlock images={d.gallery ?? []} loading={loading} dens={dens} />
+      <GalleryBlock images={d.gallery ?? []} loading={loading} />
       <OrgMembers members={d.members ?? []} loading={loading} dens={dens} />
       <JoinBlock stats={stats} />
     </>
@@ -146,8 +148,11 @@ export default function Home() {
  * 右侧分区导航
  * ========================================================================== */
 function SectionRail({ sections, active }: { sections: { id: string; label: string }[]; active: string }) {
+  const [hovered, setHovered] = useState(false);
   return (
     <nav
+      onMouseEnter={() => setHovered(true)}
+      onMouseLeave={() => setHovered(false)}
       className="st-fade fixed right-5 top-1/2 z-[60] hidden -translate-y-1/2 flex-col items-end gap-2.5 xl:flex"
       /* 等首屏进场走完再出现，避免和 Hero 的级联抢注意力 */
       style={{ animationDelay: '1050ms' }}
@@ -158,10 +163,11 @@ function SectionRail({ sections, active }: { sections: { id: string; label: stri
           <a key={sec.id} href={`#${sec.id}`} className="group flex items-center gap-3" aria-label={sec.label}>
             <span
               className={cn(
-                'whitespace-nowrap rounded-full border px-3.5 py-1.5 text-[15px] font-medium transition-colors duration-300',
+                'whitespace-nowrap rounded-full border px-2.5 py-1 text-xs transition-all duration-300',
+                hovered || isActive ? 'opacity-100' : 'translate-x-1 opacity-0',
                 isActive
-                  ? 'border-primary/50 bg-primary/15 text-primary'
-                  : 'border-white/15 bg-black/65 text-foreground/85 backdrop-blur-md group-hover:border-white/30 group-hover:text-foreground'
+                  ? 'border-primary/40 bg-primary/12 text-primary'
+                  : 'border-white/10 bg-black/45 text-muted-foreground backdrop-blur-md'
               )}
             >
               {sec.label}
@@ -195,7 +201,7 @@ function Hero({ settings }: { settings: Record<string, string> }) {
       <div
         aria-hidden
         className="pointer-events-none absolute left-1/2 top-1/2 z-[2] h-[80vh] w-[min(1180px,96vw)] -translate-x-1/2 -translate-y-1/2"
-        style={{ background: 'radial-gradient(ellipse 62% 52% at 50% 50%, rgba(0,0,0,.58) 0%, rgba(0,0,0,.34) 48%, transparent 76%)' }}
+        style={{ background: 'radial-gradient(ellipse 62% 52% at 50% 50%, rgb(var(--tw-black) / .58) 0%, rgb(var(--tw-black) / .34) 48%, transparent 76%)' }}
       />
 
       <div className="relative z-10 flex w-full max-w-4xl flex-col items-center text-center">
@@ -266,7 +272,7 @@ function Hero({ settings }: { settings: Record<string, string> }) {
 const QUICK = [
   { icon: CalendarDays, title: '活动报名', desc: '技术沙龙 · 工作坊 · 竞赛集训', to: '/activities' },
   { icon: FileText, title: '项目申报', desc: '大创项目在线申报与进度查询', to: '/projects/apply' },
-  { icon: Compass, title: '全站搜索', desc: '新闻通知 · 活动 · 创新项目', to: '/search' },
+  { icon: Trophy, title: '竞赛信息', desc: '赛事动态 · 报名与截止时间', to: '/competitions' },
   { icon: Users, title: '加入我们', desc: '查看录取名单 · 联系部门', to: '/join' },
 ];
 
@@ -604,47 +610,60 @@ function ProjectCompetition({
 }
 
 /* =============================================================================
- * 6. 活动画廊（独占一屏，照片数随分辨率增加）
+ * 6. 活动画廊（单张横向滚动）
  * ========================================================================== */
-function GalleryBlock({ images, loading, dens }: { images: any[]; loading: boolean; dens: number }) {
-  const count = pick([8, 8, 12, 12], dens);
+function GalleryBlock({ images, loading }: { images: any[]; loading: boolean }) {
+  const track = useRef<HTMLDivElement>(null);
+  const [active, setActive] = useState(0);
+  const move = (direction: number) => {
+    const el = track.current;
+    if (!el) return;
+    const next = Math.max(0, Math.min(images.length - 1, active + direction));
+    setActive(next);
+    el.scrollTo({ left: next * el.clientWidth, behavior: 'smooth' });
+  };
 
   return (
     <Screen
       id="gallery"
       eyebrow="Gallery"
       title="活动画廊"
-      description="科技文化节、竞赛现场、创新工坊与讲座沙龙的影像记录。"
+      description="逐张浏览部门活动影像，左右滑动或使用箭头切换。"
       action={
         <LinkButton to="/gallery">
           进入画廊 <ArrowRight className="h-4 w-4" />
         </LinkButton>
       }
     >
-      <div className={cn('grid grid-cols-2 gap-4 sm:grid-cols-4', count > 8 && '2xl:grid-cols-6')}>
-        {loading
-          ? Array.from({ length: count }).map((_, i) => <Skeleton key={i} className="aspect-[4/3]" />)
-          : images.slice(0, count).map((img: any, i: number) => (
-              <Link
-                key={img.id}
-                to="/gallery"
-                data-reveal="scale"
-                style={stagger(i % 6, 38)}
-                className="group block"
-              >
-                {/* 画廊格子同样走「板中板」：裁剪只发生在 .card-media 上，
-                    外壳的 5px 内衬不参与裁剪，图片边缘就不会被外圆角切出阶梯边。
-                    悬浮放大交给 .card:hover .card-media img（scale 独立属性，纯合成）。 */}
-                <div className="card">
-                  <div className="card-media aspect-[4/3]">
-                    <img src={img.url} alt={img.title} loading="lazy" />
-                    <span aria-hidden className="card-scrim" />
-                    <p className="clamp-1 absolute inset-x-0 bottom-0 px-3 pb-2.5 text-sm font-medium text-white/95">{img.title}</p>
-                  </div>
-                </div>
-              </Link>
+      {loading ? (
+        <Skeleton className="h-[min(55vh,560px)] min-h-[250px] w-full" />
+      ) : images.length ? (
+        <div aria-label="活动影像" aria-roledescription="轮播图">
+          <div
+            ref={track}
+            className="no-scrollbar flex snap-x snap-mandatory overflow-x-auto overscroll-x-contain rounded-2xl scroll-smooth"
+            onScroll={(e) => setActive(Math.round(e.currentTarget.scrollLeft / e.currentTarget.clientWidth))}
+            tabIndex={0}
+            aria-label="左右滚动浏览活动影像"
+          >
+            {images.map((img: any, i: number) => (
+              <div key={img.id} className="relative h-[min(55vh,560px)] min-h-[250px] w-full shrink-0 snap-start overflow-hidden bg-black/45" aria-label={`${i + 1} / ${images.length}: ${img.title}`}>
+                <img src={img.url} alt={img.title} loading={i === 0 ? 'eager' : 'lazy'} className="h-full w-full object-contain" />
+                <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/75 to-transparent px-5 pb-5 pt-12 text-sm text-white">{img.title}</div>
+              </div>
             ))}
-      </div>
+          </div>
+          <div className="mt-4 flex items-center justify-between gap-4">
+            <span className="mono text-xs tabular-nums text-muted-foreground">{active + 1} / {images.length}</span>
+            <div className="flex gap-2">
+              <button type="button" onClick={() => move(-1)} disabled={active === 0} aria-label="上一张" className="rounded-full border border-white/15 p-2.5 text-foreground transition hover:border-primary/50 disabled:cursor-not-allowed disabled:opacity-35"><ChevronLeft className="h-5 w-5" /></button>
+              <button type="button" onClick={() => move(1)} disabled={active === images.length - 1} aria-label="下一张" className="rounded-full border border-white/15 p-2.5 text-foreground transition hover:border-primary/50 disabled:cursor-not-allowed disabled:opacity-35"><ChevronRight className="h-5 w-5" /></button>
+            </div>
+          </div>
+        </div>
+      ) : (
+        <Glass tone="soft" className="p-8 text-center text-sm text-muted-foreground">暂无活动影像</Glass>
+      )}
     </Screen>
   );
 }

@@ -2,6 +2,27 @@
 <html lang="zh-CN" class="dark">
   <head>
     <meta charset="UTF-8" />
+    <!-- 首帧前确定主题，避免闪烁；规则与 src/lib/theme.ts 保持一致 -->
+    <script>
+      (function () {
+        var t = null;
+        try { t = localStorage.getItem('sti-theme'); } catch (e) {}
+        if (t !== 'light' && t !== 'dark') {
+          t = window.matchMedia && matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark';
+        }
+        var r = document.documentElement;
+        r.classList.remove('dark', 'light');
+        r.classList.add(t);
+        if (t === 'light') {
+          var m = document.querySelector('meta[name="theme-color"]');
+          if (m) m.setAttribute('content', '#f4f6f9');
+          else document.addEventListener('DOMContentLoaded', function () {
+            var mm = document.querySelector('meta[name="theme-color"]');
+            if (mm) mm.setAttribute('content', '#f4f6f9');
+          });
+        }
+      })();
+    </script>
     <link rel="icon" type="image/svg+xml" href="/logo.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
     <meta name="theme-color" content="#000000" />

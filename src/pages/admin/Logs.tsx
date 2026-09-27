@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from 'react';
 import { Database, Download, Eraser, HardDriveDownload, Info, RefreshCw, ScrollText, ShieldCheck, Table2 } from 'lucide-react';
-import { AdminApi, getToken } from '@/lib/api';
+import { AdminApi } from '@/lib/api';
 import { useApi, useDebounced, useRevealScan, useTitle } from '@/lib/hooks';
 import { useAuth, useToast } from '@/lib/store';
 import { cn, fdatetime, fnum, fromNow } from '@/lib/utils';
@@ -209,7 +209,7 @@ export default function Logs() {
     }
     setBackingUp(true);
     try {
-      const res = await fetch('/api/admin/backup', { headers: { Authorization: `Bearer ${getToken() ?? ''}` } });
+      const res = await fetch('/api/admin/backup', { credentials: 'same-origin' });
       if (!res.ok) throw new Error(res.status === 403 ? '仅超级管理员可以导出完整备份' : `备份失败（${res.status}）`);
       const blob = await res.blob();
       const a = document.createElement('a');

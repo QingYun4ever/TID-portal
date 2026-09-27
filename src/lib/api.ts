@@ -1,24 +1,6 @@
 /* =============================================================================
- * API 客户端 — 统一 fetch 封装，自动带令牌，统一错误处理
+ * API 客户端 — 同源 Cookie 会话，统一错误处理
  * ========================================================================== */
-
-const TOKEN_KEY = 'sti_token';
-
-export function getToken(): string | null {
-  try {
-    return localStorage.getItem(TOKEN_KEY);
-  } catch {
-    return null;
-  }
-}
-export function setToken(t: string | null) {
-  try {
-    if (t) localStorage.setItem(TOKEN_KEY, t);
-    else localStorage.removeItem(TOKEN_KEY);
-  } catch {
-    /* ignore */
-  }
-}
 
 export class ApiError extends Error {
   status: number;
@@ -45,11 +27,9 @@ export interface ApiResponse<T> {
 }
 
 export async function api<T = any>(path: string, opts: ApiOptions = {}): Promise<T> {
-  const token = getToken();
   const isForm = opts.body instanceof FormData;
   const headers: Record<string, string> = { Accept: 'application/json', ...(opts.headers || {}) };
   if (!isForm && opts.body !== undefined) headers['Content-Type'] = 'application/json';
-  if (token) headers['Authorization'] = `Bearer ${token}`;
 
   let res: Response;
   try {
@@ -58,7 +38,7 @@ export async function api<T = any>(path: string, opts: ApiOptions = {}): Promise
       headers,
       body: isForm ? (opts.body as FormData) : opts.body !== undefined ? JSON.stringify(opts.body) : undefined,
       signal: opts.signal,
-      credentials: 'include',
+      credentials: 'same-origin',
     });
   } catch (e: any) {
     if (e?.name === 'AbortError') throw e;
@@ -75,7 +55,6 @@ export async function api<T = any>(path: string, opts: ApiOptions = {}): Promise
 
   if (!res.ok) {
     const msg = json?.error || (res.status === 401 ? '请先登录' : `请求失败（${res.status}）`);
-    if (res.status === 401 && getToken()) setToken(null);
     throw new ApiError(msg, res.status, json?.code);
   }
   if (json && typeof json === 'object' && 'data' in json) return json as unknown as T;
@@ -95,13 +74,9 @@ export async function apiFull<T = any>(path: string, opts: ApiOptions = {}): Pro
 
 /* ------------------------------ 具体接口 -------------------------------- */
 export const AuthApi = {
-  login: (username: string, password: string) => apiData('/auth/login', { body: { username, password } }),
-  register: (data: Record<string, unknown>) => apiData('/auth/register', { body: data }),
   logout: () => apiData('/auth/logout', { body: {} }),
   me: () => apiData<{ user: any; stats: any } | null>('/auth/me'),
   updateMe: (data: Record<string, unknown>) => apiData('/auth/me', { method: 'PATCH', body: data }),
-  changePassword: (oldPassword: string, newPassword: string) =>
-    apiData('/auth/change-password', { body: { oldPassword, newPassword } }),
   signups: () => apiData<any[]>('/auth/my/signups'),
   applications: () => apiData<any[]>('/auth/my/applications'),
   joinApplications: () => apiData<any[]>('/auth/my/join-applications'),
@@ -131,7 +106,6 @@ export const PublicApi = {
   galleryAreas: () => apiData<any[]>('/gallery/areas'),
   galleryImages: (params: Record<string, string | number> = {}) => apiFull<any>(`/gallery/images?${qs(params)}`),
   about: () => apiData<any>('/about'),
-  search: (q: string, scope = 'all') => apiData<any>(`/search?q=${encodeURIComponent(q)}&scope=${scope}`),
   tags: () => apiData<any[]>('/tags'),
 };
 
@@ -161,7 +135,6 @@ export const AdminApi = {
   savePage: (key: string, data: { title?: string; content?: string }) =>
     apiData(`/admin/pages/${key}`, { method: 'PUT', body: data }),
   users: (params: Record<string, string | number> = {}) => apiFull<any>(`/admin/users?${qs(params)}`),
-  createUser: (data: Record<string, unknown>) => apiData('/admin/users', { body: data }),
   updateUser: (id: number, data: Record<string, unknown>) => apiData(`/admin/users/${id}`, { method: 'PATCH', body: data }),
   deleteUser: (id: number) => apiData(`/admin/users/${id}`, { method: 'DELETE' }),
   broadcast: (data: Record<string, unknown>) => apiData<{ sent: number }>('/admin/users/broadcast', { body: data }),

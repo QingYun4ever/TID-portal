@@ -64,16 +64,17 @@ export function LiquidBackdrop({ className, intensity = 1 }: { className?: strin
       className={cn('pointer-events-none fixed inset-0 -z-10 overflow-hidden', className)}
       style={{ opacity: intensity }}
     >
-      {/* 冷白光雾 —— 仅两团，低饱和，柔边由渐变段本身给出 */}
+      {/* 冷白光雾 —— 仅两团，低饱和，柔边由渐变段本身给出
+          （.liquid-orb：浅色主题下略提浓度，给毛玻璃留一点可透的底色） */}
       <div
-        className="animate-drift absolute left-1/2 top-[-16%] h-[74vmax] w-[74vmax] -translate-x-1/2 rounded-full"
+        className="liquid-orb animate-drift absolute left-1/2 top-[-16%] h-[74vmax] w-[74vmax] -translate-x-1/2 rounded-full"
         style={{
           background:
             'radial-gradient(circle at 50% 50%, rgba(125,180,255,.16) 0%, rgba(125,180,255,.115) 22%, rgba(125,180,255,.055) 44%, rgba(125,180,255,.018) 62%, transparent 78%)',
         }}
       />
       <div
-        className="animate-drift absolute bottom-[-26%] left-[8%] h-[58vmax] w-[58vmax] rounded-full"
+        className="liquid-orb animate-drift absolute bottom-[-26%] left-[8%] h-[58vmax] w-[58vmax] rounded-full"
         style={{
           animationDelay: '-11s',
           background:
@@ -86,7 +87,7 @@ export function LiquidBackdrop({ className, intensity = 1 }: { className?: strin
         className="absolute inset-[-6%] opacity-[0.42]"
         style={{
           backgroundImage:
-            'linear-gradient(to right, rgba(255,255,255,.05) 1px, transparent 1px), linear-gradient(to bottom, rgba(255,255,255,.05) 1px, transparent 1px)',
+            'linear-gradient(to right, rgb(var(--tw-white) / .05) 1px, transparent 1px), linear-gradient(to bottom, rgb(var(--tw-white) / .05) 1px, transparent 1px)',
           backgroundSize: '76px 76px',
           transform: 'translate3d(var(--gx,0), var(--gy,0), 0)',
           maskImage: 'radial-gradient(76% 60% at 50% 34%, #000 6%, transparent 72%)',
@@ -159,7 +160,7 @@ export function GridTexture({ className, size = 56 }: { className?: string; size
       className={cn('pointer-events-none absolute inset-0', className)}
       style={{
         backgroundImage:
-          'linear-gradient(to right, rgba(255,255,255,.035) 1px, transparent 1px), linear-gradient(to bottom, rgba(255,255,255,.035) 1px, transparent 1px)',
+          'linear-gradient(to right, rgb(var(--tw-white) / .035) 1px, transparent 1px), linear-gradient(to bottom, rgb(var(--tw-white) / .035) 1px, transparent 1px)',
         backgroundSize: `${size}px ${size}px`,
         maskImage: 'radial-gradient(70% 60% at 50% 50%, #000 10%, transparent 76%)',
         WebkitMaskImage: 'radial-gradient(70% 60% at 50% 50%, #000 10%, transparent 76%)',

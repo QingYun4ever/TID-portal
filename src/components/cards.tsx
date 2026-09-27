@@ -143,7 +143,8 @@ export function ArticleCard({
                 </Chip>
               ) : null}
             </div>
-            <span className="mono absolute bottom-3 left-3.5 text-sm tracking-wide text-white/85">
+            {/* card-cap：压在封面上的说明文字，有图时恒为白色，不随主题翻转 */}
+            <span className="card-cap mono absolute bottom-3 left-3.5 text-sm tracking-wide">
               {fdate(article.publishedAt)}
             </span>
           </div>

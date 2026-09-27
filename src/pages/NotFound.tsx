@@ -1,5 +1,5 @@
 import { Link, useLocation } from 'react-router';
-import { Compass, Home as HomeIcon, Search } from 'lucide-react';
+import { Compass, Home as HomeIcon } from 'lucide-react';
 import { LogoMark } from '@/components/Brand';
 import { Glass, LinkButton } from '@/components/ui';
 
@@ -39,10 +39,6 @@ export default function NotFound() {
             <LinkButton to="/" variant="primary">
               <HomeIcon className="h-4 w-4" />
               返回首页
-            </LinkButton>
-            <LinkButton to="/search">
-              <Search className="h-4 w-4" />
-              全站搜索
             </LinkButton>
           </div>
 

@@ -536,50 +536,6 @@ publicRoutes.get('/status', (c) => {
   });
 });
 
-/* ------------------------------ 全局搜索 ------------------------------- */
-publicRoutes.get('/search', (c) => {
-  const q = (c.req.query('q') || '').trim();
-  const scope = c.req.query('scope') || 'all';
-  if (!q) return ok(c, { groups: [], total: 0 });
-  const like = `%${q}%`;
-  const groups: { type: string; label: string; items: any[] }[] = [];
-
-  if (scope === 'all' || scope === 'article') {
-    const items = all(
-      `SELECT id,title,slug,summary,category,publishedAt AS date FROM articles
-       WHERE status='published' AND (title LIKE ? OR summary LIKE ? OR content LIKE ?) LIMIT 6`,
-      [like, like, like]
-    );
-    if (items.length) groups.push({ type: 'article', label: '新闻与通知', items });
-  }
-  if (scope === 'all' || scope === 'activity') {
-    const items = all(
-      `SELECT id,title,slug,summary,category,startAt AS date FROM activities
-       WHERE status='published' AND (title LIKE ? OR summary LIKE ? OR content LIKE ?) LIMIT 6`,
-      [like, like, like]
-    );
-    if (items.length) groups.push({ type: 'activity', label: '活动', items });
-  }
-  if (scope === 'all' || scope === 'project') {
-    const items = all(
-      `SELECT id,title,slug,summary,category,createdAt AS date FROM projects
-       WHERE status='published' AND (title LIKE ? OR summary LIKE ? OR content LIKE ? OR team LIKE ?) LIMIT 6`,
-      [like, like, like, like]
-    );
-    if (items.length) groups.push({ type: 'project', label: '创新项目', items });
-  }
-  if (scope === 'all' || scope === 'competition') {
-    const items = all(
-      `SELECT id,title,summary,level AS category,createdAt AS date FROM competitions
-       WHERE status='published' AND (title LIKE ? OR summary LIKE ? OR organizer LIKE ?) LIMIT 6`,
-      [like, like, like]
-    );
-    if (items.length) groups.push({ type: 'competition', label: '竞赛信息', items });
-  }
-  const total = groups.reduce((s, g) => s + g.items.length, 0);
-  return ok(c, { groups, total, query: q });
-});
-
 /* -------------------------------- 标签 --------------------------------- */
 publicRoutes.get('/tags', (c) => {
   const tags = all<{ tags: string }>("SELECT tags FROM articles WHERE status='published'")

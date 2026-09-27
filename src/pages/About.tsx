@@ -2,16 +2,11 @@ import { useMemo, useState } from 'react';
 import type { ReactNode } from 'react';
 import {
   Award,
-  Building2,
   CalendarDays,
   Clock,
   Compass,
   Layers,
-  Mail,
-  MapPin,
-  Network,
   Quote,
-  Sparkles,
   Target,
   Users,
 } from 'lucide-react';
@@ -23,7 +18,7 @@ import { fnum } from '@/lib/utils';
 import { TimelineItem } from '@/components/cards';
 import { useRevealScope } from '@/components/RevealScope';
 import { LogoMark } from '@/components/Brand';
-import { GlowOrb, GridTexture } from '@/components/LiquidBackdrop';
+import { GridTexture } from '@/components/LiquidBackdrop';
 import {
   Avatar,
   Button,
@@ -31,7 +26,6 @@ import {
   EmptyState,
   ErrorState,
   Glass,
-  LinkButton,
   PageHero,
   Section,
   Skeleton,
@@ -40,17 +34,16 @@ import {
 
 /* =============================================================================
  * 部门概况 — /about
- * 顺序：PageHero → 部门简介 → 数据统计 → 发展历程 → 组织架构(#org)
- *       → 成员风采(#members) → 联系方式(#contact)
+ * 顺序：PageHero → 部门简介 → 数据统计 → 发展历程
+ *       → 指导教师(#advisors) → 成员风采(#members)
  * ========================================================================== */
 
 const ANCHORS = [
   { id: 'intro', label: '部门简介' },
   { id: 'stats', label: '数据统计' },
   { id: 'timeline', label: '发展历程' },
-  { id: 'org', label: '组织架构' },
+  { id: 'advisors', label: '指导教师' },
   { id: 'members', label: '成员风采' },
-  { id: 'contact', label: '联系方式' },
 ];
 
 export default function About() {
@@ -60,9 +53,7 @@ export default function About() {
   const { settings } = useSettings();
 
   const page = data?.page ?? null;
-  const contact = data?.contact ?? null;
   const timeline: any[] = data?.timeline ?? [];
-  const org: any[] = data?.org ?? [];
   const members: any[] = data?.members ?? [];
   const stats = data?.stats ?? {};
 
@@ -266,102 +257,25 @@ export default function About() {
             )}
           </Section>
 
-          {/* ========================= 组织架构 ========================= */}
-          <Section
-            id="org"
-            eyebrow="Organization"
-            title="组织架构"
-            description="由部长团统筹，工作组协同运转。"
-          >
-            {loading ? (
-              <div className="flex flex-col gap-4">
-                <Skeleton className="h-28" />
-                <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
-                  {Array.from({ length: 4 }).map((_, i) => (
-                    <Skeleton key={i} className="h-32" />
-                  ))}
-                </div>
-              </div>
-            ) : org.length ? (
-              <div className="flex flex-col gap-8">
-                {org.map((root) => (
-                  <OrgNode key={root.id} node={root} depth={0} />
-                ))}
-              </div>
-            ) : (
-              <Glass tone="soft" className="p-4">
-                <EmptyState
-                  icon={<Network className="h-6 w-6" />}
-                  title="暂无组织架构数据"
-                  description="后台「组织架构」中维护节点后会在这里递归展示。"
-                />
-              </Glass>
-            )}
+          {/* ========================= 指导教师 ========================= */}
+          <Section id="advisors" eyebrow="Faculty Advisors" title="指导教师">
+            <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+              {['郭松梅', '杨秋静', '孙博轩', '王非凡'].map((name) => (
+                <Glass key={name} tone="soft" className="flex items-center gap-4 p-5" data-reveal="scale">
+                  <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl border border-primary/25 bg-primary/10 text-primary">
+                    <Users className="h-5 w-5" />
+                  </span>
+                  <div>
+                    <p className="text-base font-medium text-foreground">{name}</p>
+                    <p className="text-xs text-muted-foreground">指导教师</p>
+                  </div>
+                </Glass>
+              ))}
+            </div>
           </Section>
 
           {/* ========================= 成员风采 ========================= */}
           <MembersSection members={members} loading={loading} />
-
-          {/* ========================= 联系方式 ========================= */}
-          <Section
-            id="contact"
-            eyebrow="Contact"
-            title="联系方式"
-            description="联系邮箱与地址如下，欢迎来信咨询。"
-          >
-            <div className="grid gap-6 lg:grid-cols-[1.4fr_1fr] lg:gap-10">
-              <Glass tone="soft" className="p-6 sm:p-8" data-reveal="left">
-                {loading ? (
-                  <div className="flex flex-col gap-3">
-                    <Skeleton className="h-6 w-40" />
-                    <Skeleton className="h-24" />
-                    <Skeleton className="h-40" />
-                  </div>
-                ) : contact?.content ? (
-                  <div className="prose-glass" dangerouslySetInnerHTML={{ __html: contact.content }} />
-                ) : (
-                  <EmptyState
-                    icon={<Mail className="h-6 w-6" />}
-                    title="联系方式尚未发布"
-                    description="管理员可在后台「页面管理」中维护联系方式内容。"
-                  />
-                )}
-              </Glass>
-
-              <div className="flex flex-col gap-4" data-reveal="right">
-                <ContactCard
-                  icon={<Mail className="h-4 w-4" />}
-                  label="邮箱"
-                  value={settings.email || '—'}
-                  href={settings.email ? `mailto:${settings.email}` : undefined}
-                  hint="招新、竞赛与项目咨询"
-                />
-                <ContactCard
-                  icon={<MapPin className="h-4 w-4" />}
-                  label="办公地址"
-                  value={settings.address || '—'}
-                />
-
-                <Glass tone="soft" className="p-5">
-                  <div className="flex items-center gap-2.5">
-                    <Sparkles className="h-4 w-4 text-accent" />
-                    <p className="text-[13.5px] font-medium">更快的方式</p>
-                  </div>
-                  <p className="mt-2 text-[12.5px] leading-relaxed text-muted-foreground">
-                    活动报名、项目申报与意见反馈均可在线提交，无需到访办公室。
-                  </p>
-                  <div className="mt-4 flex flex-wrap gap-2.5">
-                    <LinkButton to="/feedback" size="sm">
-                      在线反馈
-                    </LinkButton>
-                    <LinkButton to="/join" size="sm" variant="primary">
-                      加入我们
-                    </LinkButton>
-                  </div>
-                </Glass>
-              </div>
-            </div>
-          </Section>
         </>
       )}
     </div>
@@ -401,72 +315,6 @@ function CountCard({
         </div>
         <p className="mt-2 text-[13px] font-medium text-foreground/90">{label}</p>
         <p className="mt-1 text-[11px] leading-relaxed text-muted-foreground">{hint}</p>
-      </Glass>
-    </div>
-  );
-}
-
-/* =============================================================================
- * 组织架构（递归）
- * ========================================================================== */
-function OrgNode({ node, depth }: { node: any; depth: number }) {
-  const children: any[] = node.children ?? [];
-  const root = depth === 0;
-
-  if (root) {
-    return (
-      <div data-reveal>
-        <Glass tone="default" className="relative overflow-hidden p-6">
-          <GlowOrb className="-left-24 -top-24" size={340} color="rgba(186,230,253,.10)" />
-          <div className="relative flex flex-wrap items-center gap-4">
-            <span className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl border border-primary/32 bg-primary/12 text-primary">
-              <Building2 className="h-5 w-5" />
-            </span>
-            <div className="min-w-0 flex-1">
-              <h3 className="text-lg font-semibold">{node.name}</h3>
-              <p className="mt-1 text-[12.5px] text-muted-foreground">{node.description}</p>
-            </div>
-            {node.leader && (
-              <Chip tone="primary" className="!px-3 !py-1">
-                {node.leader}
-              </Chip>
-            )}
-          </div>
-        </Glass>
-
-        {children.length > 0 && (
-          <div className="mt-5 flex flex-col gap-4 border-l border-white/10 pl-5 sm:ml-4 sm:pl-7">
-            {children.map((c, i) => (
-              <OrgNode key={c.id} node={c} depth={depth + 1} />
-            ))}
-          </div>
-        )}
-      </div>
-    );
-  }
-
-  return (
-    <div className="relative" data-reveal="left">
-      <span aria-hidden className="absolute -left-5 top-7 h-px w-4 bg-white/14 sm:-left-7 sm:w-6" />
-      <Glass tone="thin" hover className="p-4 sm:p-5">
-        <div className="flex flex-wrap items-center gap-3">
-          <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-xl border border-white/12 bg-white/[0.055] text-primary">
-            <Users className="h-3.5 w-3.5" />
-          </span>
-          <p className="text-[13.5px] font-medium">{node.name}</p>
-          {node.leader && <span className="mono text-[10.5px] text-primary/85">负责人 {node.leader}</span>}
-        </div>
-        {node.description && (
-          <p className="mt-2.5 text-[12.5px] leading-relaxed text-muted-foreground">{node.description}</p>
-        )}
-
-        {children.length > 0 && (
-          <div className="mt-3.5 flex flex-col gap-3 border-l border-white/10 pl-4">
-            {children.map((c: any) => (
-              <OrgNode key={c.id} node={c} depth={depth + 1} />
-            ))}
-          </div>
-        )}
       </Glass>
     </div>
   );
@@ -575,40 +423,3 @@ function MembersSection({ members, loading }: { members: any[]; loading: boolean
   );
 }
 
-/* =============================================================================
- * 联系方式卡片
- * ========================================================================== */
-function ContactCard({
-  icon,
-  label,
-  value,
-  hint,
-  href,
-}: {
-  icon: ReactNode;
-  label: string;
-  value: string;
-  hint?: string;
-  href?: string;
-}) {
-  const inner = (
-    <Glass tone="soft" hover sheen className="flex h-full items-start gap-4 p-5">
-      <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl border border-primary/28 bg-primary/12 text-primary">
-        {icon}
-      </span>
-      <span className="min-w-0 flex-1">
-        <span className="block text-[11px] tracking-wide text-muted-foreground">{label}</span>
-        <span className="mt-1.5 block text-[13.5px] text-foreground/90">{value}</span>
-        {hint && <span className="mt-1 block text-[11px] text-muted-foreground/85">{hint}</span>}
-      </span>
-    </Glass>
-  );
-
-  return href ? (
-    <a href={href} className="block transition-opacity hover:opacity-90">
-      {inner}
-    </a>
-  ) : (
-    inner
-  );
-}

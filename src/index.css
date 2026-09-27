@@ -72,6 +72,75 @@
 
     /* 导航栏高度 */
     --nav-h: 68px;
+
+    /* ---- 主题翻转通道（RGB 三元组，供 rgb(var(--x) / a) 使用）----
+       --tw-white  Tailwind 的 white：深色主题=白，浅色主题=墨色
+       --tw-black  Tailwind 的 black：深色主题=黑，浅色主题=白
+       --shade     投影色：深色主题用纯黑，浅色主题用带蓝的石板灰（纯黑投影在浅底上发脏）
+       --drawer    抽屉 / 侧栏底色 */
+    --tw-white: 255 255 255;
+    --tw-black: 0 0 0;
+    --shade: 0 0 0;
+    --drawer: 7 9 14;
+    color-scheme: dark;
+  }
+
+  /* ==================================================================
+     浅色主题 —— 「日光毛玻璃」
+     ------------------------------------------------------------------
+     参考 web-style-reference 的透光毛玻璃语言：
+       · 底：冷调的浅灰白 + 顶部一层极淡的天光，不用插画；
+       · 面板：半透明白 + blur(20px) + 一圈浅灰细边 + 大半径的柔和灰影；
+       · 高光：玻璃上沿是纯白的一道，而不是深色主题里的「亮边」；
+     配色纪律与深色主题完全一致：墨色（靠不透明度分层）/ 蓝 primary / 警示色。
+     蓝色在浅底上加深到 48% 亮度，保证作为文字时的对比度（≥ 4.5:1）。
+     ================================================================== */
+  html.light {
+    --background: 216 30% 96.5%;
+    --foreground: 220 32% 12%;
+    --card: 0 0% 100%;
+    --card-foreground: 220 32% 12%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 220 32% 12%;
+
+    --primary: 211 90% 46%;
+    --primary-foreground: 0 0% 100%;
+
+    --accent: 216 18% 38%;
+    --accent-foreground: 0 0% 100%;
+
+    --secondary: 216 22% 91%;
+    --secondary-foreground: 220 32% 14%;
+    --muted: 216 22% 92%;
+    --muted-foreground: 218 13% 38%;
+
+    --destructive: 0 72% 50%;
+    --destructive-foreground: 0 0% 100%;
+    --warning: 32 95% 38%;
+    --warning-foreground: 0 0% 100%;
+
+    --success: 211 90% 46%;
+    --success-foreground: 0 0% 100%;
+
+    --border: 216 20% 86%;
+    --input: 216 20% 88%;
+    --ring: 211 90% 46%;
+
+    --glass-blur: 20px;
+    --glass-sat: 140%;
+
+    --tw-white: 15 23 38;
+    --tw-black: 255 255 255;
+    --shade: 71 85 105;
+    --drawer: 248 250 252;
+    color-scheme: light;
+  }
+
+  /* 切换主题的那一帧：关掉所有过渡，避免几百个元素各自慢慢变色 */
+  html.theme-switching *:not([data-keep-transition]),
+  html.theme-switching *::before,
+  html.theme-switching *::after {
+    transition: none !important;
   }
 
   * {
@@ -105,11 +174,18 @@
     background-position: 0 0, 50% 0;
   }
 
+  /* 浅色：冷调浅灰白 + 顶部一层淡天光（同样只占首屏，不用 fixed） */
+  html.light {
+    background-color: hsl(var(--background));
+    background-image:
+      url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.018'/%3E%3C/svg%3E"),
+      radial-gradient(120% 78% at 50% -10%, hsl(208 70% 92%) 0%, hsl(214 40% 95.5%) 46%, hsl(var(--background)) 100%);
+  }
+
   body {
     background: transparent;
     color: hsl(var(--foreground));
     font-family: var(--font-sans);
-    color-scheme: dark;
     min-height: 100dvh;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
@@ -118,7 +194,7 @@
 
   ::selection {
     background: hsl(var(--primary) / 0.28);
-    color: #fff;
+    color: hsl(var(--foreground));
   }
 
   h1,
@@ -138,13 +214,13 @@
     background: transparent;
   }
   ::-webkit-scrollbar-thumb {
-    background: rgba(255, 255, 255, 0.11);
+    background: rgb(var(--tw-white) / 0.11);
     border-radius: 99px;
     border: 3px solid transparent;
     background-clip: content-box;
   }
   ::-webkit-scrollbar-thumb:hover {
-    background: rgba(255, 255, 255, 0.22);
+    background: rgb(var(--tw-white) / 0.22);
     background-clip: content-box;
   }
 

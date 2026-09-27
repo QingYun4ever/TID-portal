@@ -25,9 +25,7 @@ const Competitions = lazy(() => import('./pages/Competitions'));
 const Gallery = lazy(() => import('./pages/Gallery'));
 const Join = lazy(() => import('./pages/Join'));
 const Feedback = lazy(() => import('./pages/Feedback'));
-const Search = lazy(() => import('./pages/Search'));
 const Login = lazy(() => import('./pages/Login'));
-const Register = lazy(() => import('./pages/Register'));
 const NotFound = lazy(() => import('./pages/NotFound'));
 
 const AccountLayout = lazy(() => import('./pages/account/AccountLayout'));
@@ -102,7 +100,7 @@ function RequireAuth({ children, admin = false }: { children: React.ReactNode; a
             {admin ? '该页面仅对部门管理员开放。' : '请先登录后访问用户中心。'}
           </p>
           <div className="mt-7 flex justify-center gap-3">
-            <LinkButton to="/login" variant="primary">
+            <LinkButton to={`/login?redirect=${encodeURIComponent(location.pathname + location.search + location.hash)}`} variant="primary">
               去登录
             </LinkButton>
             <LinkButton to="/">返回首页</LinkButton>
@@ -165,11 +163,9 @@ export default function App() {
             <Route path="/gallery" element={<Gallery />} />
             <Route path="/join" element={<Join />} />
             <Route path="/feedback" element={<Feedback />} />
-            <Route path="/search" element={<Search />} />
 
             {/* ---------- 认证 ---------- */}
             <Route path="/login" element={<Login />} />
-            <Route path="/register" element={<Register />} />
 
             {/* ---------- 用户中心 ---------- */}
             <Route

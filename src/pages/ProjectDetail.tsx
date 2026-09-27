@@ -2,7 +2,6 @@ import React from 'react';
 import { useParams } from 'react-router';
 import {
   AlertTriangle,
-  ArrowRight,
   Award,
   Building2,
   CalendarDays,
@@ -37,7 +36,6 @@ import {
  *  - 顶部大标题、类别徽章、年份、获奖信息、团队、指导教师、标签
  *  - 正文 .prose-glass
  *  - 侧栏：项目信息表（团队 / 成员 / 指导教师 / 年份 / 浏览量）+ 相关项目推荐
- *  - 底部 CTA → /projects/apply
  * ========================================================================== */
 
 const CAT_TONE: Record<string, 'primary' | 'accent' | 'success' | 'warning' | 'default'> = {
@@ -230,31 +228,6 @@ export default function ProjectDetail() {
               </p>
             </Glass>
 
-            {/* ============================ 底部 CTA ============================ */}
-            <Glass tone="strong" className="relative overflow-hidden p-7 sm:p-9" data-reveal="scale">
-              <GlowOrb className="-right-20 -top-24" size={400} color="rgba(255,255,255,.06)" />
-              <div className="relative flex flex-wrap items-center justify-between gap-6">
-                <div className="max-w-xl">
-                  <div className="eyebrow mb-3">Apply Now</div>
-                  <h2 className="text-balance text-xl font-semibold leading-snug sm:text-2xl">
-                    想申报类似的创新项目？
-                  </h2>
-                  <p className="mt-3 text-[13px] leading-relaxed text-muted-foreground">
-                    大学生创新创业训练计划全年受理在线申报。填写项目基本信息、团队信息与项目简介，
-                    5 个工作日内即可获得初审反馈。
-                  </p>
-                </div>
-                <div className="flex flex-wrap items-center gap-3">
-                  <LinkButton to="/projects/apply" variant="primary" size="lg">
-                    <FileText className="h-4 w-4" />
-                    立即在线申报
-                  </LinkButton>
-                  <LinkButton to="/projects" variant="glass" size="lg">
-                    返回项目库 <ArrowRight className="h-4 w-4" />
-                  </LinkButton>
-                </div>
-              </div>
-            </Glass>
           </div>
 
           {/* ============================= 侧栏 ============================= */}

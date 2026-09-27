@@ -23,6 +23,16 @@ export default {
         mono: ['"JetBrains Mono"', 'ui-monospace', 'SFMono-Regular', 'Menlo', 'Consolas', 'monospace'],
       },
       colors: {
+        /* ── 主题翻转色 ──────────────────────────────────────────────
+           全站几百处 bg-white/[0.05]、border-white/10、text-white/60 ……
+           在深色主题里它们的语义其实是「前景墨色的一点点叠加」。
+           把 white / black 接到 CSS 变量上：深色主题下仍是纯白 / 纯黑，
+           浅色主题下 white → 深墨色、black → 白，于是所有叠加层自动翻转，
+           不需要逐个页面去改类名（index.css 的 --tw-white / --tw-black）。
+           真正需要「不随主题变化的白」的地方（压在照片上的文字）用 snow。 */
+        white: 'rgb(var(--tw-white) / <alpha-value>)',
+        black: 'rgb(var(--tw-black) / <alpha-value>)',
+        snow: '#ffffff',
         border: 'hsl(var(--border))',
         input: 'hsl(var(--input))',
         ring: 'hsl(var(--ring))',

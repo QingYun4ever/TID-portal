@@ -1,9 +1,8 @@
 import React from 'react';
 import { Link } from 'react-router';
-import { ArrowUpRight, Github, Mail, MapPin, QrCode } from 'lucide-react';
+import { ArrowUpRight, Github, Mail, MapPin } from 'lucide-react';
 import { useSettings } from '@/lib/store';
 import { LogoLockup } from './Brand';
-import { Glass } from './ui';
 
 const COLUMNS: { title: string; links: { label: string; to: string }[] }[] = [
   {
@@ -11,9 +10,7 @@ const COLUMNS: { title: string; links: { label: string; to: string }[] }[] = [
     links: [
       { label: '首页', to: '/' },
       { label: '部门概况', to: '/about' },
-      { label: '组织架构', to: '/about#org' },
       { label: '成员风采', to: '/about#members' },
-      { label: '联系方式', to: '/about#contact' },
     ],
   },
   {
@@ -38,7 +35,6 @@ const COLUMNS: { title: string; links: { label: string; to: string }[] }[] = [
   {
     title: '系统',
     links: [
-      { label: '全站搜索', to: '/search' },
       { label: '用户中心', to: '/account' },
       { label: '后台管理', to: '/admin' },
     ],
@@ -106,25 +102,6 @@ export function Footer() {
               </ul>
             </div>
           ))}
-        </div>
-
-        {/* 微信二维码 */}
-        <div className="mt-14">
-          <Glass tone="soft" className="flex items-center gap-5 p-6">
-            <div className="flex h-[88px] w-[88px] shrink-0 items-center justify-center overflow-hidden rounded-2xl border border-white/12 bg-white/[0.05]">
-              {settings.wechatQr ? (
-                <img src={settings.wechatQr} alt="微信公众号二维码" className="h-full w-full object-cover" />
-              ) : (
-                <QrCode className="h-9 w-9 text-muted-foreground/60" />
-              )}
-            </div>
-            <div>
-              <p className="text-[13px] font-medium">关注公众号</p>
-              <p className="mt-1.5 max-w-[180px] text-[12px] leading-relaxed text-muted-foreground">
-                扫码获取竞赛提醒、活动预告与政策解读
-              </p>
-            </div>
-          </Glass>
         </div>
 
         <div className="hairline my-10" />

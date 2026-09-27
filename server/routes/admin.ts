@@ -608,25 +608,6 @@ adminRoutes.patch('/users/:id', requireAuth('superadmin'), async (c) => {
   return ok(c, { updated: true });
 });
 
-adminRoutes.post('/users', requireAuth('superadmin'), async (c) => {
-  const body = await readBody<any>(c);
-  const username = (body.username || '').trim();
-  if (!username) return fail(c, '请填写账号');
-  if (get('SELECT id FROM users WHERE username=?', [username])) return fail(c, '账号已存在', 409);
-  const { hashPasswordSync } = await import('../db.ts');
-  const id = insert('users', {
-    username,
-    passwordHash: hashPasswordSync(body.password || 'sti123456'),
-    name: body.name || username,
-    role: body.role || 'student',
-    email: body.email || null,
-    phone: body.phone || null,
-    college: body.college || null,
-  });
-  logOp({ userId: actor(c)?.id, userName: actor(c)?.name, action: '新建用户', target: 'user', detail: username });
-  return ok(c, { id });
-});
-
 adminRoutes.delete('/users/:id', requireAuth('superadmin'), (c) => {
   const id = Number(c.req.param('id'));
   if (id === actor(c)!.id) return fail(c, '不能删除自己的账号');

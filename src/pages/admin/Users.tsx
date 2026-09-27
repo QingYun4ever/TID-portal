@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from 'react';
-import { AlertTriangle, Megaphone, Pencil, Plus, RefreshCw, ShieldCheck, Trash2, Users as UsersIcon } from 'lucide-react';
+import { AlertTriangle, Megaphone, Pencil, RefreshCw, ShieldCheck, Trash2, Users as UsersIcon } from 'lucide-react';
 import { AdminApi } from '@/lib/api';
 import { useApi, useDebounced, useTitle } from '@/lib/hooks';
 import { useAuth, useToast } from '@/lib/store';
@@ -71,39 +71,6 @@ export default function Users() {
   useEffect(() => {
     setPage(1);
   }, [role, q]);
-
-  /* ------------------------------ 新建用户 ------------------------------ */
-  const [createOpen, setCreateOpen] = useState(false);
-  const [creating, setCreating] = useState(false);
-  const [form, setForm] = useState({ username: '', name: '', password: '', role: 'student', email: '', college: '' });
-
-  const openCreate = () => {
-    setForm({ username: '', name: '', password: '', role: 'student', email: '', college: '' });
-    setCreateOpen(true);
-  };
-
-  const submitCreate = async () => {
-    if (!form.username.trim()) return toast.error('请填写账号');
-    if (!form.name.trim()) return toast.error('请填写姓名');
-    setCreating(true);
-    try {
-      await AdminApi.createUser({
-        username: form.username.trim(),
-        name: form.name.trim(),
-        password: form.password.trim() || 'sti123456',
-        role: form.role,
-        email: form.email.trim(),
-        college: form.college.trim(),
-      });
-      toast.success('用户创建成功', `${form.name}（${ROLES[form.role] ?? form.role}）`);
-      setCreateOpen(false);
-      reload();
-    } catch (e: any) {
-      toast.error('创建失败', e.message);
-    } finally {
-      setCreating(false);
-    }
-  };
 
   /* ------------------------------ 编辑用户 ------------------------------ */
   const [editing, setEditing] = useState<AdminUser | null>(null);
@@ -316,7 +283,7 @@ export default function Users() {
   return (
     <AdminPage
       title="用户与权限"
-      description="管理门户账号、角色与启用状态，并向指定角色的用户群发站内消息。"
+      description="管理通过统一身份认证登录的用户、角色与启用状态，并向指定角色的用户群发站内消息。"
       breadcrumb="后台管理"
       icon={<ShieldCheck className="h-6 w-6" />}
       actions={
@@ -329,13 +296,6 @@ export default function Users() {
             <Megaphone className="h-3.5 w-3.5" />
             群发消息
           </Button>
-          <Button
-            variant="primary"
-            onClick={isSuperAdmin ? openCreate : () => toast.error('权限不足', '仅超级管理员可以新建用户')}
-          >
-            <Plus className="h-4 w-4" />
-            新建用户
-          </Button>
         </>
       }
     >
@@ -345,7 +305,7 @@ export default function Users() {
           <div className="text-[12.5px] leading-relaxed">
             <p className="font-medium text-[hsl(var(--warning))]">权限受限（只读）</p>
             <p className="mt-1 text-muted-foreground">
-              当前账号为「{ROLES[me?.role ?? ''] ?? me?.role}」。只有超级管理员可以新建 / 编辑用户、修改角色、启用停用与删除账号；你仍可以查看列表并群发站内消息。
+              当前账号为「{ROLES[me?.role ?? ''] ?? me?.role}」。只有超级管理员可以编辑用户、修改角色、启用停用与删除账号；你仍可以查看列表并群发站内消息。
             </p>
           </div>
         </Glass>
@@ -401,70 +361,6 @@ export default function Users() {
           )}
         />
       )}
-
-      {/* ------------------------------ 新建用户 ------------------------------ */}
-      <Modal
-        open={createOpen}
-        onClose={() => setCreateOpen(false)}
-        title="新建用户"
-        description="创建后用户即可用该账号登录门户，未填写密码时使用默认密码 sti123456。"
-        size="md"
-        footer={
-          <>
-            <Button variant="ghost" onClick={() => setCreateOpen(false)} disabled={creating}>
-              取消
-            </Button>
-            <Button variant="primary" onClick={submitCreate} loading={creating}>
-              创建用户
-            </Button>
-          </>
-        }
-      >
-        <div className="grid grid-cols-1 gap-5 sm:grid-cols-2">
-          <Field label="账号" required hint="登录用户名，创建后不可修改">
-            <Input
-              value={form.username}
-              onChange={(e) => setForm((s) => ({ ...s, username: e.target.value }))}
-              placeholder="例如 chenxi"
-            />
-          </Field>
-          <Field label="姓名" required>
-            <Input value={form.name} onChange={(e) => setForm((s) => ({ ...s, name: e.target.value }))} placeholder="真实姓名" />
-          </Field>
-          <Field label="初始密码" hint="留空则使用默认密码 sti123456">
-            <Input
-              type="password"
-              value={form.password}
-              onChange={(e) => setForm((s) => ({ ...s, password: e.target.value }))}
-              placeholder="建议不少于 6 位"
-            />
-          </Field>
-          <Field label="角色" required>
-            <Select value={form.role} onChange={(e) => setForm((s) => ({ ...s, role: e.target.value }))}>
-              {ROLE_ORDER.map((r) => (
-                <option key={r} value={r}>
-                  {ROLES[r]}
-                </option>
-              ))}
-            </Select>
-          </Field>
-          <Field label="邮箱">
-            <Input
-              type="email"
-              value={form.email}
-              onChange={(e) => setForm((s) => ({ ...s, email: e.target.value }))}
-              placeholder="name@university.edu.cn"
-            />
-          </Field>
-          <Field label="学院">
-            <Input
-              value={form.college}
-              onChange={(e) => setForm((s) => ({ ...s, college: e.target.value }))}
-              placeholder="例如 计算机科学与技术学院"
-            />
-          </Field>
-        </div>
-      </Modal>
 
       {/* ------------------------------ 编辑用户 ------------------------------ */}
       <Drawer

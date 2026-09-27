@@ -1,0 +1,39 @@
+services:
+  portal:
+    build:
+      context: .
+    image: sti-portal:latest
+    container_name: sti-portal
+    restart: unless-stopped
+
+    # OIDC_CLIENT_ID / OIDC_CLIENT_SECRET / OIDC_REDIRECT_URI / JWT_SECRET
+    # 均来自 .env（已被 .gitignore 与 .dockerignore 排除，不会进入镜像）
+    env_file:
+      - .env
+    environment:
+      NODE_ENV: production
+      PORT: "8787"
+      HOST: 0.0.0.0
+      DATA_DIR: /app/data
+
+    ports:
+      # 前面若有 TLS 反代，可改为 "127.0.0.1:8787:8787" 仅本机可达
+      - "8787:8787"
+
+    volumes:
+      # 数据库 portal.db 与 uploads/ 持久化，重建容器不丢数据
+      - portal-data:/app/data
+
+    security_opt:
+      - no-new-privileges:true
+
+volumes:
+  portal-data:
+
+# 说明：
+# 1. 正式环境 OIDC_REDIRECT_URI 必须填对外可访问的 HTTPS 地址，
+#    并在 Authentik 应用的 Redirect URIs 中登记同一条：
+#      https://<你的域名>/api/auth/oidc/callback
+# 2. 反向代理需原样透传 Host 与协议（服务端不信任 X-Forwarded-Host）。
+# 3. 本机演示可用 http://127.0.0.1:8787/api/auth/oidc/callback，
+#    该地址同样需要在 Authentik 中登记。

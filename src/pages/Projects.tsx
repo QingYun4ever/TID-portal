@@ -1,29 +1,23 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { useSearchParams } from 'react-router';
 import {
-  ArrowRight,
   Award,
   Compass,
-  FileText,
   Layers,
-  ListChecks,
   SearchX,
   Sparkles,
-  Trophy,
 } from 'lucide-react';
 
 import { PublicApi } from '@/lib/api';
 import { useApi, useDebounced, useRevealScan, useTitle } from '@/lib/hooks';
-import { PROJECT_CATEGORIES, cn, fnum } from '@/lib/utils';
+import { PROJECT_CATEGORIES, fnum } from '@/lib/utils';
 import { ProjectCard } from '@/components/cards';
-import { GlowOrb } from '@/components/LiquidBackdrop';
 import {
   Button,
   Chip,
   EmptyState,
   ErrorState,
   Glass,
-  LinkButton,
   PageHero,
   Pagination,
   SearchInput,
@@ -34,7 +28,7 @@ import {
 
 /* =============================================================================
  * 创新项目展示库（/projects）
- *  - 顶部引导条：竞赛信息 + 项目在线申报
+ *  - 仅展示项目成果，支持类别、年份与关键词筛选
  *  - Tabs（全部 / 优秀 / 立项 / 结项 / 在研，带 meta.counts 数量）
  *  - 年份筛选（meta.years）+ 搜索 + 分页
  *  - 第一个「优秀项目」用 ProjectCard size="lg" 突出展示，其余网格排布
@@ -97,7 +91,7 @@ export default function Projects() {
       <PageHero
         eyebrow="Innovation Showcase"
         title="创新项目展示库"
-        description="覆盖优秀项目、立项项目、结项项目与在研项目，展示技术路线、团队构成与获奖成果，为申报提供可参考的范例。"
+        description="覆盖优秀项目、立项项目、结项项目与在研项目，展示技术路线、团队构成与获奖成果。"
         breadcrumb={[{ label: '创新项目' }]}
       >
         <div className="flex flex-wrap items-center gap-2.5">
@@ -114,62 +108,6 @@ export default function Projects() {
       </PageHero>
 
       <section className="shell pb-24">
-        {/* ======================= 创新竞赛与申报入口 ======================= */}
-        <Glass tone="strong" className="relative overflow-hidden p-7 sm:p-9" data-reveal="scale">
-          <GlowOrb className="-right-24 -top-28" size={460} color="rgba(255,255,255,.055)" />
-          <GlowOrb className="-bottom-32 -left-24" size={420} color="rgba(186,230,253,.10)" />
-          <div className="relative grid gap-8 lg:grid-cols-[1.35fr_1fr] lg:items-center">
-            <div>
-              <div className="eyebrow mb-4">Competition &amp; Application</div>
-              <h2 className="text-balance text-2xl font-semibold leading-snug tracking-tight sm:text-[1.7rem]">
-                创新竞赛与申报入口
-              </h2>
-              <p className="mt-4 max-w-xl text-pretty text-[13.5px] leading-relaxed text-muted-foreground">
-                竞赛信息聚合发布、截止日期倒计时与提醒订阅；大学生创新创业训练计划项目支持在线申报，
-                进度可在用户中心实时查询。
-              </p>
-              <div className="mt-6 flex flex-wrap items-center gap-3">
-                <LinkButton to="/competitions" variant="primary">
-                  <Trophy className="h-4 w-4" />
-                  浏览竞赛信息
-                </LinkButton>
-                <LinkButton to="/projects/apply" variant="glass">
-                  <FileText className="h-4 w-4" />
-                  开始项目申报
-                </LinkButton>
-              </div>
-            </div>
-
-            <Glass tone="thin" className="p-5">
-              <p className="flex items-center gap-2.5 text-[13px] font-medium">
-                <ListChecks className="h-4 w-4 text-primary" />
-                申报流程
-              </p>
-              <div className="mt-4 flex flex-col">
-                {[
-                  { t: '在线填写申报书', d: '项目信息 · 团队信息 · 项目简介' },
-                  { t: '部门初审', d: '5 个工作日内反馈受理结果' },
-                  { t: '专家评审', d: '技术与可行性双重评审' },
-                  { t: '结果公示与立项', d: '门户公示，用户中心可查进度' },
-                ].map((s, i, arr) => (
-                  <div key={s.t} className="relative flex gap-3.5">
-                    <div className="flex flex-col items-center">
-                      <span className="mono flex h-6 w-6 shrink-0 items-center justify-center rounded-full border border-primary/35 bg-primary/12 text-[10.5px] font-semibold text-primary">
-                        {i + 1}
-                      </span>
-                      {i < arr.length - 1 && <span className="my-1 w-px flex-1 bg-gradient-to-b from-primary/40 to-transparent" />}
-                    </div>
-                    <div className={cn('min-w-0 flex-1', i < arr.length - 1 ? 'pb-3.5' : '')}>
-                      <p className="text-[12.5px] font-medium">{s.t}</p>
-                      <p className="mt-0.5 text-[11px] leading-relaxed text-muted-foreground">{s.d}</p>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </Glass>
-          </div>
-        </Glass>
-
         {/* ============================ 筛选栏 ============================ */}
         <Glass tone="soft" className="mt-8 p-5" data-reveal>
           <div className="flex flex-col gap-4 xl:flex-row xl:items-center xl:justify-between">
@@ -258,47 +196,23 @@ export default function Projects() {
                 description={
                   dq
                     ? '试试更换关键词，或清除搜索条件浏览全部项目。'
-                    : '可切换其他类别或年份查看；也欢迎直接申报新项目，成为第一批展示成果。'
+                    : '可切换其他类别或年份查看全部项目。'
                 }
-                action={
-                  <div className="flex flex-wrap justify-center gap-3">
-                    {(dq || category !== 'all' || year !== 'all') && (
-                      <Button
-                        onClick={() => {
-                          setQ('');
-                          setCategory('all');
-                          setYear('all');
-                        }}
-                      >
-                        清空筛选
-                      </Button>
-                    )}
-                    <LinkButton to="/projects/apply" variant="primary">
-                      项目在线申报 <ArrowRight className="h-4 w-4" />
-                    </LinkButton>
-                  </div>
-                }
+                action={dq || category !== 'all' || year !== 'all' ? (
+                  <Button
+                    onClick={() => {
+                      setQ('');
+                      setCategory('all');
+                      setYear('all');
+                    }}
+                  >
+                    清空筛选
+                  </Button>
+                ) : undefined}
               />
             </Glass>
           )}
         </div>
-
-        {/* ============================= 底部 CTA ============================= */}
-        <Glass tone="soft" className="mt-12 flex flex-wrap items-center justify-between gap-4 p-6" data-reveal="blur">
-          <div className="flex items-center gap-4">
-            <span className="flex h-11 w-11 items-center justify-center rounded-2xl border border-white/12 bg-white/[0.06] text-accent">
-              <Sparkles className="h-5 w-5" />
-            </span>
-            <div>
-              <p className="text-[14px] font-medium">有一个想法，想变成正式项目？</p>
-              <p className="mt-1 text-[12.5px] text-muted-foreground">大创项目在线申报现已开放，5 个工作日内反馈初审结果。</p>
-            </div>
-          </div>
-          <LinkButton to="/projects/apply" variant="primary" size="lg">
-            <FileText className="h-4 w-4" />
-            立即申报
-          </LinkButton>
-        </Glass>
       </section>
     </>
   );

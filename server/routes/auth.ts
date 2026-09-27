@@ -1,73 +1,159 @@
 /* =============================================================================
  * 认证 / 用户中心  /api/auth/*
  * ========================================================================== */
+import { createHash, randomBytes } from 'node:crypto';
 import { Hono } from 'hono';
-import { all, get, insert, run, verifyPassword, hashPasswordSync, boolFields } from '../db.ts';
-import { ok, fail, readBody, pick, logOp } from '../util.ts';
-import { signToken, currentUser, requireAuth } from '../auth.ts';
-import type { Role } from '../../shared/types.ts';
+import { deleteCookie, getCookie, setCookie } from 'hono/cookie';
+import * as oidc from 'openid-client';
+import { all, get, insert, run, boolFields } from '../db.ts';
+import { ok, readBody, pick, logOp } from '../util.ts';
+import { signToken, currentUser, requireAuth, publicUser, SESSION_COOKIE, SESSION_TTL_SECONDS } from '../auth.ts';
+
+const ISSUER = 'https://auth.cjlwall.cc/application/o/home/';
+const FLOW_COOKIE = '__Secure-sti_oidc_flow';
+const FLOW_TTL_SECONDS = 10 * 60;
+const FAILED_LOGIN = '/login?error=oidc_failed';
+
+interface OidcSettings { clientId: string; clientSecret: string; redirectUri: string; callback: URL }
+
+function settings(): OidcSettings {
+  const clientId = process.env.OIDC_CLIENT_ID;
+  const clientSecret = process.env.OIDC_CLIENT_SECRET;
+  const redirectUri = process.env.OIDC_REDIRECT_URI;
+  if (!clientId || !clientSecret || !redirectUri) {
+    throw new Error('OIDC_CLIENT_ID, OIDC_CLIENT_SECRET and OIDC_REDIRECT_URI are required');
+  }
+  let callback: URL;
+  try { callback = new URL(redirectUri); } catch { throw new Error('OIDC_REDIRECT_URI must be an absolute HTTPS URL'); }
+  if ((callback.protocol !== 'https:' && !(callback.protocol === 'http:' &&
+      ['localhost', '127.0.0.1', '[::1]'].includes(callback.hostname))) ||
+      callback.pathname !== '/api/auth/oidc/callback' || callback.search || callback.hash ||
+      callback.username || callback.password) {
+    throw new Error('OIDC_REDIRECT_URI must point to /api/auth/oidc/callback on HTTPS (or local loopback HTTP)');
+  }
+  return { clientId, clientSecret, redirectUri, callback };
+}
+
+let discovered: Promise<oidc.Configuration> | undefined;
+function provider(config: OidcSettings): Promise<oidc.Configuration> {
+  if (!discovered) {
+    discovered = oidc.discovery(new URL(ISSUER), config.clientId,
+      { client_secret: config.clientSecret }, oidc.ClientSecretBasic(), { timeout: 10 });
+    discovered.catch(() => { discovered = undefined; });
+  }
+  return discovered;
+}
+
+function localPath(value: string | undefined): string {
+  if (!value || !value.startsWith('/') || value.startsWith('//') ||
+      /[\\\u0000-\u001f\u007f]/.test(value) || /%(?:2f|5c)/i.test(value)) return '/';
+  try {
+    const parsed = new URL(value, 'https://portal.invalid');
+    return parsed.origin === 'https://portal.invalid' ? value : '/';
+  } catch { return '/'; }
+}
+
+const digest = (value: string) => createHash('sha256').update(value).digest('hex');
 
 export const authRoutes = new Hono();
 
-authRoutes.post('/login', async (c) => {
-  const body = await readBody<{ username: string; password: string }>(c);
-  const username = (body.username || '').trim();
-  const password = body.password || '';
-  if (!username || !password) return fail(c, '请输入账号和密码');
+authRoutes.get('/oidc/start', async (c) => {
+  let config: OidcSettings;
+  try { config = settings(); } catch (error) {
+    return c.json({ ok: false, error: (error as Error).message, code: 'OIDC_CONFIGURATION' }, 503);
+  }
+  try {
+    const client = await provider(config);
+    const state = oidc.randomState();
+    const verifier = oidc.randomPKCECodeVerifier();
+    const nonce = oidc.randomNonce();
+    const browserSecret = randomBytes(32).toString('base64url');
+    const challenge = await oidc.calculatePKCECodeChallenge(verifier);
+    const authorization = oidc.buildAuthorizationUrl(client, {
+      redirect_uri: config.redirectUri, scope: 'openid email profile',
+      state, nonce, code_challenge: challenge, code_challenge_method: 'S256',
+    });
+    run('DELETE FROM oidc_login_flows WHERE expiresAt<=?', [Date.now()]);
+    insert('oidc_login_flows', {
+      stateHash: digest(state), browserHash: digest(browserSecret), codeVerifier: verifier,
+      nonce, redirectPath: localPath(c.req.query('redirect')),
+      expiresAt: Date.now() + FLOW_TTL_SECONDS * 1000,
+    });
+    setCookie(c, FLOW_COOKIE, browserSecret, {
+      path: '/api/auth/oidc/callback', httpOnly: true, secure: true, sameSite: 'Lax',
+      maxAge: FLOW_TTL_SECONDS,
+    });
+    return c.redirect(authorization.toString(), 302);
+  } catch {
+    return c.redirect(FAILED_LOGIN, 302);
+  }
+});
 
-  const row = get<any>('SELECT * FROM users WHERE username=?', [username]);
-  if (!row || !verifyPassword(password, row.passwordHash)) return fail(c, '账号或密码错误', 401, 'BAD_CREDENTIALS');
-  if (!row.isActive) return fail(c, '账号已被停用，请联系管理员', 403);
+authRoutes.get('/oidc/callback', async (c) => {
+  const browserSecret = getCookie(c, FLOW_COOKIE);
+  deleteCookie(c, FLOW_COOKIE, { path: '/api/auth/oidc/callback', secure: true, httpOnly: true, sameSite: 'Lax' });
+  try {
+    const config = settings();
+    const callback = new URL(c.req.url);
+    if (callback.host !== config.callback.host || callback.pathname !== config.callback.pathname ||
+        !['http:', 'https:'].includes(callback.protocol) ||
+        callback.searchParams.getAll('state').length !== 1 || !browserSecret ||
+        browserSecret.length > 128) return c.redirect(FAILED_LOGIN, 302);
+    const registeredCallback = new URL(config.redirectUri);
+    registeredCallback.search = callback.search;
+    const state = callback.searchParams.get('state')!;
+    const flow = get<{ codeVerifier: string; nonce: string; redirectPath: string }>(
+      'DELETE FROM oidc_login_flows WHERE stateHash=? AND browserHash=? AND expiresAt>? RETURNING codeVerifier,nonce,redirectPath',
+      [digest(state), digest(browserSecret), Date.now()]);
+    if (!flow || callback.searchParams.getAll('code').length !== 1 ||
+        callback.searchParams.has('error')) return c.redirect(FAILED_LOGIN, 302);
 
-  const user = { id: row.id, username: row.username, name: row.name, role: row.role as Role };
-  const token = signToken(user);
-  run('UPDATE users SET lastLoginAt=? WHERE id=?', [new Date().toLocaleString('sv-SE').replace('T', ' '), row.id]);
-  logOp({ userId: row.id, userName: row.name, action: '登录', target: 'auth', detail: '用户登录成功', ip: clientIp(c) });
-
-  c.header(
-    'Set-Cookie',
-    `sti_token=${encodeURIComponent(token)}; Path=/; HttpOnly; SameSite=Lax; Max-Age=${60 * 60 * 24 * 7}`
-  );
-  return ok(c, { token, user: publicUser(row) });
+    const client = await provider(config);
+    const tokens = await oidc.authorizationCodeGrant(client, registeredCallback, {
+      pkceCodeVerifier: flow.codeVerifier, expectedState: state, expectedNonce: flow.nonce,
+      idTokenExpected: true,
+    });
+    const claims = tokens.claims();
+    if (!claims || claims.iss !== ISSUER || typeof claims.sub !== 'string' || !claims.sub) {
+      return c.redirect(FAILED_LOGIN, 302);
+    }
+    const info = await oidc.fetchUserInfo(client, tokens.access_token, claims.sub);
+    const identity = { oidcIssuer: claims.iss, oidcSubject: claims.sub };
+    let user = get<Record<string, any>>('SELECT * FROM users WHERE oidcIssuer=? AND oidcSubject=?',
+      [identity.oidcIssuer, identity.oidcSubject]);
+    if (!user) {
+      const username = 'oidc-' + digest(`${claims.iss}\0${claims.sub}`);
+      const name = typeof info.name === 'string' && info.name.trim() ? info.name.trim() :
+        typeof info.preferred_username === 'string' && info.preferred_username.trim() ? info.preferred_username.trim() : username;
+      const id = insert('users', {
+        username, passwordHash: '!', name, role: process.env.OIDC_SUPERADMIN_SUB === claims.sub ? 'superadmin' : 'student',
+        email: typeof info.email === 'string' ? info.email : null,
+        ...identity,
+      });
+      insert('user_messages', {
+        userId: id, title: '欢迎加入科技创新部门户',
+        content: '完善个人资料后即可在线报名活动、提交项目申报。如有疑问可在「互动与反馈」留言。',
+      });
+      user = get<Record<string, any>>('SELECT * FROM users WHERE id=?', [id]);
+    }
+    if (!user?.isActive) return c.redirect(FAILED_LOGIN, 302);
+    if (process.env.OIDC_SUPERADMIN_SUB === claims.sub && user.role !== 'superadmin') {
+      run('UPDATE users SET role=? WHERE id=?', ['superadmin', user.id]);
+    }
+    run('UPDATE users SET lastLoginAt=? WHERE id=?', [new Date().toLocaleString('sv-SE').replace('T', ' '), user.id]);
+    logOp({ userId: user.id, userName: user.name, action: '登录', target: 'auth', detail: 'OIDC 登录成功', ip: clientIp(c) });
+    setCookie(c, SESSION_COOKIE, signToken({ id: user.id, ...identity }), {
+      path: '/', httpOnly: true, secure: true, sameSite: 'Lax', maxAge: SESSION_TTL_SECONDS,
+    });
+    return c.redirect(localPath(flow.redirectPath), 302);
+  } catch {
+    return c.redirect(FAILED_LOGIN, 302);
+  }
 });
 
 authRoutes.post('/logout', (c) => {
-  c.header('Set-Cookie', 'sti_token=; Path=/; HttpOnly; SameSite=Lax; Max-Age=0');
+  deleteCookie(c, SESSION_COOKIE, { path: '/', httpOnly: true, secure: true, sameSite: 'Lax' });
   return ok(c, { loggedOut: true });
-});
-
-authRoutes.post('/register', async (c) => {
-  const body = await readBody<any>(c);
-  const username = (body.username || '').trim();
-  const password = body.password || '';
-  const name = (body.name || '').trim();
-  if (!username || username.length < 3) return fail(c, '账号至少 3 个字符');
-  if (!password || password.length < 6) return fail(c, '密码至少 6 位');
-  if (!name) return fail(c, '请填写姓名');
-  if (get('SELECT id FROM users WHERE username=?', [username])) return fail(c, '该账号已被注册', 409);
-
-  const id = insert('users', {
-    username,
-    passwordHash: hashPasswordSync(password),
-    name,
-    role: 'student',
-    email: body.email || null,
-    phone: body.phone || null,
-    studentId: body.studentId || null,
-    college: body.college || null,
-  });
-  const row = get<any>('SELECT * FROM users WHERE id=?', [id]);
-  const token = signToken({ id, username, role: 'student' });
-  c.header(
-    'Set-Cookie',
-    `sti_token=${encodeURIComponent(token)}; Path=/; HttpOnly; SameSite=Lax; Max-Age=${60 * 60 * 24 * 7}`
-  );
-  insert('user_messages', {
-    userId: id,
-    title: '欢迎加入科技创新部门户',
-    content: '完善个人资料后即可在线报名活动、提交项目申报。如有疑问可在「互动与反馈」留言。',
-  });
-  return ok(c, { token, user: publicUser(row) });
 });
 
 authRoutes.get('/me', (c) => {
@@ -100,15 +186,6 @@ authRoutes.patch('/me', requireAuth(), async (c) => {
   return ok(c, publicUser(row));
 });
 
-authRoutes.post('/change-password', requireAuth(), async (c) => {
-  const user = c.get('user')!;
-  const body = await readBody<{ oldPassword: string; newPassword: string }>(c);
-  const row = get<any>('SELECT * FROM users WHERE id=?', [user.id])!;
-  if (!verifyPassword(body.oldPassword || '', row.passwordHash)) return fail(c, '原密码不正确');
-  if (!body.newPassword || body.newPassword.length < 6) return fail(c, '新密码至少 6 位');
-  run('UPDATE users SET passwordHash=? WHERE id=?', [hashPasswordSync(body.newPassword), user.id]);
-  return ok(c, { changed: true });
-});
 
 /* ------------------------------ 我的数据 -------------------------------- */
 authRoutes.get('/my/signups', requireAuth(), (c) => {
@@ -127,8 +204,8 @@ authRoutes.get('/my/applications', requireAuth(), (c) => {
   const items = all(
     `SELECT pa.*, c2.title AS competitionTitle FROM project_applications pa
      LEFT JOIN competitions c2 ON c2.id=pa.competitionId
-     WHERE pa.userId=? OR pa.leaderPhone=? ORDER BY datetime(pa.createdAt) DESC`,
-    [user.id, user.phone ?? '__none__']
+     WHERE pa.userId=? ORDER BY datetime(pa.createdAt) DESC`,
+    [user.id]
   ).map((r: any) => ({ ...r, members: safeJson(r.members), materials: safeJson(r.materials) }));
   return ok(c, items);
 });
@@ -138,8 +215,8 @@ authRoutes.get('/my/join-applications', requireAuth(), (c) => {
   const items = all(
     `SELECT ja.*, jp.name AS positionName FROM join_applications ja
      LEFT JOIN join_positions jp ON jp.id=ja.positionId
-     WHERE ja.userId=? OR ja.studentId=? ORDER BY datetime(ja.createdAt) DESC`,
-    [user.id, user.studentId ?? '__none__']
+     WHERE ja.userId=? ORDER BY datetime(ja.createdAt) DESC`,
+    [user.id]
   );
   return ok(c, items);
 });
@@ -175,11 +252,6 @@ authRoutes.delete('/messages/:id', requireAuth(), (c) => {
 });
 
 /* -------------------------------- 工具 --------------------------------- */
-function publicUser(row: any) {
-  if (!row) return null;
-  const { passwordHash, ...rest } = row;
-  return { ...rest, isActive: !!row.isActive };
-}
 function safeJson(s: any) {
   try {
     return JSON.parse(s);

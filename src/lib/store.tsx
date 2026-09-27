@@ -1,5 +1,5 @@
-import React, { createContext, useCallback, useContext, useEffect, useMemo, useState } from 'react';
-import { AuthApi, PublicApi, getToken, setToken } from './api';
+import React, { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState } from 'react';
+import { AuthApi, PublicApi } from './api';
 
 /* =============================================================================
  * 认证上下文
@@ -20,8 +20,6 @@ interface AuthCtx {
   user: AuthUser | null;
   stats: any;
   ready: boolean;
-  login: (u: string, p: string) => Promise<AuthUser>;
-  register: (data: Record<string, unknown>) => Promise<AuthUser>;
   logout: () => Promise<void>;
   refresh: () => Promise<void>;
   /** 至少 admin 权限（后台入口） */
@@ -36,23 +34,21 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<AuthUser | null>(null);
   const [stats, setStats] = useState<any>(null);
   const [ready, setReady] = useState(false);
+  const requestVersion = useRef(0);
 
   const refresh = useCallback(async () => {
-    if (!getToken()) {
-      setUser(null);
-      setStats(null);
-      setReady(true);
-      return;
-    }
+    const version = ++requestVersion.current;
     try {
-      const r = await AuthApi.me();
-      setUser(r?.user ?? null);
-      setStats(r?.stats ?? null);
+      const result = await AuthApi.me();
+      if (version !== requestVersion.current) return;
+      setUser(result?.user ?? null);
+      setStats(result?.stats ?? null);
     } catch {
+      if (version !== requestVersion.current) return;
       setUser(null);
       setStats(null);
     } finally {
-      setReady(true);
+      if (version === requestVersion.current) setReady(true);
     }
   }, []);
 
@@ -60,31 +56,13 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     void refresh();
   }, [refresh]);
 
-  const login = useCallback(async (username: string, password: string) => {
-    const r = await AuthApi.login(username, password);
-    setToken(r.token);
-    setUser(r.user);
-    void refresh();
-    return r.user as AuthUser;
-  }, [refresh]);
-
-  const register = useCallback(async (data: Record<string, unknown>) => {
-    const r = await AuthApi.register(data);
-    setToken(r.token);
-    setUser(r.user);
-    void refresh();
-    return r.user as AuthUser;
-  }, [refresh]);
-
   const logout = useCallback(async () => {
-    try {
-      await AuthApi.logout();
-    } catch {
-      /* ignore */
-    }
-    setToken(null);
+    ++requestVersion.current;
+    await AuthApi.logout();
+    ++requestVersion.current;
     setUser(null);
     setStats(null);
+    setReady(true);
   }, []);
 
   const value = useMemo<AuthCtx>(
@@ -92,15 +70,13 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       user,
       stats,
       ready,
-      login,
-      register,
       logout,
       refresh,
       isAdmin: !!user && (user.role === 'admin' || user.role === 'superadmin'),
       isSuperAdmin: user?.role === 'superadmin',
       isMember: !!user && user.role !== 'student',
     }),
-    [user, stats, ready, login, register, logout, refresh]
+    [user, stats, ready, logout, refresh]
   );
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

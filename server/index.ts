@@ -36,6 +36,16 @@ app.use('*', async (c, next) => {
   c.header('Referrer-Policy', 'strict-origin-when-cross-origin');
 });
 
+const portalOrigin = process.env.OIDC_REDIRECT_URI ? new URL(process.env.OIDC_REDIRECT_URI).origin : null;
+app.use('/api/*', async (c, next) => {
+  if (['POST', 'PUT', 'PATCH', 'DELETE'].includes(c.req.method)) {
+    const origin = c.req.header('origin');
+    if (origin && (!portalOrigin || origin !== portalOrigin)) return fail(c, '请求来源不受信任', 403);
+    if (!origin && /(?:^|;\s*)__Host-sti_session=/.test(c.req.header('cookie') || '')) return fail(c, '缺少请求来源', 403);
+  }
+  await next();
+});
+
 /* CORS（开发期 Vite 端口独立） */
 app.use('/api/*', async (c, next) => {
   if (DEV) {

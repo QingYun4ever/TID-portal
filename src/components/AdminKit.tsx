@@ -26,7 +26,7 @@ import {
   Upload,
   X,
 } from 'lucide-react';
-import { AdminApi, getToken, qs } from '@/lib/api';
+import { AdminApi, qs } from '@/lib/api';
 import { cn, fdatetime, plain } from '@/lib/utils';
 import { useToast } from '@/lib/store';
 import {
@@ -1273,7 +1273,7 @@ export function ExportButton({
   const download = async () => {
     try {
       const url = AdminApi.exportUrl(kind, params ?? {});
-      const res = await fetch(url, { headers: { Authorization: `Bearer ${getToken() ?? ''}` } });
+      const res = await fetch(url, { credentials: 'same-origin' });
       if (!res.ok) throw new Error(`导出失败（${res.status}）`);
       const blob = await res.blob();
       const a = document.createElement('a');

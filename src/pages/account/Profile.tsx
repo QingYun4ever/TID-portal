@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo, useState } from 'react';
-import { AtSign, Building2, GraduationCap, Hash, Image as ImageIcon, KeyRound, Phone, Save, ShieldCheck, User } from 'lucide-react';
+import { AtSign, Building2, GraduationCap, Hash, Image as ImageIcon, Phone, Save, User } from 'lucide-react';
 
 import { AuthApi } from '@/lib/api';
 import { useTitle } from '@/lib/hooks';
@@ -22,12 +22,6 @@ interface ProfileForm {
   email: string;
   phone: string;
   avatar: string;
-}
-
-interface PwdForm {
-  oldPassword: string;
-  newPassword: string;
-  confirm: string;
 }
 
 export default function Profile() {
@@ -96,43 +90,6 @@ export default function Profile() {
       toast.error('保存失败', e?.message);
     } finally {
       setSaving(false);
-    }
-  };
-
-  /* ------------------------------ 修改密码 ------------------------------ */
-  const [pwd, setPwd] = useState<PwdForm>({ oldPassword: '', newPassword: '', confirm: '' });
-  const [pwdErrors, setPwdErrors] = useState<Partial<Record<keyof PwdForm, string>>>({});
-  const [changing, setChanging] = useState(false);
-
-  const setPwdField = (k: keyof PwdForm) => (v: string) => {
-    setPwd((p) => ({ ...p, [k]: v }));
-    setPwdErrors((e) => (e[k] ? { ...e, [k]: undefined } : e));
-  };
-
-  const validatePwd = () => {
-    const e: Partial<Record<keyof PwdForm, string>> = {};
-    if (!pwd.oldPassword) e.oldPassword = '请输入原密码';
-    if (!pwd.newPassword) e.newPassword = '请输入新密码';
-    else if (pwd.newPassword.length < 6) e.newPassword = '新密码至少 6 位';
-    else if (pwd.newPassword === pwd.oldPassword) e.newPassword = '新密码不能与原密码相同';
-    if (!pwd.confirm) e.confirm = '请再次输入新密码';
-    else if (pwd.confirm !== pwd.newPassword) e.confirm = '两次输入的新密码不一致';
-    setPwdErrors(e);
-    return Object.keys(e).length === 0;
-  };
-
-  const changePassword = async (ev: React.FormEvent) => {
-    ev.preventDefault();
-    if (!validatePwd()) return;
-    setChanging(true);
-    try {
-      await AuthApi.changePassword(pwd.oldPassword, pwd.newPassword);
-      toast.success('密码已更新', '下次登录请使用新密码。');
-      setPwd({ oldPassword: '', newPassword: '', confirm: '' });
-    } catch (e: any) {
-      toast.error('修改失败', e?.message);
-    } finally {
-      setChanging(false);
     }
   };
 
@@ -248,67 +205,21 @@ export default function Profile() {
                 重置
               </Button>
               <span className="text-[11.5px] text-muted-foreground">
-                <span className="mono">@{user?.username}</span> · 账号名不可修改
+                <span className="mono">@{user?.username}</span> · 站内标识不可修改
               </span>
             </div>
           </form>
         </Glass>
 
-        {/* --------------------------- 右侧：密码 + 摘要 --------------------------- */}
+        {/* --------------------------- 右侧：账号摘要 --------------------------- */}
         <div className="flex flex-col gap-5">
-          <Glass tone="soft" className="p-5 sm:p-6" data-reveal="right">
-            <div className="flex items-center gap-3">
-              <span className="flex h-10 w-10 items-center justify-center rounded-2xl border border-white/12 bg-white/[0.05] text-primary">
-                <KeyRound className="h-4.5 w-4.5" />
-              </span>
-              <div>
-                <h2 className="text-[15px] font-semibold">修改密码</h2>
-                <p className="mt-0.5 text-[11.5px] text-muted-foreground">新密码至少 6 位</p>
-              </div>
-            </div>
-
-            <form onSubmit={changePassword} className="mt-5 flex flex-col gap-4">
-              <Field label="原密码" required error={pwdErrors.oldPassword}>
-                <Input
-                  type="password"
-                  value={pwd.oldPassword}
-                  onChange={(e) => setPwdField('oldPassword')(e.target.value)}
-                  placeholder="请输入当前密码"
-                  autoComplete="current-password"
-                />
-              </Field>
-              <Field label="新密码" required error={pwdErrors.newPassword}>
-                <Input
-                  type="password"
-                  value={pwd.newPassword}
-                  onChange={(e) => setPwdField('newPassword')(e.target.value)}
-                  placeholder="至少 6 位"
-                  autoComplete="new-password"
-                />
-              </Field>
-              <Field label="确认新密码" required error={pwdErrors.confirm}>
-                <Input
-                  type="password"
-                  value={pwd.confirm}
-                  onChange={(e) => setPwdField('confirm')(e.target.value)}
-                  placeholder="再次输入新密码"
-                  autoComplete="new-password"
-                />
-              </Field>
-              <Button type="submit" variant="glass" loading={changing} className="w-full">
-                <ShieldCheck className="h-4 w-4" />
-                更新密码
-              </Button>
-            </form>
-          </Glass>
-
           <Glass tone="soft" className="p-5 sm:p-6" data-reveal="right">
             <h2 className="flex items-center gap-2 text-[15px] font-semibold">
               <User className="h-4 w-4 text-primary" />
               账号摘要
             </h2>
             <dl className="mt-4 flex flex-col gap-3 text-[12.5px]">
-              <Row icon={<AtSign className="h-3.5 w-3.5" />} label="登录账号" value={user?.username ?? '—'} mono />
+              <Row icon={<AtSign className="h-3.5 w-3.5" />} label="站内标识" value={user?.username ?? '—'} mono />
               <Row icon={<User className="h-3.5 w-3.5" />} label="角色" value={roleLabel} />
               <Row icon={<Hash className="h-3.5 w-3.5" />} label="学号" value={form.studentId || '—'} mono />
               <Row icon={<Building2 className="h-3.5 w-3.5" />} label="学院" value={form.college || '—'} />

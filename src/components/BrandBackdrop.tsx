@@ -120,8 +120,8 @@ export function BrandBackdrop({
         style={{
           background:
             side === 'left'
-              ? 'linear-gradient(90deg, rgba(0,0,0,.34) 0%, rgba(0,0,0,.10) 30%, transparent 58%)'
-              : 'linear-gradient(270deg, rgba(0,0,0,.34) 0%, rgba(0,0,0,.10) 30%, transparent 58%)',
+              ? 'linear-gradient(90deg, rgb(var(--tw-black) / .34) 0%, rgb(var(--tw-black) / .10) 30%, transparent 58%)'
+              : 'linear-gradient(270deg, rgb(var(--tw-black) / .34) 0%, rgb(var(--tw-black) / .10) 30%, transparent 58%)',
         }}
       />
     </div>

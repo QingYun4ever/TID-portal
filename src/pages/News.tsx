@@ -1,7 +1,6 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { Link, useSearchParams } from 'react-router';
 import {
-  ArrowRight,
   Clock3,
   FileText,
   Flame,
@@ -444,10 +443,6 @@ export default function News() {
                   搜索同时匹配标题、摘要与正文。
                 </li>
               </ul>
-              <LinkButton to="/search" variant="glass" size="sm" className="mt-5 w-full">
-                全站搜索
-                <ArrowRight className="h-3.5 w-3.5" />
-              </LinkButton>
             </Glass>
           </aside>
         </div>

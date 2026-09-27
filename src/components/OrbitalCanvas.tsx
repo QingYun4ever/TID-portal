@@ -467,7 +467,8 @@ export function OrbitalCanvas({
 
   return (
     <div ref={wrapRef} aria-hidden className={cn('pointer-events-none absolute inset-0', className)}>
-      <canvas ref={canvasRef} className="h-full w-full" />
+      {/* .orbital-canvas：浅色主题下用 CSS 做明度翻转（见 index.css），绘制逻辑不分主题 */}
+      <canvas ref={canvasRef} className="orbital-canvas h-full w-full" />
     </div>
   );
 }

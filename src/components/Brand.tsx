@@ -61,13 +61,15 @@ export function LogoMark({
       aria-label="科技创新部"
     >
       <defs>
-        {/* 射线：两端渐隐的白色光束 */}
+        {/* 射线：两端渐隐的白色光束
+            （lm-* 类只在浅色主题下生效：CSS 的 stop-color / fill 会覆盖这里的属性值，
+              白色部分换成深海军蓝、射线换成主色，深色主题下完全不受影响） */}
         <linearGradient id={g('ray')} x1="0" y1="0" x2="1" y2="0">
-          <stop offset="0" stopColor="#fff" stopOpacity="0" />
-          <stop offset="0.18" stopColor="#fff" stopOpacity="0.28" />
-          <stop offset="0.5" stopColor="#fff" stopOpacity="1" />
-          <stop offset="0.82" stopColor="#fff" stopOpacity="0.28" />
-          <stop offset="1" stopColor="#fff" stopOpacity="0" />
+          <stop className="lm-ray" offset="0" stopColor="#fff" stopOpacity="0" />
+          <stop className="lm-ray" offset="0.18" stopColor="#fff" stopOpacity="0.28" />
+          <stop className="lm-ray" offset="0.5" stopColor="#fff" stopOpacity="1" />
+          <stop className="lm-ray" offset="0.82" stopColor="#fff" stopOpacity="0.28" />
+          <stop className="lm-ray" offset="1" stopColor="#fff" stopOpacity="0" />
         </linearGradient>
 
         {/* 脉冲星核心：**纯实心白，无边缘淡化**（硬边），发光交给外层光晕 */}
@@ -80,11 +82,11 @@ export function LogoMark({
 
         {/* 星环：白 → 淡蓝 → 白 */}
         <linearGradient id={g('ring')} x1="0.05" y1="0" x2="0.95" y2="1">
-          <stop offset="0" stopColor="#ffffff" />
-          <stop offset="0.35" stopColor="#E0F2FE" />
-          <stop offset="0.62" stopColor="#E0F2FE" />
-          <stop offset="0.85" stopColor="#BAE6FD" />
-          <stop offset="1" stopColor="#ffffff" />
+          <stop className="lm-ink" offset="0" stopColor="#ffffff" />
+          <stop className="lm-ink2" offset="0.35" stopColor="#E0F2FE" />
+          <stop className="lm-ink2" offset="0.62" stopColor="#E0F2FE" />
+          <stop className="lm-ink3" offset="0.85" stopColor="#BAE6FD" />
+          <stop className="lm-ink" offset="1" stopColor="#ffffff" />
         </linearGradient>
 
         {/* 核心外晕 */}
@@ -124,7 +126,7 @@ export function LogoMark({
         {/* 3. 亮芯 */}
         <rect x="-486" y="-7" width="972" height="14" fill={`url(#${g('ray')})`} opacity="0.86" />
         {/* 4. 白热一线 */}
-        <rect x="-486" y="-2.2" width="972" height="4.4" fill="#ffffff" opacity="0.95" />
+        <rect className="lm-hot" x="-486" y="-2.2" width="972" height="4.4" fill="#ffffff" opacity="0.95" />
       </g>
 
       {/* ── 缺口星环 + 卫星：同步绕脉冲星旋转 ── */}
@@ -160,7 +162,13 @@ export function LogoMark({
         )}
 
         {/* 卫星（与星环同一旋转组，保证严格同步） */}
-        <circle cx={SATELLITE.cx} cy={SATELLITE.cy} r={SATELLITE.r} fill={monochrome ? 'currentColor' : '#ffffff'} />
+        <circle
+          className={monochrome ? undefined : 'lm-inkf'}
+          cx={SATELLITE.cx}
+          cy={SATELLITE.cy}
+          r={SATELLITE.r}
+          fill={monochrome ? 'currentColor' : '#ffffff'}
+        />
         {/* 卫星外圈的 3.2s 脉冲已移除：和核心的脉冲同频同相，视觉上只是重复一遍，
            却让同一张 SVG 每帧多一处失效区。常驻动效只留「环上流光 + 核心脉冲」两处。 */}
       </g>
@@ -169,7 +177,13 @@ export function LogoMark({
       {/* 1. 发光晕：画在核心之下，负责「发光」 */}
       <circle cx={CORE.cx} cy={CORE.cy} r={CORE.r * 2.95} fill={`url(#${g('coreGlow')})`} />
       {/* 2. 核心本体：实心白，硬边，无渐隐 */}
-      <circle cx={CORE.cx} cy={CORE.cy} r={CORE.r} fill={monochrome ? 'currentColor' : '#ffffff'} />
+      <circle
+        className={monochrome ? undefined : 'lm-inkf'}
+        cx={CORE.cx}
+        cy={CORE.cy}
+        r={CORE.r}
+        fill={monochrome ? 'currentColor' : '#ffffff'}
+      />
       {animated && (
         <circle
           cx={CORE.cx}
