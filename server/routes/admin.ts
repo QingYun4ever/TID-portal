@@ -232,17 +232,6 @@ adminRoutes.route(
 );
 
 adminRoutes.route(
-  '/changelog',
-  crud({
-    table: 'changelog',
-    label: '更新日志',
-    fields: ['version', 'versionColor', 'title', 'content', 'author'],
-    search: ['title', 'version'],
-    order: 'datetime(createdAt) DESC',
-  })
-);
-
-adminRoutes.route(
   '/status-targets',
   crud({
     table: 'status_targets',
@@ -853,7 +842,7 @@ adminRoutes.delete('/logs', requireAuth('superadmin'), (c) => {
 });
 
 adminRoutes.get('/backup', requireAuth('superadmin'), (c) => {
-  const tables = ['articles', 'activities', 'activity_signups', 'projects', 'competitions', 'project_applications', 'resources', 'join_positions', 'join_applications', 'feedback', 'gallery_areas', 'gallery_images', 'members', 'timeline', 'org_nodes', 'changelog', 'status_targets', 'settings', 'pages'];
+  const tables = ['articles', 'activities', 'activity_signups', 'projects', 'competitions', 'project_applications', 'resources', 'join_positions', 'join_applications', 'feedback', 'gallery_areas', 'gallery_images', 'members', 'timeline', 'org_nodes', 'status_targets', 'settings', 'pages'];
   const dump: Record<string, any[]> = {};
   for (const t of tables) dump[t] = all(`SELECT * FROM ${t}`);
   c.header('Content-Type', 'application/json; charset=utf-8');
@@ -863,7 +852,7 @@ adminRoutes.get('/backup', requireAuth('superadmin'), (c) => {
 
 /** 数据概览：各表行数 */
 adminRoutes.get('/db-summary', (c) => {
-  const tables = ['users', 'articles', 'activities', 'activity_signups', 'projects', 'competitions', 'project_applications', 'resources', 'join_positions', 'join_applications', 'feedback', 'gallery_areas', 'gallery_images', 'members', 'timeline', 'org_nodes', 'changelog', 'status_targets', 'status_snapshots', 'operation_logs', 'user_messages'];
+  const tables = ['users', 'articles', 'activities', 'activity_signups', 'projects', 'competitions', 'project_applications', 'resources', 'join_positions', 'join_applications', 'feedback', 'gallery_areas', 'gallery_images', 'members', 'timeline', 'org_nodes', 'status_targets', 'status_snapshots', 'operation_logs', 'user_messages'];
   return ok(
     c,
     tables.map((t) => ({ table: t, rows: get<{ c: number }>(`SELECT COUNT(*) c FROM ${t}`)?.c ?? 0 }))

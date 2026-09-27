@@ -43,7 +43,6 @@ const TABLE_LABELS: Record<string, string> = {
   members: '成员',
   timeline: '发展历程',
   org_nodes: '组织架构',
-  changelog: '更新日志',
   operation_logs: '操作日志',
   user_messages: '站内消息',
 };
@@ -310,7 +309,7 @@ export default function Logs() {
             <div className="text-[12.5px] leading-relaxed text-muted-foreground">
               <p className="font-medium text-foreground/85">关于数据备份</p>
               <p className="mt-1">
-                完整备份是一份 JSON 快照，包含文章、活动、报名、项目、竞赛、资源、招新、留言、画廊、成员、组织架构、更新日志、站点设置与页面等
+                完整备份是一份 JSON 快照，包含文章、活动、报名、项目、竞赛、资源、招新、留言、画廊、成员、组织架构、站点设置与页面等
                 <b className="text-foreground/85">全部业务数据</b>，但不包含用户密码哈希，可安全归档。
               </p>
               {!isSuperAdmin && (

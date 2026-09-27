@@ -8,7 +8,6 @@ const LINKS = [
   { to: '/news', label: '新闻与通知' },
   { to: '/activities', label: '活动报名' },
   { to: '/projects', label: '创新项目' },
-  { to: '/resources', label: '资源中心' },
   { to: '/gallery', label: '活动画廊' },
   { to: '/join', label: '加入我们' },
 ];

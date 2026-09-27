@@ -397,9 +397,6 @@ export default function Feedback() {
                   </button>
                 ))}
               </div>
-              <LinkButton to="/resources?category=faq" size="sm" variant="glass" className="mt-5 w-full">
-                资源中心常见问题
-              </LinkButton>
             </Glass>
 
             <Glass tone="soft" className="p-6" data-reveal="right">

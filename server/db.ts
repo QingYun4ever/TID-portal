@@ -212,6 +212,13 @@ CREATE TABLE IF NOT EXISTS members (
   sortOrder INTEGER NOT NULL DEFAULT 0, featured INTEGER NOT NULL DEFAULT 0
 );
 
+CREATE TABLE IF NOT EXISTS join_admissions (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  name TEXT NOT NULL,
+  className TEXT NOT NULL,
+  sortOrder INTEGER NOT NULL UNIQUE
+);
+
 CREATE TABLE IF NOT EXISTS pages (
   key TEXT PRIMARY KEY, title TEXT NOT NULL DEFAULT '', content TEXT NOT NULL DEFAULT '',
   updatedAt TEXT NOT NULL DEFAULT (datetime('now','localtime'))
@@ -230,13 +237,6 @@ CREATE TABLE IF NOT EXISTS status_snapshots (
   FOREIGN KEY (targetId) REFERENCES status_targets(id) ON DELETE CASCADE
 );
 CREATE INDEX IF NOT EXISTS idx_snap_target ON status_snapshots(targetId, checkedAt);
-
-CREATE TABLE IF NOT EXISTS changelog (
-  id INTEGER PRIMARY KEY AUTOINCREMENT,
-  version TEXT NOT NULL, versionColor TEXT NOT NULL DEFAULT 'blue', title TEXT NOT NULL,
-  content TEXT NOT NULL DEFAULT '', author TEXT NOT NULL DEFAULT '',
-  createdAt TEXT NOT NULL DEFAULT (datetime('now','localtime'))
-);
 
 CREATE TABLE IF NOT EXISTS user_messages (
   id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -412,9 +412,8 @@ export function seed() {
     slogan: '以技术为舟，以创新为帆',
     intro:
       '科技创新部是校团委指导下负责全校学生科技创新工作的职能部门，统筹学生科技竞赛、创新创业项目孵化、科技文化活动与创新人才培养，为每一位有想法的同学提供从灵感到落地的完整支撑。',
-    email: 'sti@university.edu.cn',
-    phone: '010-8888 6666',
-    address: '大学生活动中心 3 楼 305 室',
+    email: 'notpaperxiang@gmail.com',
+    address: '北京市陈经纶中学本部高中',
     wechatQr: '',
     icp: '',
   };
@@ -456,14 +455,7 @@ export function seed() {
     [
       'contact',
       '联系方式',
-      `<p>办公地址：大学生活动中心 3 楼 305 室<br/>办公时间：周一至周五 09:00 — 18:00<br/>邮箱：sti@university.edu.cn<br/>电话：010-8888 6666</p>
-<h2>各工作组对接人</h2>
-<ul>
-<li>竞赛管理组 —— 张伟（zhangwei@sti.edu.cn）</li>
-<li>项目孵化组 —— 李岩（liyan@sti.edu.cn）</li>
-<li>宣传设计组 —— 陈曦（chenxi@sti.edu.cn）</li>
-<li>技术服务组 —— 周航（zhouhang@sti.edu.cn）</li>
-</ul>`,
+      `<p>地址：北京市陈经纶中学本部高中<br/>邮箱：notpaperxiang@gmail.com</p>`,
     ],
   ];
   for (const [key, title, content] of pages) insert('pages', { key, title, content });
@@ -484,40 +476,55 @@ export function seed() {
   const root = insert('org_nodes', {
     name: '科技创新部',
     parentId: null,
-    leader: '指导教师 王建国',
+    leader: '部长 庄梓翔',
     description: '统筹部门整体工作',
     sortOrder: 0,
   });
-  const groups: [string, string, string][] = [
-    ['竞赛管理组', '张伟', '负责科技竞赛的组织、报名、培训与选拔工作'],
-    ['项目孵化组', '李岩', '负责大创项目的立项、中期检查、结题与成果转化'],
-    ['宣传设计组', '陈曦', '负责视觉设计、内容运营与新媒体系列宣传'],
-    ['技术服务组', '周航', '负责门户网站、服务器运维与技术工具支持'],
+  const groups: [string, string][] = [
+    ['竞赛管理组', '负责科技竞赛的组织、报名、培训与选拔工作'],
+    ['项目孵化组', '负责大创项目的立项、中期检查、结题与成果转化'],
+    ['宣传设计组', '负责视觉设计、内容运营与新媒体系列宣传'],
+    ['技术服务组', '负责门户网站、服务器运维与技术工具支持'],
   ];
-  groups.forEach(([name, leader, description], i) =>
-    insert('org_nodes', { name, parentId: root, leader, description, sortOrder: i })
+  groups.forEach(([name, description], i) =>
+    insert('org_nodes', { name, parentId: root, leader: null, description, sortOrder: i })
   );
 
-  /* ---- 成员风采 ---- */
-  const members: [string, string, string, string][] = [
-    ['王建国', '指导老师', '教师', '校团委科技创新工作负责人，长期从事创新创业教育研究。'],
-    ['张伟', '部长', '主席团', '统筹部门整体工作，连续三年组织校园科技文化节。'],
-    ['李岩', '副部长 · 项目孵化', '主席团', '负责大创项目全流程管理，累计服务项目 300 余项。'],
-    ['陈曦', '副部长 · 宣传设计', '主席团', '视觉设计负责人，主导部门品牌视觉系统建设。'],
-    ['周航', '技术总监', '技术服务组', '全栈工程师，负责门户网站与部门服务器基础设施。'],
-    ['刘思远', '竞赛专员', '竞赛管理组', '负责国赛、省赛信息收集与队伍选拔。'],
-    ['孙佳怡', '活动策划', '宣传设计组', '策划技术沙龙与创新工作坊系列活动。'],
-    ['赵子墨', '项目专员', '项目孵化组', '负责项目材料审核与导师对接。'],
+  const admitted: [string, string][] = [
+    ['刘航麟', '高一-2班'],
+    ['徐千惠', '高一-13班'],
+    ['林书羽', '高一-8班'],
+    ['甘佳霖', '高一-10班'],
+    ['王子欣', '高一-3班'],
+    ['王梓曦', '高一-3班'],
+    ['王绍翰', '高二-1班'],
+    ['翟炳勋', '高二-6班'],
+    ['耿万形', '高二-3班'],
+    ['赵宥晨', '高二-1班'],
+    ['郭宝泽', '高二-1班'],
+    ['陈轩弘', '初三-1班'],
+    ['鲜金钊', '高二-5班'],
   ];
-  members.forEach(([name, role, group, bio], i) =>
+
+  /* ---- 成员风采 ---- */
+  const leadership: [string, string][] = [
+    ['庄梓翔', '部长'],
+    ['毕天宇', '副部长'],
+    ['张森', '副部长'],
+  ];
+  const members = [
+    ...leadership.map(([name, role]) => ({ name, role, group: '部长团' })),
+    ...admitted.map(([name, className]) => ({ name, role: className, group: '学生成员' })),
+  ];
+  members.forEach(({ name, role, group }, i) =>
     insert('members', {
       name,
       role,
       group,
-      bio,
-      tags: JSON.stringify(group === '技术服务组' ? ['TypeScript', 'React', '运维'] : ['组织', '沟通']),
+      bio: '',
+      tags: '[]',
       sortOrder: i,
-      featured: i < 4 ? 1 : 0,
+      featured: i < 8 ? 1 : 0,
     })
   );
 
@@ -1021,6 +1028,8 @@ export function seed() {
       active: 1,
     })
   );
+  admitted.forEach(([name, className], i) => insert('join_admissions', { name, className, sortOrder: i + 1 }));
+
   const joinNames = ['林一鸣', '吴桐', '郑好', '何雨', '马骁', '许清', '钱途', '周雯'];
   joinNames.forEach((name, i) =>
     insert('join_applications', {
@@ -1138,26 +1147,6 @@ export function seed() {
       }
     }
   }
-
-  /* ---- 更新日志 ---- */
-  const logs: [string, string, string, string, string][] = [
-    ['3.0.0', 'emerald', '门户网站 3.0 正式上线', '全新的液态玻璃视觉体系；打通竞赛—项目—活动—资源全流程；支持后台内容发布与审核。', '技术服务组'],
-    ['2.4.0', 'blue', '新增活动在线报名与签到', '支持名额限制、截止时间、报名名单导出与签到二维码。', '技术服务组'],
-    ['2.3.0', 'violet', '竞赛信息聚合与截止提醒', '整合校内外 40 余项竞赛；新增截止倒计时与订阅提醒。', '竞赛管理组'],
-    ['2.2.0', 'amber', '成果展示画廊重构', '多层分类区域、灯箱浏览、批量上传与排序。', '宣传设计组'],
-    ['2.1.0', 'cyan', '项目申报流程线上化', '在线填写申报书、材料上传与进度查询。', '项目孵化组'],
-    ['2.0.0', 'rose', '全新门户上线', '由传统 CMS 迁移至自研门户系统，支持响应式与深色主题。', '技术服务组'],
-  ];
-  logs.forEach(([version, color, title, content, author], i) =>
-    insert('changelog', {
-      version,
-      versionColor: color,
-      title,
-      content,
-      author,
-      createdAt: daysAgo(i * 30 + 2),
-    })
-  );
 
   /* ---- 消息 ---- */
   const msgs: [number, string, string, boolean][] = [

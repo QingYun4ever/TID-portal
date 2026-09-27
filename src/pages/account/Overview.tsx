@@ -5,7 +5,6 @@ import {
   BadgeCheck,
   CalendarDays,
   ClipboardList,
-  Download,
   FileText,
   MessageSquare,
   Rocket,
@@ -43,7 +42,6 @@ function greeting(hour: number) {
 const QUICK = [
   { to: '/activities', title: '活动报名', desc: '技术沙龙 · 工作坊 · 竞赛集训', icon: CalendarDays, tone: 'from-sky-400/22 to-cyan-300/6' },
   { to: '/projects/apply', title: '项目申报', desc: '大创项目在线申报与进度查询', icon: FileText, tone: 'from-violet-400/22 to-fuchsia-300/6' },
-  { to: '/resources', title: '资源下载', desc: '申报模板 · 竞赛指南 · 培训资料', icon: Download, tone: 'from-emerald-400/22 to-teal-300/6' },
   { to: '/account/messages', title: '我的消息', desc: '审核结果与系统通知', icon: MessageSquare, tone: 'from-amber-400/22 to-orange-300/6' },
   { to: '/account/profile', title: '完善资料', desc: '学号 / 学院 / 联系方式', icon: UserRound, tone: 'from-rose-400/22 to-pink-300/6' },
 ];

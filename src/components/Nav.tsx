@@ -7,9 +7,7 @@ import {
   Briefcase,
   CalendarDays,
   ChevronDown,
-  Download,
   FileText,
-  GitBranch,
   Layers,
   LayoutDashboard,
   LogIn,
@@ -40,22 +38,19 @@ const MAIN_NAV = [
   { label: '新闻通知', to: '/news' },
   { label: '活动', to: '/activities' },
   { label: '竞赛与项目', to: '/projects' },
-  { label: '资源中心', to: '/resources' },
   { label: '画廊', to: '/gallery' },
   { label: '加入我们', to: '/join' },
 ];
 
-/** 顶栏「快速入口」下拉 —— 文档指定项：活动报名、项目申报、资源下载、加入我们、其他链接、更新日志 */
+/** 顶栏「快速入口」下拉 */
 const QUICK_LINKS = [
   { icon: CalendarDays, label: '活动报名', desc: '查看活动并在线报名', to: '/activities' },
   { icon: FileText, label: '项目申报', desc: '提交大创项目申报材料', to: '/projects/apply' },
-  { icon: Download, label: '资源下载', desc: '模板、指南与培训资料', to: '/resources' },
-  { icon: Users, label: '加入我们', desc: '招新公告与岗位介绍', to: '/join' },
+  { icon: Users, label: '加入我们', desc: '查看录取名单', to: '/join' },
 ];
 
 const OTHER_LINKS = [
   { icon: MessageSquare, label: '互动与反馈', desc: '留言板 · 在线咨询', to: '/feedback' },
-  { icon: GitBranch, label: '更新日志', desc: '门户版本变更记录', to: '/changelog' },
   { icon: BookOpen, label: '创新成果库', desc: '优秀项目与获奖成果', to: '/projects?category=excellent' },
   { icon: Trophy, label: '竞赛日历', desc: '竞赛截止时间一览', to: '/competitions' },
   { icon: Layers, label: '全景搜索', desc: '全站内容检索', to: '/search' },

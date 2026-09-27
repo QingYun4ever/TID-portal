@@ -10,7 +10,6 @@ import {
   Mail,
   MapPin,
   Network,
-  Phone,
   Quote,
   Sparkles,
   Target,
@@ -20,7 +19,7 @@ import {
 import { PublicApi } from '@/lib/api';
 import { useApi, useCountUp, useInView, useTitle } from '@/lib/hooks';
 import { useSettings } from '@/lib/store';
-import { cn, fnum } from '@/lib/utils';
+import { fnum } from '@/lib/utils';
 import { TimelineItem } from '@/components/cards';
 import { useRevealScope } from '@/components/RevealScope';
 import { LogoMark } from '@/components/Brand';
@@ -206,7 +205,7 @@ export default function About() {
                   label="部门成员"
                   value={Number(stats.members ?? members.length ?? 0)}
                   unit="人"
-                  hint="含指导教师与四个工作组"
+                  hint="含部长团与学生成员"
                   delay={0}
                 />
                 <CountCard
@@ -243,11 +242,6 @@ export default function About() {
             eyebrow="Milestones"
             title="发展历程"
             description="从两个工作组到今天的技术基础设施，每一步都记录在案。"
-            action={
-              <LinkButton to="/changelog">
-                查看版本更新日志
-              </LinkButton>
-            }
           >
             {loading ? (
               <div className="flex flex-col gap-4">
@@ -277,7 +271,7 @@ export default function About() {
             id="org"
             eyebrow="Organization"
             title="组织架构"
-            description="部门由指导教师统筹，下设四个工作组协同运转。"
+            description="由部长团统筹，工作组协同运转。"
           >
             {loading ? (
               <div className="flex flex-col gap-4">
@@ -313,7 +307,7 @@ export default function About() {
             id="contact"
             eyebrow="Contact"
             title="联系方式"
-            description="办公时间、对接人与各工作组邮箱，欢迎随时联系。"
+            description="联系邮箱与地址如下，欢迎来信咨询。"
           >
             <div className="grid gap-6 lg:grid-cols-[1.4fr_1fr] lg:gap-10">
               <Glass tone="soft" className="p-6 sm:p-8" data-reveal="left">
@@ -343,17 +337,9 @@ export default function About() {
                   hint="招新、竞赛与项目咨询"
                 />
                 <ContactCard
-                  icon={<Phone className="h-4 w-4" />}
-                  label="电话"
-                  value={settings.phone || '—'}
-                  mono
-                  hint="工作日 09:00 — 18:00"
-                />
-                <ContactCard
                   icon={<MapPin className="h-4 w-4" />}
                   label="办公地址"
                   value={settings.address || '—'}
-                  hint="来访请提前电话预约"
                 />
 
                 <Glass tone="soft" className="p-5">
@@ -516,7 +502,7 @@ function MembersSection({ members, loading }: { members: any[]; loading: boolean
       id="members"
       eyebrow="Our People"
       title="成员风采"
-      description="来自全校多个学院的同学，因为对技术的兴趣聚在一起。"
+      description="部长团与学生成员共同组成科技创新部。"
       action={
         !loading && groups.length > 1 ? (
           <Tabs items={tabs} value={group} onChange={setGroup} size="sm" className="hidden sm:block" />
@@ -550,10 +536,10 @@ function MembersSection({ members, loading }: { members: any[]; loading: boolean
                     </span>
                   </div>
                 )}
-                <p className="mt-3.5 text-[13.5px] font-medium">{m.name}</p>
-                <p className="mt-0.5 text-[10.5px] text-primary">{m.role}</p>
-                {m.group && <p className="mono mt-1 text-[10px] text-muted-foreground/80">{m.group}</p>}
-                <p className="clamp-2 mt-2.5 text-[11.5px] leading-relaxed text-muted-foreground">{m.bio}</p>
+                <p className="mt-3.5 text-base font-medium">{m.name}</p>
+                <p className="mt-1 text-sm text-primary">{m.role}</p>
+                {m.group && <p className="mt-1 text-xs text-muted-foreground">{m.group}</p>}
+                {m.bio && <p className="clamp-2 mt-2.5 text-sm leading-relaxed text-muted-foreground">{m.bio}</p>}
                 {Array.isArray(m.tags) && m.tags.length > 0 && (
                   <div className="mt-3 flex flex-wrap justify-center gap-1.5">
                     {m.tags.slice(0, 3).map((t: string) => (
@@ -582,7 +568,7 @@ function MembersSection({ members, loading }: { members: any[]; loading: boolean
         </Glass>
       )}
 
-      <p className="mono mt-6 text-center text-[11px] text-muted-foreground">
+      <p className="mono mt-6 text-center text-sm text-muted-foreground">
         当前展示 {items.length} / {members.length} 位成员
       </p>
     </Section>
@@ -598,14 +584,12 @@ function ContactCard({
   value,
   hint,
   href,
-  mono = false,
 }: {
   icon: ReactNode;
   label: string;
   value: string;
   hint?: string;
   href?: string;
-  mono?: boolean;
 }) {
   const inner = (
     <Glass tone="soft" hover sheen className="flex h-full items-start gap-4 p-5">
@@ -614,7 +598,7 @@ function ContactCard({
       </span>
       <span className="min-w-0 flex-1">
         <span className="block text-[11px] tracking-wide text-muted-foreground">{label}</span>
-        <span className={cn('mt-1.5 block text-[13.5px] text-foreground/90', mono && 'mono')}>{value}</span>
+        <span className="mt-1.5 block text-[13.5px] text-foreground/90">{value}</span>
         {hint && <span className="mt-1 block text-[11px] text-muted-foreground/85">{hint}</span>}
       </span>
     </Glass>

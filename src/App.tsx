@@ -22,11 +22,9 @@ const Projects = lazy(() => import('./pages/Projects'));
 const ProjectDetail = lazy(() => import('./pages/ProjectDetail'));
 const ProjectApply = lazy(() => import('./pages/ProjectApply'));
 const Competitions = lazy(() => import('./pages/Competitions'));
-const Resources = lazy(() => import('./pages/Resources'));
 const Gallery = lazy(() => import('./pages/Gallery'));
 const Join = lazy(() => import('./pages/Join'));
 const Feedback = lazy(() => import('./pages/Feedback'));
-const Changelog = lazy(() => import('./pages/Changelog'));
 const Search = lazy(() => import('./pages/Search'));
 const Login = lazy(() => import('./pages/Login'));
 const Register = lazy(() => import('./pages/Register'));
@@ -48,13 +46,11 @@ const AdminSignups = lazy(() => import('./pages/admin/Signups'));
 const AdminProjects = lazy(() => import('./pages/admin/Projects'));
 const AdminCompetitions = lazy(() => import('./pages/admin/Competitions'));
 const AdminApplications = lazy(() => import('./pages/admin/Applications'));
-const AdminResources = lazy(() => import('./pages/admin/Resources'));
 const AdminJoin = lazy(() => import('./pages/admin/Join'));
 const AdminFeedback = lazy(() => import('./pages/admin/Feedback'));
 const AdminGallery = lazy(() => import('./pages/admin/Gallery'));
 const AdminMembers = lazy(() => import('./pages/admin/Members'));
 const AdminAbout = lazy(() => import('./pages/admin/About'));
-const AdminChangelog = lazy(() => import('./pages/admin/ChangelogAdmin'));
 const AdminUsers = lazy(() => import('./pages/admin/Users'));
 const AdminSettings = lazy(() => import('./pages/admin/Settings'));
 const AdminLogs = lazy(() => import('./pages/admin/Logs'));
@@ -166,11 +162,9 @@ export default function App() {
             <Route path="/projects/:slug" element={<ProjectDetail />} />
 
             <Route path="/competitions" element={<Competitions />} />
-            <Route path="/resources" element={<Resources />} />
             <Route path="/gallery" element={<Gallery />} />
             <Route path="/join" element={<Join />} />
             <Route path="/feedback" element={<Feedback />} />
-            <Route path="/changelog" element={<Changelog />} />
             <Route path="/search" element={<Search />} />
 
             {/* ---------- 认证 ---------- */}
@@ -210,13 +204,11 @@ export default function App() {
               <Route path="projects" element={<AdminProjects />} />
               <Route path="competitions" element={<AdminCompetitions />} />
               <Route path="applications" element={<AdminApplications />} />
-              <Route path="resources" element={<AdminResources />} />
               <Route path="join" element={<AdminJoin />} />
               <Route path="feedback" element={<AdminFeedback />} />
               <Route path="gallery" element={<AdminGallery />} />
               <Route path="members" element={<AdminMembers />} />
               <Route path="about" element={<AdminAbout />} />
-              <Route path="changelog" element={<AdminChangelog />} />
               <Route path="users" element={<AdminUsers />} />
               <Route path="settings" element={<AdminSettings />} />
               <Route path="logs" element={<AdminLogs />} />

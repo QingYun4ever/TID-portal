@@ -6,7 +6,6 @@ import {
   Bell,
   CalendarDays,
   Compass,
-  Download,
   Eye,
   FileText,
   Layers,
@@ -16,23 +15,22 @@ import {
   Users,
 } from 'lucide-react';
 
-import { PublicApi, SubmitApi } from '@/lib/api';
+import { PublicApi } from '@/lib/api';
 import { useApi, useActiveSection, useScrollVar } from '@/lib/hooks';
-import { useSettings, useToast } from '@/lib/store';
 import { NEWS_CATEGORIES, cn, fnum, plain } from '@/lib/utils';
 import { LogoMark } from '@/components/Brand';
 import { BrandBackdrop } from '@/components/BrandBackdrop';
 import { GlowOrb, GridTexture } from '@/components/LiquidBackdrop';
 import { OrbitalCanvas } from '@/components/OrbitalCanvas';
-import { ActivityCard, ArticleCard, CompetitionCard, ProjectCard, ResourceCard } from '@/components/cards';
-import { Chip, Dot, Glass, LinkButton, Section, Skeleton, Tabs } from '@/components/ui';
+import { ActivityCard, ArticleCard, CompetitionCard, ProjectCard } from '@/components/cards';
+import { Chip, Glass, LinkButton, Section, Skeleton, Tabs } from '@/components/ui';
 
 /* =============================================================================
  * 首页 —— 下滑式「一屏一块」布局
  *
  * 布局约定：
  *   · 每个分区独占一整屏（<Screen> = <Section screen>）
- *   · 相关内容合并到同一屏，共 9 屏
+ *   · 相关内容合并到同一屏，共 8 屏
  *   · 卡片数量随分辨率自适应（useDensity），保证「一屏装满且不溢出」
  *   · 原生滚动，不劫持滚轮、不做整屏吸附（节奏由右侧导航轨道的锚点承担）
  *
@@ -55,7 +53,6 @@ const SECTIONS = [
   { id: 'activities', label: '活动与申报' },
   { id: 'projects', label: '成果与竞赛' },
   { id: 'gallery', label: '活动画廊' },
-  { id: 'resources', label: '资源中心' },
   { id: 'org', label: '组织与成员' },
   { id: 'join', label: '加入我们' },
 ];
@@ -93,8 +90,6 @@ const pick = <T,>(arr: T[], level: number): T => arr[Math.min(arr.length - 1, Ma
 
 export default function Home() {
   const { data, loading } = useApi<any>(() => PublicApi.overview(), []);
-  const { settings } = useSettings();
-  const toast = useToast();
   useScrollVar();
   const active = useActiveSection(SECTIONS.map((s) => s.id));
   const dens = useDensity();
@@ -104,17 +99,6 @@ export default function Home() {
   const stats = d.stats ?? {};
 
   const [newsTab, setNewsTab] = useState('all');
-
-  const downloadResource = async (r: any) => {
-    try {
-      const out = await SubmitApi.downloadResource(r.id);
-      if (r.url && r.url !== '#') window.open(r.url, '_blank');
-      else toast.info('演示数据', '该资源为演示条目，未绑定真实文件。可在后台「资源中心」上传实际文件。');
-      toast.success('开始下载', `${r.title}（${fnum(out.downloads)} 次下载）`);
-    } catch (e: any) {
-      toast.error('下载失败', e.message);
-    }
-  };
 
   const filteredNews = useMemo(() => {
     const list: any[] = d.featuredArticles ?? [];
@@ -138,7 +122,7 @@ export default function Home() {
       <SectionRail sections={SECTIONS} active={active} />
 
       <Hero settings={s} />
-      <QuickAbout quickCount={4} stats={stats} intro={s.intro} />
+      <QuickAbout stats={stats} intro={s.intro} />
       <HistoryNews
         timeline={d.timeline ?? []}
         articles={filteredNews}
@@ -152,7 +136,6 @@ export default function Home() {
       <ActivityApply activities={d.activities ?? []} loading={loading} dens={dens} />
       <ProjectCompetition projects={d.projects ?? []} competitions={d.competitions ?? []} loading={loading} dens={dens} />
       <GalleryBlock images={d.gallery ?? []} loading={loading} dens={dens} />
-      <ResourceBlock onDownload={downloadResource} dens={dens} />
       <OrgMembers members={d.members ?? []} loading={loading} dens={dens} />
       <JoinBlock stats={stats} />
     </>
@@ -163,11 +146,8 @@ export default function Home() {
  * 右侧分区导航
  * ========================================================================== */
 function SectionRail({ sections, active }: { sections: { id: string; label: string }[]; active: string }) {
-  const [hovered, setHovered] = useState(false);
   return (
     <nav
-      onMouseEnter={() => setHovered(true)}
-      onMouseLeave={() => setHovered(false)}
       className="st-fade fixed right-5 top-1/2 z-[60] hidden -translate-y-1/2 flex-col items-end gap-2.5 xl:flex"
       /* 等首屏进场走完再出现，避免和 Hero 的级联抢注意力 */
       style={{ animationDelay: '1050ms' }}
@@ -178,11 +158,10 @@ function SectionRail({ sections, active }: { sections: { id: string; label: stri
           <a key={sec.id} href={`#${sec.id}`} className="group flex items-center gap-3" aria-label={sec.label}>
             <span
               className={cn(
-                'whitespace-nowrap rounded-full border px-2.5 py-1 text-xs transition-all duration-300',
-                hovered || isActive ? 'opacity-100' : 'translate-x-1 opacity-0',
+                'whitespace-nowrap rounded-full border px-3.5 py-1.5 text-[15px] font-medium transition-colors duration-300',
                 isActive
-                  ? 'border-primary/40 bg-primary/12 text-primary'
-                  : 'border-white/10 bg-black/45 text-muted-foreground backdrop-blur-md'
+                  ? 'border-primary/50 bg-primary/15 text-primary'
+                  : 'border-white/15 bg-black/65 text-foreground/85 backdrop-blur-md group-hover:border-white/30 group-hover:text-foreground'
               )}
             >
               {sec.label}
@@ -287,11 +266,11 @@ function Hero({ settings }: { settings: Record<string, string> }) {
 const QUICK = [
   { icon: CalendarDays, title: '活动报名', desc: '技术沙龙 · 工作坊 · 竞赛集训', to: '/activities' },
   { icon: FileText, title: '项目申报', desc: '大创项目在线申报与进度查询', to: '/projects/apply' },
-  { icon: Download, title: '资源下载', desc: '申报书模板 · 竞赛指南 · 培训资料', to: '/resources' },
-  { icon: Users, title: '加入我们', desc: '招新公告 · 岗位介绍 · 报名表', to: '/join' },
+  { icon: Compass, title: '全站搜索', desc: '新闻通知 · 活动 · 创新项目', to: '/search' },
+  { icon: Users, title: '加入我们', desc: '查看录取名单 · 联系部门', to: '/join' },
 ];
 
-function QuickAbout({ stats, intro }: { quickCount: number; stats: any; intro?: string }) {
+function QuickAbout({ stats, intro }: { stats: { signups?: number; projects?: number; members?: number }; intro?: string }) {
   const items = [
     { label: '成立年份', value: '2015', unit: '年' },
     { label: '服务学生', value: fnum((stats.signups ?? 0) + 4000), unit: '人次' },
@@ -671,40 +650,7 @@ function GalleryBlock({ images, loading, dens }: { images: any[]; loading: boole
 }
 
 /* =============================================================================
- * 7. 资源中心（独占一屏）
- * ========================================================================== */
-function ResourceBlock({ onDownload, dens }: { onDownload: (r: any) => void; dens: number }) {
-  const { data, loading } = useApi<any[]>(() => PublicApi.resources(), []);
-  const count = pick([6, 6, 8, 8], dens);
-  const list = (data ?? []).slice(0, count);
-
-  return (
-    <Screen
-      id="resources"
-      eyebrow="Resources"
-      title="资源中心"
-      description="申报书模板、商业计划书、路演 PPT、政策文件、竞赛指南与培训资料。"
-      action={
-        <LinkButton to="/resources">
-          全部资源 <ArrowRight className="h-4 w-4" />
-        </LinkButton>
-      }
-    >
-      <div className={cn('grid gap-4 sm:grid-cols-2 lg:grid-cols-3', count > 6 && '2xl:grid-cols-4')}>
-        {loading
-          ? Array.from({ length: count }).map((_, i) => <Skeleton key={i} className="h-40" />)
-          : list.map((r, i) => (
-              <div key={r.id} data-reveal="scale" style={stagger(i % 4)}>
-                <ResourceCard resource={r} onDownload={onDownload} />
-              </div>
-            ))}
-      </div>
-    </Screen>
-  );
-}
-
-/* =============================================================================
- * 8. 组织架构 + 成员风采（合并一屏）
+ * 7. 组织架构 + 成员风采（合并一屏）
  * ========================================================================== */
 function OrgMembers({ members, loading, dens }: { members: any[]; loading: boolean; dens: number }) {
   const { data, loading: orgLoading } = useApi<any>(() => PublicApi.about(), []);
@@ -716,7 +662,7 @@ function OrgMembers({ members, loading, dens }: { members: any[]; loading: boole
       id="org"
       eyebrow="Organization & Team"
       title="组织架构与成员风采"
-      description="四个工作组协同运转，成员来自全校多个学院。"
+      description="部长团与学生成员共同参与部门工作。"
       action={
         <LinkButton to="/about#members">
           认识全体成员 <ArrowRight className="h-4 w-4" />
@@ -788,9 +734,9 @@ function OrgMembers({ members, loading, dens }: { members: any[]; loading: boole
 }
 
 /* =============================================================================
- * 9. 加入我们（独占一屏）
+ * 8. 加入我们（独占一屏）
  * ========================================================================== */
-function JoinBlock({ stats }: { stats: any }) {
+function JoinBlock({ stats }: { stats: { projects?: number; activities?: number; competitions?: number; galleryImages?: number } }) {
   return (
     <Screen id="join" container="shell">
       <Glass tone="strong" className="relative overflow-hidden p-8 sm:p-12 lg:p-14" data-reveal="scale">
@@ -802,29 +748,18 @@ function JoinBlock({ stats }: { stats: any }) {
         <div className="relative grid gap-10 lg:grid-cols-[1.2fr_1fr] lg:items-center">
           <div>
             <div className="eyebrow mb-5">Join Us</div>
-            <h2 className="text-balance text-3xl font-semibold leading-[1.15] tracking-tight">
-              和我们一起，
-              <br className="hidden sm:block" />
-              把想法变成可运行的东西
-            </h2>
+            <h2 className="text-balance text-3xl font-semibold leading-[1.15] tracking-tight">加入我们</h2>
             <p className="mt-5 max-w-xl text-pretty text-base leading-[1.85] text-muted-foreground">
-              无论你擅长写代码、做设计、写文案，还是单纯对某个领域充满好奇 —— 科技创新部都欢迎你。
+              查看科技创新部录取名单，了解最新录取信息。
             </p>
             <div className="mt-7 flex flex-wrap items-center gap-3.5">
               <LinkButton to="/join" variant="primary" size="lg">
-                查看招新岗位 <ArrowRight className="h-4 w-4" />
+                查看录取名单 <ArrowRight className="h-4 w-4" />
               </LinkButton>
               <LinkButton to="/feedback" variant="glass" size="lg">
                 <MessageSquare className="h-4 w-4" />
                 有问题想问
               </LinkButton>
-            </div>
-            <div className="mt-7 flex flex-wrap items-center gap-x-7 gap-y-3 text-sm text-muted-foreground">
-              <span className="flex items-center gap-2">
-                <Dot tone="success" pulse />
-                2026 春季招新进行中
-              </span>
-              <span className="mono">7 个岗位 · 30 个名额</span>
             </div>
           </div>
 
@@ -832,7 +767,7 @@ function JoinBlock({ stats }: { stats: any }) {
             {[
               { k: '在展项目', v: stats.projects ?? 0, icon: Layers },
               { k: '部门活动', v: stats.activities ?? 0, icon: CalendarDays },
-              { k: '资源文件', v: stats.resources ?? 0, icon: Download },
+              { k: '竞赛信息', v: stats.competitions ?? 0, icon: Trophy },
               { k: '画廊影像', v: stats.galleryImages ?? 0, icon: Eye },
             ].map((it) => (
               <Glass key={it.k} tone="thin" hover className="flex flex-col items-center p-5 text-center">

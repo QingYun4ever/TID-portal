@@ -6,7 +6,6 @@ import {
   BookOpen,
   CalendarDays,
   Compass,
-  Download,
   FileText,
   Layers,
   Lightbulb,
@@ -42,7 +41,6 @@ const SCOPES = [
   { value: 'activity', label: '活动' },
   { value: 'project', label: '项目' },
   { value: 'competition', label: '竞赛' },
-  { value: 'resource', label: '资源' },
 ];
 
 interface TypeMeta {
@@ -62,7 +60,6 @@ const TYPE_META: Record<string, TypeMeta> = {
   },
   project: { label: '创新项目', icon: <Layers className="h-4 w-4" />, tone: 'accent', to: (i) => `/projects/${i.slug}` },
   competition: { label: '竞赛信息', icon: <Trophy className="h-4 w-4" />, tone: 'success', to: () => '/competitions' },
-  resource: { label: '资源中心', icon: <Download className="h-4 w-4" />, tone: 'default', to: () => '/resources' },
 };
 
 const HOT_WORDS = ['大创项目', '挑战杯', '电子设计竞赛', '创新工坊', '学分认定', '政策文件'];
@@ -144,7 +141,7 @@ export default function Search() {
       <PageHero
         eyebrow="Global Search"
         title="全站搜索"
-        description="一次检索覆盖新闻通知、活动、创新项目、竞赛信息与资源中心，结果按内容类型分组呈现。"
+        description="一次检索覆盖新闻通知、活动、创新项目与竞赛信息，结果按内容类型分组呈现。"
         breadcrumb={[{ label: '全站搜索' }]}
       >
         <div className="max-w-3xl">
@@ -369,7 +366,6 @@ export default function Search() {
                   { label: '活动与报名', to: '/activities' },
                   { label: '创新项目库', to: '/projects' },
                   { label: '竞赛信息', to: '/competitions' },
-                  { label: '资源中心', to: '/resources' },
                 ].map((l) => (
                   <Link
                     key={l.to}

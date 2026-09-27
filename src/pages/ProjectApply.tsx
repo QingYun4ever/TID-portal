@@ -14,7 +14,6 @@ import {
   Info,
   Mail,
   MapPin,
-  Phone,
   RotateCcw,
   Send,
   ShieldCheck,
@@ -667,15 +666,11 @@ export default function ProjectApply() {
                   <div className="flex flex-col gap-2.5 text-[12px] text-foreground/80">
                     <span className="flex items-center gap-2.5">
                       <Mail className="h-3.5 w-3.5 shrink-0 text-primary" />
-                      <span className="mono">{settings.email || 'sti@university.edu.cn'}</span>
-                    </span>
-                    <span className="flex items-center gap-2.5">
-                      <Phone className="h-3.5 w-3.5 shrink-0 text-primary" />
-                      <span className="mono">{settings.phone || '010-8888 6666'}</span>
+                      <span className="mono">{settings.email || 'notpaperxiang@gmail.com'}</span>
                     </span>
                     <span className="flex items-start gap-2.5">
                       <MapPin className="mt-0.5 h-3.5 w-3.5 shrink-0 text-primary" />
-                      {settings.address || '大学生活动中心 3 楼 305 室'}
+                      {settings.address || '北京市陈经纶中学本部高中'}
                     </span>
                   </div>
                 </div>

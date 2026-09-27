@@ -6,9 +6,7 @@ import {
   BookOpen,
   ChevronLeft,
   ClipboardList,
-  Download,
   FileText,
-  GitBranch,
   Home,
   Image as ImageIcon,
   LayoutDashboard,
@@ -45,7 +43,6 @@ const GROUPS: NavGroup[] = [
       { to: '/admin/activities', label: '活动管理', icon: Activity },
       { to: '/admin/projects', label: '项目展示库', icon: Layers },
       { to: '/admin/competitions', label: '竞赛信息', icon: Trophy },
-      { to: '/admin/resources', label: '资源中心', icon: Download },
     ],
   },
   {
@@ -63,7 +60,6 @@ const GROUPS: NavGroup[] = [
       { to: '/admin/gallery', label: '活动画廊', icon: ImageIcon },
       { to: '/admin/members', label: '成员与架构', icon: Users },
       { to: '/admin/about', label: '部门概况页', icon: BookOpen },
-      { to: '/admin/changelog', label: '更新日志', icon: GitBranch },
     ],
   },
   {

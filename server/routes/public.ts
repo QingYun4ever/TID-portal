@@ -361,11 +361,10 @@ publicRoutes.get('/join', (c) => {
   const groups = all<{ group: string; c: number }>(
     'SELECT "group", COUNT(*) c FROM join_positions WHERE active=1 GROUP BY "group" ORDER BY MIN(sortOrder)'
   );
-  const approved = all(
-    `SELECT name, college, major, (SELECT name FROM join_positions jp WHERE jp.id=ja.positionId) AS positionName, createdAt
-     FROM join_applications ja WHERE status='approved' ORDER BY createdAt DESC LIMIT 20`
+  const admissions = all<{ id: number; name: string; className: string }>(
+    'SELECT id, name, className FROM join_admissions ORDER BY sortOrder ASC'
   );
-  return ok(c, { positions, notice, groups: groups.map((g) => ({ name: g.group, count: g.c })), approved });
+  return ok(c, { positions, notice, groups: groups.map((g) => ({ name: g.group, count: g.c })), admissions });
 });
 
 /* ------------------------------ 互动与反馈 ----------------------------- */
@@ -537,12 +536,6 @@ publicRoutes.get('/status', (c) => {
   });
 });
 
-/* ------------------------------ 更新日志 ------------------------------- */
-publicRoutes.get('/changelog', (c) => {
-  const items = all('SELECT * FROM changelog ORDER BY datetime(createdAt) DESC, id DESC');
-  return ok(c, items);
-});
-
 /* ------------------------------ 全局搜索 ------------------------------- */
 publicRoutes.get('/search', (c) => {
   const q = (c.req.query('q') || '').trim();
@@ -582,14 +575,6 @@ publicRoutes.get('/search', (c) => {
       [like, like, like]
     );
     if (items.length) groups.push({ type: 'competition', label: '竞赛信息', items });
-  }
-  if (scope === 'all' || scope === 'resource') {
-    const items = all(
-      `SELECT id,title,description AS summary,category,createdAt AS date FROM resources
-       WHERE (title LIKE ? OR description LIKE ?) LIMIT 6`,
-      [like, like]
-    );
-    if (items.length) groups.push({ type: 'resource', label: '资源中心', items });
   }
   const total = groups.reduce((s, g) => s + g.items.length, 0);
   return ok(c, { groups, total, query: q });

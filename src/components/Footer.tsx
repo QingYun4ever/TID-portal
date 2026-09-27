@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link } from 'react-router';
-import { ArrowUpRight, GitBranch, Github, Mail, MapPin, Phone, QrCode } from 'lucide-react';
+import { ArrowUpRight, Github, Mail, MapPin, QrCode } from 'lucide-react';
 import { useSettings } from '@/lib/store';
 import { LogoLockup } from './Brand';
 import { Glass } from './ui';
@@ -31,7 +31,6 @@ const COLUMNS: { title: string; links: { label: string; to: string }[] }[] = [
     links: [
       { label: '活动报名', to: '/activities' },
       { label: '项目申报', to: '/projects/apply' },
-      { label: '资源下载', to: '/resources' },
       { label: '加入我们', to: '/join' },
       { label: '互动与反馈', to: '/feedback' },
     ],
@@ -39,7 +38,6 @@ const COLUMNS: { title: string; links: { label: string; to: string }[] }[] = [
   {
     title: '系统',
     links: [
-      { label: '更新日志', to: '/changelog' },
       { label: '全站搜索', to: '/search' },
       { label: '用户中心', to: '/account' },
       { label: '后台管理', to: '/admin' },
@@ -86,12 +84,6 @@ export function Footer() {
                   {settings.email}
                 </a>
               )}
-              {settings.phone && (
-                <span className="mono flex items-center gap-2.5">
-                  <Phone className="h-3.5 w-3.5 shrink-0 text-primary/70" />
-                  {settings.phone}
-                </span>
-              )}
             </div>
           </div>
 
@@ -117,36 +109,7 @@ export function Footer() {
         </div>
 
         {/* 微信二维码 */}
-        <div className="mt-14 grid gap-6 lg:grid-cols-[1fr_auto]">
-          <Glass tone="soft" className="flex flex-col gap-4 p-6 sm:flex-row sm:items-center sm:justify-between">
-            <div>
-              <div className="flex items-center gap-2.5">
-                <span className="mono rounded-full border border-white/12 bg-white/[0.05] px-2 py-0.5 text-[10px] tracking-[0.14em] text-foreground/70">
-                  v3.0.0
-                </span>
-                <span className="text-[13px] font-medium">门户持续迭代中</span>
-              </div>
-              <p className="mt-2 text-[12px] text-muted-foreground">
-                功能调整、界面改版与问题修复都会记录在{' '}
-                <Link to="/changelog" className="text-primary transition hover:underline">
-                  更新日志
-                </Link>
-                ；有建议请到{' '}
-                <Link to="/feedback" className="text-primary transition hover:underline">
-                  互动与反馈
-                </Link>
-                。
-              </p>
-            </div>
-            <Link
-              to="/changelog"
-              className="inline-flex shrink-0 items-center gap-2 rounded-full border border-white/12 bg-white/[0.055] px-4 py-2 text-[12px] font-medium text-foreground/85 transition hover:border-white/25 hover:bg-white/[0.09]"
-            >
-              <GitBranch className="h-3.5 w-3.5 text-primary" />
-              查看更新日志
-            </Link>
-          </Glass>
-
+        <div className="mt-14">
           <Glass tone="soft" className="flex items-center gap-5 p-6">
             <div className="flex h-[88px] w-[88px] shrink-0 items-center justify-center overflow-hidden rounded-2xl border border-white/12 bg-white/[0.05]">
               {settings.wechatQr ? (
@@ -172,7 +135,6 @@ export function Footer() {
             {settings.icp && <span className="ml-3 opacity-70">{settings.icp}</span>}
           </p>
           <div className="flex items-center gap-5">
-            <span className="mono opacity-70">Portal v3.0.0</span>
             <a
               href="https://github.com"
               target="_blank"

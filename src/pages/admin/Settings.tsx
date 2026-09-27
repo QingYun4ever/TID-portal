@@ -16,9 +16,8 @@ const BRAND_FIELDS: { name: string; label: string; placeholder?: string; hint?: 
 ];
 
 const CONTACT_FIELDS: { name: string; label: string; placeholder?: string; hint?: string }[] = [
-  { name: 'email', label: '联系邮箱', placeholder: 'sti@university.edu.cn' },
-  { name: 'phone', label: '联系电话', placeholder: '010-8888 6666' },
-  { name: 'address', label: '办公地址', placeholder: '大学生活动中心 3 楼 305 室' },
+  { name: 'email', label: '联系邮箱', placeholder: 'notpaperxiang@gmail.com' },
+  { name: 'address', label: '办公地址', placeholder: '北京市陈经纶中学本部高中' },
 ];
 
 const ALL_KEYS = [...BRAND_FIELDS.map((f) => f.name), ...CONTACT_FIELDS.map((f) => f.name), 'intro', 'wechatQr'];

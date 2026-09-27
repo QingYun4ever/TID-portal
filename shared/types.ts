@@ -299,17 +299,6 @@ export interface StatusTarget {
   history?: { t: string; online: boolean; latencyMs: number | null }[];
 }
 
-/* ------------------------------ 更新日志 ------------------------------- */
-export interface ChangelogEntry {
-  id: number;
-  version: string;
-  versionColor: string;
-  title: string;
-  content: string;
-  author: string;
-  createdAt: string;
-}
-
 /* ------------------------------ 消息 / 日志 ----------------------------- */
 export interface UserMessage {
   id: number;

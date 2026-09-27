@@ -131,7 +131,6 @@ export const PublicApi = {
   galleryAreas: () => apiData<any[]>('/gallery/areas'),
   galleryImages: (params: Record<string, string | number> = {}) => apiFull<any>(`/gallery/images?${qs(params)}`),
   about: () => apiData<any>('/about'),
-  changelog: () => apiData<any[]>('/changelog'),
   search: (q: string, scope = 'all') => apiData<any>(`/search?q=${encodeURIComponent(q)}&scope=${scope}`),
   tags: () => apiData<any[]>('/tags'),
 };
