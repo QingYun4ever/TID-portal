@@ -17,7 +17,7 @@ import {
 import { ApiError, PublicApi, SubmitApi } from '@/lib/api';
 import { useApi, useTitle } from '@/lib/hooks';
 import { useAuth, useToast } from '@/lib/store';
-import { cn, fdate } from '@/lib/utils';
+import { cn } from '@/lib/utils';
 import { useRevealScope } from '@/components/RevealScope';
 import {
   Accordion,
@@ -61,18 +61,10 @@ interface JoinGroup {
   name: string;
   count: number;
 }
-interface ApprovedRow {
-  name: string;
-  college: string;
-  major: string;
-  positionName: string | null;
-  createdAt: string;
-}
 interface JoinData {
   positions: JoinPosition[];
   notice: JoinNotice | null;
   groups: JoinGroup[];
-  approved: ApprovedRow[];
 }
 
 /* =============================================================================
@@ -125,6 +117,22 @@ function validate(f: JoinForm): Record<string, string> {
   return e;
 }
 
+const ADMITTED_STUDENTS = [
+  { name: '刘航麟', className: '高一-2班' },
+  { name: '徐千惠', className: '高一-13班' },
+  { name: '林书羽', className: '高一-8班' },
+  { name: '甘佳霖', className: '高一-10班' },
+  { name: '王子欣', className: '高一-3班' },
+  { name: '王梓曦', className: '高一-3班' },
+  { name: '王绍翰', className: '高二-1班' },
+  { name: '翟炳勋', className: '高二-6班' },
+  { name: '耿万形', className: '高二-3班' },
+  { name: '赵宥晨', className: '高二-1班' },
+  { name: '郭宝泽', className: '高二-1班' },
+  { name: '陈轩弘', className: '初三-1班' },
+  { name: '鲜金钊', className: '高二-5班' },
+];
+
 const FAQ = [
   {
     q: '招新对专业和年级有限制吗？',
@@ -167,7 +175,6 @@ export default function Join() {
   const positions = data?.positions ?? [];
   const notice = data?.notice ?? null;
   const groups = data?.groups ?? [];
-  const approved = data?.approved ?? [];
 
   const totalHeadcount = useMemo(
     () => positions.reduce((s, p) => s + (Number(p.headcount) || 0), 0),
@@ -294,9 +301,36 @@ export default function Join() {
             {positions.length} 个岗位 · {totalHeadcount} 个名额
           </span>
           <span className="mono">{groups.length} 个工作组</span>
-          {approved.length > 0 && <span className="mono">已公示 {approved.length} 人</span>}
+          <span className="mono">已录取 {ADMITTED_STUDENTS.length} 人</span>
         </div>
       </PageHero>
+      <Section
+        id="approved"
+        eyebrow="Admission List"
+        title="录取名单"
+        description={`本次共录取 ${ADMITTED_STUDENTS.length} 位同学，名单如下。`}
+      >
+        <TableWrap>
+          <table className="w-full border-collapse">
+            <thead>
+              <tr>
+                <Th className="w-16">序号</Th>
+                <Th>姓名</Th>
+                <Th>班级</Th>
+              </tr>
+            </thead>
+            <tbody>
+              {ADMITTED_STUDENTS.map((student, i) => (
+                <tr key={student.name} className="transition-colors hover:bg-white/[0.03]">
+                  <Td className="mono text-muted-foreground">{i + 1}</Td>
+                  <Td className="font-medium text-foreground">{student.name}</Td>
+                  <Td className="text-muted-foreground">{student.className}</Td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </TableWrap>
+      </Section>
 
       {error ? (
         <Section container="shell" className="!pt-0">
@@ -652,57 +686,6 @@ export default function Join() {
               )}
             </div>
           </Section>
-
-          {/* ============================ 录用公示 ============================ */}
-          <Section
-            id="approved"
-            eyebrow="Public Notice"
-            title="录用公示名单"
-            description={`共 ${approved.length} 位同学通过本轮选拔，公示期为 3 天，如有异议请通过「互动与反馈」提交。`}
-          >
-            <div data-reveal>
-              {approved.length ? (
-                <TableWrap>
-                  <table className="w-full border-collapse">
-                    <thead>
-                      <tr>
-                        <Th className="w-12">#</Th>
-                        <Th>姓名</Th>
-                        <Th>学院</Th>
-                        <Th>专业</Th>
-                        <Th>录用岗位</Th>
-                        <Th className="text-right">公示时间</Th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {approved.map((r, i) => (
-                        <tr key={`${r.name}-${r.createdAt}-${i}`} className="transition-colors hover:bg-white/[0.03]">
-                          <Td className="mono text-muted-foreground">{String(i + 1).padStart(2, '0')}</Td>
-                          <Td className="font-medium text-foreground">{r.name}</Td>
-                          <Td className="text-muted-foreground">{r.college || '—'}</Td>
-                          <Td className="text-muted-foreground">{r.major || '—'}</Td>
-                          <Td>
-                            <Chip tone="primary">{r.positionName || '待分配'}</Chip>
-                          </Td>
-                          <Td className="mono text-right text-muted-foreground">{fdate(r.createdAt)}</Td>
-                        </tr>
-                      ))}
-                    </tbody>
-                  </table>
-                </TableWrap>
-              ) : (
-                <Glass tone="soft" className="p-4">
-                  <EmptyState
-                    icon={<BadgeCheck className="h-5 w-5" />}
-                    title="本次录用名单尚未公示"
-                    description="面试结束后，录用结果将在此处公示。已报名的同学可在用户中心查看实时进度。"
-                    action={<LinkButton to="/account/join">查看我的招新进度</LinkButton>}
-                  />
-                </Glass>
-              )}
-            </div>
-          </Section>
-
           {/* ============================ 常见问题 ============================ */}
           <Section
             id="faq"
