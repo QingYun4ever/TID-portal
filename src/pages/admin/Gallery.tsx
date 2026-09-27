@@ -875,7 +875,7 @@ export default function AdminGallery() {
                           <div className="flex items-center justify-center gap-2">
                             <button
                               onClick={() => setLightbox({ open: true, index: idx })}
-                              className="lg-thin flex h-9 w-9 items-center justify-center rounded-full text-foreground transition hover:scale-105"
+                              className="lg-thin backdrop-blur-md flex h-9 w-9 items-center justify-center rounded-full text-foreground transition hover:scale-105"
                               title="放大预览"
                               aria-label="放大预览"
                             >
@@ -883,7 +883,7 @@ export default function AdminGallery() {
                             </button>
                             <button
                               onClick={() => openImageEdit(img)}
-                              className="lg-thin flex h-9 w-9 items-center justify-center rounded-full text-foreground transition hover:scale-105"
+                              className="lg-thin backdrop-blur-md flex h-9 w-9 items-center justify-center rounded-full text-foreground transition hover:scale-105"
                               title="编辑信息"
                               aria-label="编辑信息"
                             >
@@ -891,7 +891,7 @@ export default function AdminGallery() {
                             </button>
                             <button
                               onClick={() => setConfirmImgDel(img)}
-                              className="lg-thin flex h-9 w-9 items-center justify-center rounded-full text-[hsl(var(--destructive))] transition hover:scale-105"
+                              className="lg-thin backdrop-blur-md flex h-9 w-9 items-center justify-center rounded-full text-[hsl(var(--destructive))] transition hover:scale-105"
                               title="删除图片"
                               aria-label="删除图片"
                             >
@@ -1175,7 +1175,7 @@ export default function AdminGallery() {
           <div className="relative z-10 flex min-h-0 flex-1 items-center justify-center gap-3 p-4 sm:gap-5 sm:p-6">
             <button
               onClick={() => setLightbox((s) => ({ ...s, index: s.index > 0 ? s.index - 1 : images.length - 1 }))}
-              className="lg-thin flex h-11 w-11 shrink-0 items-center justify-center rounded-full text-foreground transition hover:scale-105"
+              className="lg-thin backdrop-blur-md flex h-11 w-11 shrink-0 items-center justify-center rounded-full text-foreground transition hover:scale-105"
               aria-label="上一张"
               title="上一张（←）"
             >
@@ -1194,7 +1194,7 @@ export default function AdminGallery() {
 
             <button
               onClick={() => setLightbox((s) => ({ ...s, index: s.index < images.length - 1 ? s.index + 1 : 0 }))}
-              className="lg-thin flex h-11 w-11 shrink-0 items-center justify-center rounded-full text-foreground transition hover:scale-105"
+              className="lg-thin backdrop-blur-md flex h-11 w-11 shrink-0 items-center justify-center rounded-full text-foreground transition hover:scale-105"
               aria-label="下一张"
               title="下一张（→）"
             >

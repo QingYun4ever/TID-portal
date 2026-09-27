@@ -45,7 +45,7 @@
     --secondary: 210 8% 14%;
     --secondary-foreground: 210 12% 96%;
     --muted: 210 8% 13%;
-    --muted-foreground: 210 8% 62%;
+    --muted-foreground: 210 8% 74%;
 
     /* 高等级提示专用 */
     --destructive: 0 78% 62%;
@@ -593,14 +593,14 @@
     color: #fff;
   }
   .field-label {
-    @apply mb-2 block text-xs font-medium tracking-wide text-muted-foreground;
+    @apply mb-2 block text-sm font-medium tracking-wide text-muted-foreground;
   }
 
   /* ------------------------------------------------------------------
      4. 徽章 / 状态点 / 分区标题
      ------------------------------------------------------------------ */
   .chip {
-    @apply inline-flex items-center gap-1.5 rounded-full border px-3 py-1 text-[11px] font-medium tracking-wide;
+    @apply inline-flex items-center gap-1.5 rounded-full border px-3 py-1 text-xs font-medium tracking-wide;
     background: rgba(255, 255, 255, 0.055);
     border-color: rgba(255, 255, 255, 0.11);
     color: hsl(var(--muted-foreground));
@@ -640,7 +640,7 @@
 
   /* 分区小标题：编号 + 线 */
   .eyebrow {
-    @apply inline-flex items-center gap-3 text-[11px] font-medium uppercase tracking-[0.34em] text-muted-foreground;
+    @apply inline-flex items-center gap-3 text-sm font-medium uppercase tracking-[0.24em] text-muted-foreground;
   }
   .eyebrow::before {
     content: '';

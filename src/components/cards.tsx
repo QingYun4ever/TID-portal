@@ -66,7 +66,7 @@ function CardFoot({ children, className }: { children: React.ReactNode; classNam
   return (
     <div className={cn('mt-4', className)}>
       <span aria-hidden className="card-rule block" />
-      <div className="mt-3 flex items-center justify-between gap-3 text-[11px] text-muted-foreground">{children}</div>
+      <div className="mt-3 flex items-center justify-between gap-3 text-sm text-muted-foreground">{children}</div>
     </div>
   );
 }
@@ -97,20 +97,20 @@ export function ArticleCard({
             aria-hidden
             className="absolute bottom-2.5 left-0 top-2.5 w-px bg-white/10 transition-colors duration-300 group-hover:bg-primary/70"
           />
-          <span className="mono mt-0.5 w-10 shrink-0 text-[11px] text-muted-foreground">
+          <span className="mono mt-0.5 w-12 shrink-0 text-xs text-muted-foreground">
             {fdate(article.publishedAt).slice(5)}
           </span>
           <div className="min-w-0 flex-1">
-            <p className="clamp-2 text-[13.5px] font-medium leading-snug text-foreground/90 transition-colors duration-300 group-hover:text-primary">
+            <p className="clamp-2 text-base font-medium leading-snug text-foreground/90 transition-colors duration-300 group-hover:text-primary">
               {article.pinned ? <Pin className="mr-1.5 inline h-3 w-3 -rotate-45 text-[hsl(var(--warning))]" /> : null}
               {article.title}
             </p>
             <div className="mt-1.5 flex items-center gap-2.5">
-              <Chip tone={catTone} className="!px-2 !py-0 !text-[10px]">
+              <Chip tone={catTone} className="!px-2 !py-0">
                 {catText}
               </Chip>
               {article.views !== undefined && (
-                <span className="mono flex items-center gap-1 text-[10px] text-muted-foreground">
+                <span className="mono flex items-center gap-1 text-xs text-muted-foreground">
                   <Eye className="h-2.5 w-2.5" />
                   {fnum(article.views)}
                 </span>
@@ -143,7 +143,7 @@ export function ArticleCard({
                 </Chip>
               ) : null}
             </div>
-            <span className="mono absolute bottom-3 left-3.5 text-[11px] tracking-wide text-white/70">
+            <span className="mono absolute bottom-3 left-3.5 text-sm tracking-wide text-white/85">
               {fdate(article.publishedAt)}
             </span>
           </div>
@@ -152,7 +152,7 @@ export function ArticleCard({
             <h3 className="clamp-2 text-[17px] font-semibold leading-snug transition-colors duration-300 group-hover:text-primary">
               {article.title}
             </h3>
-            <p className="clamp-3 mt-2.5 flex-1 text-[13.5px] leading-relaxed text-muted-foreground">
+            <p className="clamp-3 mt-2.5 flex-1 text-base leading-relaxed text-muted-foreground">
               {article.summary}
             </p>
             <CardFoot>
@@ -180,12 +180,12 @@ export function ArticleCard({
               {catText}
             </Chip>
             {article.pinned ? <Pin className="h-3.5 w-3.5 -rotate-45 text-[hsl(var(--warning))]" /> : null}
-            <span className="mono ml-auto text-[11px] text-muted-foreground">{fdate(article.publishedAt)}</span>
+            <span className="mono ml-auto text-sm text-muted-foreground">{fdate(article.publishedAt)}</span>
           </div>
           <h3 className="clamp-2 mt-3.5 text-[15px] font-semibold leading-snug transition-colors duration-300 group-hover:text-primary">
             {article.title}
           </h3>
-          <p className="clamp-2 mt-2.5 flex-1 text-[13px] leading-relaxed text-muted-foreground">{article.summary}</p>
+          <p className="clamp-2 mt-2.5 flex-1 text-sm leading-relaxed text-muted-foreground">{article.summary}</p>
           <CardFoot>
             <span className="mono flex items-center gap-1.5">
               <Eye className="h-3 w-3" />
@@ -217,9 +217,9 @@ export function ActivityCard({ activity, className }: { activity: any; className
           <div className="flex items-start gap-4">
             {/* 日期砖 */}
             <div className="card-tile flex w-[54px] shrink-0 flex-col items-center py-2.5">
-              <span className="mono text-[10px] uppercase text-muted-foreground">{day.slice(5, 7)}月</span>
+              <span className="mono text-xs uppercase text-muted-foreground">{day.slice(5, 7)}月</span>
               <span className="mono text-xl font-semibold leading-tight text-foreground">{day.slice(8, 10)}</span>
-              <span className="mono text-[9px] text-muted-foreground">{day.slice(0, 4)}</span>
+              <span className="mono text-xs text-muted-foreground">{day.slice(0, 4)}</span>
             </div>
 
             <div className="min-w-0 flex-1">
@@ -240,12 +240,12 @@ export function ActivityCard({ activity, className }: { activity: any; className
               <h3 className="clamp-2 mt-2.5 text-[15px] font-semibold leading-snug transition-colors duration-300 group-hover:text-primary">
                 {activity.title}
               </h3>
-              <p className="clamp-2 mt-2 text-[13px] leading-relaxed text-muted-foreground">{activity.summary}</p>
+              <p className="clamp-2 mt-2 text-sm leading-relaxed text-muted-foreground">{activity.summary}</p>
             </div>
           </div>
 
           <CardFoot className="mt-auto pt-1">
-            <span className="flex min-w-0 flex-wrap items-center gap-x-4 gap-y-1.5 text-[11.5px]">
+            <span className="flex min-w-0 flex-wrap items-center gap-x-4 gap-y-1.5 text-sm">
               <span className="flex items-center gap-1.5">
                 <Clock className="h-3.5 w-3.5 shrink-0" />
                 <span className="mono">{fdatetime(activity.startAt).slice(5)}</span>
@@ -261,7 +261,7 @@ export function ActivityCard({ activity, className }: { activity: any; className
 
           {capacity > 0 && (
             <div className="mt-3.5">
-              <div className="mb-1.5 flex items-center justify-between text-[11px]">
+              <div className="mb-1.5 flex items-center justify-between text-sm">
                 <span className="flex items-center gap-1.5 text-muted-foreground">
                   <Users className="h-3 w-3" />
                   已报名 <span className="mono text-foreground">{signed}</span> / {capacity}
@@ -321,14 +321,14 @@ export function ProjectCard({
           <div className="card-body md:p-7">
             <div className="flex flex-wrap items-center gap-2">
               <Chip tone={tone}>{cat}</Chip>
-              <span className="mono text-[11px] text-muted-foreground">{project.year}</span>
+              <span className="mono text-sm text-muted-foreground">{project.year}</span>
             </div>
             <h3 className="mt-4 text-xl font-semibold leading-snug transition-colors duration-300 group-hover:text-primary">
               {project.title}
             </h3>
-            <p className="clamp-3 mt-3 flex-1 text-[13.5px] leading-relaxed text-muted-foreground">{project.summary}</p>
+            <p className="clamp-3 mt-3 flex-1 text-base leading-relaxed text-muted-foreground">{project.summary}</p>
             <CardFoot>
-              <span className="flex min-w-0 flex-wrap items-center gap-x-4 gap-y-1.5 text-[11.5px]">
+              <span className="flex min-w-0 flex-wrap items-center gap-x-4 gap-y-1.5 text-sm">
                 <span className="clamp-1 flex items-center gap-1.5">
                   <Users className="h-3.5 w-3.5 shrink-0" />
                   {project.team}
@@ -366,17 +366,17 @@ export function ProjectCard({
             <Chip tone={tone} className="!px-2.5 !py-0.5">
               {cat}
             </Chip>
-            <span className="mono ml-auto text-[11px] text-muted-foreground">{project.year}</span>
+            <span className="mono ml-auto text-sm text-muted-foreground">{project.year}</span>
           </div>
           <h3
             className={cn(
               'clamp-2 mt-3 font-semibold leading-snug transition-colors duration-300 group-hover:text-primary',
-              size === 'sm' ? 'text-[14px]' : 'text-[15px]'
+              size === 'sm' ? 'text-base' : 'text-[17px]'
             )}
           >
             {project.title}
           </h3>
-          <p className="clamp-2 mt-2 flex-1 text-[13px] leading-relaxed text-muted-foreground">{project.summary}</p>
+          <p className="clamp-2 mt-2 flex-1 text-sm leading-relaxed text-muted-foreground">{project.summary}</p>
           <CardFoot className="mt-3.5">
             <span className="clamp-1">{project.team}</span>
             {project.views !== undefined && (
@@ -420,11 +420,11 @@ export function CompetitionCard({ competition, className }: { competition: any; 
         </div>
 
         <h3 className="clamp-2 mt-3.5 text-[15px] font-semibold leading-snug">{competition.title}</h3>
-        <p className="mt-1.5 flex items-center gap-1.5 text-[11.5px] text-muted-foreground">
+        <p className="mt-1.5 flex items-center gap-1.5 text-sm text-muted-foreground">
           <Building2 className="h-3.5 w-3.5 shrink-0" />
           <span className="clamp-1">{competition.organizer}</span>
         </p>
-        <p className="clamp-3 mt-3 flex-1 text-[13px] leading-relaxed text-muted-foreground">{competition.summary}</p>
+        <p className="clamp-3 mt-3 flex-1 text-sm leading-relaxed text-muted-foreground">{competition.summary}</p>
 
         {/* 紧迫度刻度 —— 只在未截止时出现 */}
         {!expired && d !== null && (
@@ -444,7 +444,7 @@ export function CompetitionCard({ competition, className }: { competition: any; 
             <CalendarDays className="h-3.5 w-3.5" />
             截止 <span className="mono">{fdate(dl)}</span>
           </span>
-          {!expired && <Countdown target={dl} className="text-[11px]" />}
+          {!expired && <Countdown target={dl} className="text-sm" />}
         </CardFoot>
 
         {competition.link && (
@@ -452,7 +452,7 @@ export function CompetitionCard({ competition, className }: { competition: any; 
             href={competition.link}
             target="_blank"
             rel="noreferrer noopener"
-            className="mt-3 inline-flex items-center gap-1.5 text-[12px] font-medium text-primary transition-all duration-300 hover:gap-2.5"
+            className="mt-3 inline-flex items-center gap-1.5 text-sm font-medium text-primary transition-all duration-300 hover:gap-2.5"
           >
             前往赛事官网 <ArrowUpRight className="h-3.5 w-3.5" />
           </a>

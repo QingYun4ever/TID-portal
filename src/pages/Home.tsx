@@ -17,7 +17,7 @@ import {
 } from 'lucide-react';
 
 import { PublicApi, SubmitApi } from '@/lib/api';
-import { useApi, useActiveSection, useCountUp, useInView, useScrollVar } from '@/lib/hooks';
+import { useApi, useActiveSection, useScrollVar } from '@/lib/hooks';
 import { useSettings, useToast } from '@/lib/store';
 import { NEWS_CATEGORIES, cn, fnum, plain } from '@/lib/utils';
 import { LogoMark } from '@/components/Brand';
@@ -137,7 +137,7 @@ export default function Home() {
 
       <SectionRail sections={SECTIONS} active={active} />
 
-      <Hero settings={s} stats={stats} loading={loading} />
+      <Hero settings={s} />
       <QuickAbout quickCount={4} stats={stats} intro={s.intro} />
       <HistoryNews
         timeline={d.timeline ?? []}
@@ -178,7 +178,7 @@ function SectionRail({ sections, active }: { sections: { id: string; label: stri
           <a key={sec.id} href={`#${sec.id}`} className="group flex items-center gap-3" aria-label={sec.label}>
             <span
               className={cn(
-                'whitespace-nowrap rounded-full border px-2.5 py-1 text-[10.5px] transition-all duration-300',
+                'whitespace-nowrap rounded-full border px-2.5 py-1 text-xs transition-all duration-300',
                 hovered || isActive ? 'opacity-100' : 'translate-x-1 opacity-0',
                 isActive
                   ? 'border-primary/40 bg-primary/12 text-primary'
@@ -203,14 +203,7 @@ function SectionRail({ sections, active }: { sections: { id: string; label: stri
 /* =============================================================================
  * 1. 首屏
  * ========================================================================== */
-function Hero({ settings, stats, loading }: { settings: Record<string, string>; stats: any; loading: boolean }) {
-  const statItems = [
-    { label: '在展创新项目', value: stats.projects ?? 0, icon: Layers },
-    { label: '发布通知公告', value: stats.articles ?? 0, icon: FileText },
-    { label: '累计活动报名', value: stats.signups ?? 0, icon: Users },
-    { label: '门户累计浏览', value: stats.views ?? 0, icon: Eye },
-  ];
-
+function Hero({ settings }: { settings: Record<string, string> }) {
   return (
     <section id="hero" className="relative flex min-h-dvh flex-col items-center justify-center overflow-hidden px-5 pb-10 pt-20">
       <div aria-hidden className="pointer-events-none absolute inset-0">
@@ -246,7 +239,7 @@ function Hero({ settings, stats, loading }: { settings: Record<string, string>; 
           <span className="aurora-text">科技创新部</span>
         </h1>
         <p
-          className="mono st-rise mt-4 text-[10px] font-medium uppercase text-muted-foreground sm:text-[11px]"
+          className="mono st-rise mt-4 text-xs font-medium uppercase text-muted-foreground sm:text-sm"
           style={{ letterSpacing: '0.34em', ...rise(140) }}
         >
           TECHNOLOGY &amp; INNOVATION DEPARTMENT
@@ -274,42 +267,17 @@ function Hero({ settings, stats, loading }: { settings: Record<string, string>; 
             活动报名
           </LinkButton>
         </div>
-
-        <div className="mt-8 grid w-full max-w-3xl grid-cols-2 gap-3 sm:grid-cols-4">
-          {loading
-            ? Array.from({ length: 4 }).map((_, i) => <Skeleton key={i} className="h-[86px]" />)
-            : statItems.map((it, i) => (
-                <div key={it.label} className="st-rise" style={rise(350 + i * 70)}>
-                  <HeroStat {...it} />
-                </div>
-              ))}
-        </div>
       </div>
-
       {/* 下滑提示 */}
       <div
         aria-hidden
         className="st-rise absolute bottom-7 left-1/2 flex -translate-x-1/2 flex-col items-center gap-2.5"
         style={rise(900)}
       >
-        <span className="mono text-[9.5px] tracking-[0.3em] text-muted-foreground/70">SCROLL</span>
+        <span className="mono text-xs tracking-[0.3em] text-muted-foreground">SCROLL</span>
         <span className="scroll-cue-line block h-9 w-px bg-white/10" />
       </div>
     </section>
-  );
-}
-
-function HeroStat({ label, value, icon: Icon }: { label: string; value: number; icon: any }) {
-  const { ref, inView } = useInView<HTMLDivElement>(0.4);
-  const n = useCountUp(value, 1500, inView);
-  return (
-    <div ref={ref} className="h-full">
-      <Glass tone="thin" hover sheen className="flex h-full flex-col items-center px-4 py-4">
-        <Icon className="mb-2.5 h-4 w-4 text-primary/80" />
-        <span className="mono text-xl font-semibold tabular-nums text-foreground">{fnum(Math.round(n))}</span>
-        <span className="mt-1 text-[10.5px] tracking-wide text-muted-foreground">{label}</span>
-      </Glass>
-    </div>
   );
 }
 
@@ -359,11 +327,11 @@ function QuickAbout({ stats, intro }: { quickCount: number; stats: any; intro?: 
                   <q.icon className="h-[17px] w-[17px]" />
                 </span>
                 <div>
-                  <h3 className="flex items-center gap-1.5 text-[13.5px] font-medium">
+                  <h3 className="flex items-center gap-1.5 text-base font-medium">
                     {q.title}
                     <ArrowUpRight className="h-3 w-3 opacity-0 transition-all duration-300 group-hover:translate-x-0.5 group-hover:opacity-70" />
                   </h3>
-                  <p className="clamp-1 mt-1 text-[11.5px] leading-relaxed text-muted-foreground">{q.desc}</p>
+                  <p className="clamp-2 mt-1 text-sm leading-relaxed text-muted-foreground">{q.desc}</p>
                 </div>
               </Glass>
             </Link>
@@ -375,17 +343,17 @@ function QuickAbout({ stats, intro }: { quickCount: number; stats: any; intro?: 
           <div className="grid grid-cols-2 gap-3.5">
             {items.map((it, i) => (
               <Glass key={it.label} tone="soft" hover sheen className="p-4" data-reveal="scale" style={stagger(i)}>
-                <p className="text-[10.5px] tracking-wide text-muted-foreground">{it.label}</p>
+                <p className="text-sm tracking-wide text-muted-foreground">{it.label}</p>
                 <p className="mono mt-2 text-xl font-semibold text-primary">{it.value}</p>
-                <p className="mt-0.5 text-[10.5px] text-muted-foreground">{it.unit}</p>
+                <p className="mt-0.5 text-sm text-muted-foreground">{it.unit}</p>
               </Glass>
             ))}
           </div>
           <Glass tone="soft" className="p-4" data-reveal style={stagger(4)}>
-            <h3 className="text-[13.5px] font-medium">核心职责</h3>
+            <h3 className="text-base font-medium">核心职责</h3>
             <ul className="mt-3 grid gap-2 sm:grid-cols-2">
               {duties.map((t) => (
-                <li key={t} className="flex items-start gap-2 text-[11.5px] leading-relaxed text-foreground/75">
+                <li key={t} className="flex items-start gap-2 text-sm leading-relaxed text-foreground/85">
                   <span className="mt-[6px] h-1 w-1 shrink-0 rounded-full bg-primary" />
                   {t}
                 </li>
@@ -452,17 +420,17 @@ function HistoryNews({
               : timeline.slice(0, timelineCount).map((t, i, arr) => (
                   <div key={t.id} className="flex gap-3">
                     <div className="flex w-10 shrink-0 flex-col items-center">
-                      <span className="mono text-[11.5px] font-semibold text-primary">{t.year}</span>
+                      <span className="mono text-sm font-semibold text-primary">{t.year}</span>
                       <span className="mt-1 h-2 w-2 rounded-full border-2 border-primary bg-background" />
                       {i < arr.length - 1 && <span className="mt-1 w-px flex-1 bg-gradient-to-b from-primary/40 to-transparent" />}
                     </div>
                     <div className={cn('min-w-0 flex-1', i < arr.length - 1 ? 'pb-2.5' : '')}>
-                      <p className="text-[12.5px] font-medium leading-snug">{t.title}</p>
+                      <p className="text-sm font-medium leading-snug">{t.title}</p>
                     </div>
                   </div>
                 ))}
           </div>
-          <Link to="/about" className="mt-3 text-[11.5px] text-primary transition hover:underline">
+          <Link to="/about" className="mt-3 text-sm text-primary transition hover:underline">
             查看完整历程 →
           </Link>
         </Glass>
@@ -491,11 +459,11 @@ function HistoryNews({
 
             <Glass tone="soft" className="p-4" data-reveal="right">
               <div className="mb-3 flex items-center justify-between">
-                <h3 className="flex items-center gap-2 text-[13.5px] font-medium">
+                <h3 className="flex items-center gap-2 text-base font-medium">
                   <Bell className="h-3.5 w-3.5 text-[hsl(var(--warning))]" />
                   通知公告
                 </h3>
-                <Link to="/news?category=notice" className="text-[10.5px] text-primary transition hover:underline">
+                <Link to="/news?category=notice" className="text-sm text-primary transition hover:underline">
                   更多
                 </Link>
               </div>
@@ -562,12 +530,12 @@ function ActivityApply({ activities, loading, dens }: { activities: any[]; loadi
       <div className="mt-6 grid gap-3.5 sm:grid-cols-2 lg:grid-cols-4">
         {steps.map((step, i) => (
           <Glass key={step.t} tone="soft" hover sheen className="flex items-start gap-3 p-4" data-reveal="scale" style={stagger(i)}>
-            <span className="mono flex h-7 w-7 shrink-0 items-center justify-center rounded-full border border-primary/35 bg-primary/12 text-[11.5px] font-semibold text-primary">
+            <span className="mono flex h-7 w-7 shrink-0 items-center justify-center rounded-full border border-primary/35 bg-primary/12 text-sm font-semibold text-primary">
               {i + 1}
             </span>
             <div className="min-w-0">
-              <h3 className="text-[12.5px] font-medium">{step.t}</h3>
-              <p className="mt-1 text-[11px] leading-relaxed text-muted-foreground">{step.d}</p>
+              <h3 className="text-base font-medium">{step.t}</h3>
+              <p className="mt-1 text-sm leading-relaxed text-muted-foreground">{step.d}</p>
             </div>
           </Glass>
         ))}
@@ -692,7 +660,7 @@ function GalleryBlock({ images, loading, dens }: { images: any[]; loading: boole
                   <div className="card-media aspect-[4/3]">
                     <img src={img.url} alt={img.title} loading="lazy" />
                     <span aria-hidden className="card-scrim" />
-                    <p className="clamp-1 absolute inset-x-0 bottom-0 px-3 pb-2.5 text-[11.5px] font-medium text-white/95">{img.title}</p>
+                    <p className="clamp-1 absolute inset-x-0 bottom-0 px-3 pb-2.5 text-sm font-medium text-white/95">{img.title}</p>
                   </div>
                 </div>
               </Link>
@@ -771,8 +739,8 @@ function OrgMembers({ members, loading, dens }: { members: any[]; loading: boole
                   <span className="flex h-8 w-8 items-center justify-center rounded-xl border border-primary/30 bg-primary/12 text-primary">
                     <Users className="h-3.5 w-3.5" />
                   </span>
-                  <p className="text-[13px] font-medium">{root.name}</p>
-                  <span className="text-[11px] text-muted-foreground">{root.leader}</span>
+                  <p className="text-base font-medium">{root.name}</p>
+                  <span className="text-sm text-muted-foreground">{root.leader}</span>
                   <Chip className="ml-auto">{(root.children ?? []).length} 个工作组</Chip>
                 </div>
                 <div className="grid gap-3.5 sm:grid-cols-2 lg:grid-cols-4">
@@ -780,9 +748,9 @@ function OrgMembers({ members, loading, dens }: { members: any[]; loading: boole
                     <Glass key={c.id} tone="thin" hover className="flex h-full flex-col p-4" data-reveal="scale" style={stagger(i)}>
                       <div className="flex items-center gap-2">
                         <Compass className="h-3.5 w-3.5 text-primary/80" />
-                        <p className="text-[12.5px] font-medium">{c.name}</p>
+                        <p className="text-sm font-medium">{c.name}</p>
                       </div>
-                      <p className="clamp-2 mt-2 flex-1 text-[11px] leading-relaxed text-muted-foreground">{c.description}</p>
+                      <p className="clamp-2 mt-2 flex-1 text-sm leading-relaxed text-muted-foreground">{c.description}</p>
                     </Glass>
                   ))}
                 </div>
@@ -807,10 +775,10 @@ function OrgMembers({ members, loading, dens }: { members: any[]; loading: boole
                 >
                   <div className="relative">
                     <LogoMark uid={`m${m.id}`} monochrome className="h-9 w-9 text-white/18" />
-                    <span className="absolute inset-0 flex items-center justify-center text-[12px] font-medium text-foreground">{m.name.slice(-2)}</span>
+                    <span className="absolute inset-0 flex items-center justify-center text-sm font-medium text-foreground">{m.name.slice(-2)}</span>
                   </div>
-                  <p className="mt-2 text-[12.5px] font-medium">{m.name}</p>
-                  <p className="clamp-1 mt-0.5 text-[10px] text-primary">{m.role}</p>
+                  <p className="mt-2 text-sm font-medium">{m.name}</p>
+                  <p className="clamp-1 mt-0.5 text-sm text-primary">{m.role}</p>
                 </Glass>
               ))}
         </div>
@@ -839,7 +807,7 @@ function JoinBlock({ stats }: { stats: any }) {
               <br className="hidden sm:block" />
               把想法变成可运行的东西
             </h2>
-            <p className="mt-5 max-w-xl text-pretty text-[14px] leading-[1.85] text-muted-foreground">
+            <p className="mt-5 max-w-xl text-pretty text-base leading-[1.85] text-muted-foreground">
               无论你擅长写代码、做设计、写文案，还是单纯对某个领域充满好奇 —— 科技创新部都欢迎你。
             </p>
             <div className="mt-7 flex flex-wrap items-center gap-3.5">
@@ -851,7 +819,7 @@ function JoinBlock({ stats }: { stats: any }) {
                 有问题想问
               </LinkButton>
             </div>
-            <div className="mt-7 flex flex-wrap items-center gap-x-7 gap-y-3 text-[12px] text-muted-foreground">
+            <div className="mt-7 flex flex-wrap items-center gap-x-7 gap-y-3 text-sm text-muted-foreground">
               <span className="flex items-center gap-2">
                 <Dot tone="success" pulse />
                 2026 春季招新进行中
@@ -870,7 +838,7 @@ function JoinBlock({ stats }: { stats: any }) {
               <Glass key={it.k} tone="thin" hover className="flex flex-col items-center p-5 text-center">
                 <it.icon className="h-4 w-4 text-primary/80" />
                 <span className="mono mt-3 text-2xl font-semibold text-foreground">{fnum(it.v)}</span>
-                <span className="mt-1 text-[11px] text-muted-foreground">{it.k}</span>
+                <span className="mt-1 text-sm text-muted-foreground">{it.k}</span>
               </Glass>
             ))}
           </div>

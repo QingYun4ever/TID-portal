@@ -497,7 +497,7 @@ function GalleryTile({ image, onOpen }: { image: GalleryImage; onOpen: () => voi
           <span className="mono mt-1 block text-[10px] text-white/55">{image.areaName}</span>
         )}
       </span>
-      <span className="lg-thin absolute right-3 top-3 flex h-7 w-7 items-center justify-center rounded-full text-white/85 opacity-0 transition-opacity duration-400 group-hover:opacity-100">
+      <span className="lg-thin backdrop-blur-md absolute right-3 top-3 flex h-7 w-7 items-center justify-center rounded-full text-white/85 opacity-0 transition-opacity duration-400 group-hover:opacity-100">
         <Plus className="h-3.5 w-3.5" />
       </span>
     </button>
@@ -716,7 +716,7 @@ function Lightbox({
               aria-label="上一张"
               className="group absolute left-0 top-0 z-20 flex h-full w-[18%] cursor-w-resize items-center justify-start pl-3"
             >
-              <span className="lg-thin flex h-9 w-9 items-center justify-center rounded-full text-foreground/80 opacity-0 transition-opacity duration-300 group-hover:opacity-100">
+              <span className="lg-thin backdrop-blur-md flex h-9 w-9 items-center justify-center rounded-full text-foreground/80 opacity-0 transition-opacity duration-300 group-hover:opacity-100">
                 <ChevronLeft className="h-4 w-4" />
               </span>
             </button>
@@ -725,7 +725,7 @@ function Lightbox({
               aria-label="下一张"
               className="group absolute right-0 top-0 z-20 flex h-full w-[18%] cursor-e-resize items-center justify-end pr-3"
             >
-              <span className="lg-thin flex h-9 w-9 items-center justify-center rounded-full text-foreground/80 opacity-0 transition-opacity duration-300 group-hover:opacity-100">
+              <span className="lg-thin backdrop-blur-md flex h-9 w-9 items-center justify-center rounded-full text-foreground/80 opacity-0 transition-opacity duration-300 group-hover:opacity-100">
                 <ChevronRight className="h-4 w-4" />
               </span>
             </button>

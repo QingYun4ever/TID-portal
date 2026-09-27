@@ -26,9 +26,9 @@ interface GlassProps extends React.HTMLAttributes<HTMLDivElement> {
   refract?: boolean;
   sheen?: boolean;
   hover?: boolean;
-  /** 是否裁剪子元素。圆角 + backdrop-filter + overflow:hidden 同时出现时，
-   *  Chrome 会用无抗锯齿的合成层遮罩裁剪，圆角处出现阶梯锯齿。
-   *  内部已自带圆角的内容（图片板等）应传 clip={false}。 */
+  /** 是否裁剪子元素（默认裁剪）。毛玻璃已挪到内衬层 .lg-blur，
+   *  外壳的圆角裁剪走普通抗锯齿路径；但内部已自带圆角的内容（图片板等）
+   *  仍建议传 clip={false}，让圆角只由内容自己负责，边缘更干净。 */
   clip?: boolean;
   as?: 'div' | 'section' | 'article' | 'aside' | 'header' | 'footer' | 'li' | 'nav';
 }
@@ -621,7 +621,7 @@ export function Section({
                 </h2>
               )}
               {description && (
-                <p className="mt-4 text-pretty text-[14.5px] leading-relaxed text-muted-foreground">{description}</p>
+                <p className="mt-4 text-pretty text-base leading-relaxed text-muted-foreground">{description}</p>
               )}
             </div>
             {action && (
@@ -745,13 +745,13 @@ export function Tabs({
             onClick={() => onChange(it.value)}
             className={cn(
               'relative z-10 shrink-0 rounded-full font-medium transition-colors duration-300',
-              size === 'sm' ? 'px-3.5 py-1.5 text-xs' : 'px-5 py-2 text-sm',
+              size === 'sm' ? 'px-3.5 py-1.5 text-sm' : 'px-5 py-2 text-base',
               value === it.value ? 'text-foreground' : 'text-muted-foreground hover:text-foreground/85'
             )}
           >
             {it.label}
             {it.count !== undefined && (
-              <span className={cn('ml-1.5 text-[10px]', value === it.value ? 'text-primary' : 'text-muted-foreground/70')}>
+              <span className={cn('ml-1.5 text-xs', value === it.value ? 'text-primary' : 'text-muted-foreground')}>
                 {it.count}
               </span>
             )}
