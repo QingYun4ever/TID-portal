@@ -1,0 +1,45 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="-46 -46 1092 1092" fill="none">
+  <defs>
+    <linearGradient id="ray" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0" stop-color="#fff" stop-opacity="0"/>
+      <stop offset=".18" stop-color="#fff" stop-opacity=".28"/>
+      <stop offset=".5" stop-color="#fff" stop-opacity="1"/>
+      <stop offset=".82" stop-color="#fff" stop-opacity=".28"/>
+      <stop offset="1" stop-color="#fff" stop-opacity="0"/>
+    </linearGradient>
+    <radialGradient id="halo">
+      <stop offset="0" stop-color="#BAE6FD" stop-opacity=".34"/>
+      <stop offset=".45" stop-color="#7DD3FC" stop-opacity=".12"/>
+      <stop offset="1" stop-color="#000" stop-opacity="0"/>
+    </radialGradient>
+    <radialGradient id="coreGlow">
+      <stop offset="0" stop-color="#fff" stop-opacity=".8"/>
+      <stop offset=".3" stop-color="#E0F2FE" stop-opacity=".42"/>
+      <stop offset=".58" stop-color="#BAE6FD" stop-opacity=".14"/>
+      <stop offset="1" stop-color="#7DD3FC" stop-opacity="0"/>
+    </radialGradient>
+  </defs>
+
+  <!-- 脉冲星外晕 -->
+  <circle cx="500" cy="500" r="430" fill="url(#halo)"/>
+
+  <!-- 脉冲星射线（45° 双向） -->
+  <g transform="translate(500 500) rotate(45)">
+    <rect x="-486" y="-58" width="972" height="116" fill="url(#ray)" opacity=".2"/>
+    <rect x="-486" y="-19" width="972" height="38" fill="url(#ray)" opacity=".46"/>
+    <rect x="-486" y="-7" width="972" height="14" fill="url(#ray)" opacity=".86"/>
+    <rect x="-486" y="-2.2" width="972" height="4.4" fill="#fff" opacity=".95"/>
+  </g>
+
+  <!-- 缺口星环 + 卫星 -->
+  <path
+    fill="#fff"
+    fill-rule="evenodd"
+    d="M881 323C967 507 908 727 741 844C574 961 347 941 203 797C59 653 39 426 156 259C273 92 493 33 678 119L664 148C493 69 290 123 182 277C74 432 92 641 226 774C359 908 568 926 723 818C877 710 931 507 852 336Z"
+  />
+  <circle cx="852.8" cy="144.5" r="30.6" fill="#fff"/>
+
+  <!-- 脉冲星核心：发光晕 + 实心白核心（无边缘淡化） -->
+  <circle cx="500" cy="500" r="262" fill="url(#coreGlow)"/>
+  <circle cx="500" cy="500" r="88.9" fill="#fff"/>
+</svg>

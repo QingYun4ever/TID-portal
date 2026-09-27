@@ -1,0 +1,630 @@
+import { useMemo, useState } from 'react';
+import type { ReactNode } from 'react';
+import {
+  Award,
+  Building2,
+  CalendarDays,
+  Clock,
+  Compass,
+  Layers,
+  Mail,
+  MapPin,
+  Network,
+  Phone,
+  Quote,
+  Sparkles,
+  Target,
+  Users,
+} from 'lucide-react';
+
+import { PublicApi } from '@/lib/api';
+import { useApi, useCountUp, useInView, useTitle } from '@/lib/hooks';
+import { useSettings } from '@/lib/store';
+import { cn, fnum } from '@/lib/utils';
+import { TimelineItem } from '@/components/cards';
+import { useRevealScope } from '@/components/RevealScope';
+import { LogoMark } from '@/components/Brand';
+import { GlowOrb, GridTexture } from '@/components/LiquidBackdrop';
+import {
+  Avatar,
+  Button,
+  Chip,
+  EmptyState,
+  ErrorState,
+  Glass,
+  LinkButton,
+  PageHero,
+  Section,
+  Skeleton,
+  Tabs,
+} from '@/components/ui';
+
+/* =============================================================================
+ * 部门概况 — /about
+ * 顺序：PageHero → 部门简介 → 数据统计 → 发展历程 → 组织架构(#org)
+ *       → 成员风采(#members) → 联系方式(#contact)
+ * ========================================================================== */
+
+const ANCHORS = [
+  { id: 'intro', label: '部门简介' },
+  { id: 'stats', label: '数据统计' },
+  { id: 'timeline', label: '发展历程' },
+  { id: 'org', label: '组织架构' },
+  { id: 'members', label: '成员风采' },
+  { id: 'contact', label: '联系方式' },
+];
+
+export default function About() {
+  useTitle('部门概况');
+  const revealRef = useRevealScope<HTMLDivElement>();
+  const { data, loading, error, reload } = useApi<any>(() => PublicApi.about(), []);
+  const { settings } = useSettings();
+
+  const page = data?.page ?? null;
+  const contact = data?.contact ?? null;
+  const timeline: any[] = data?.timeline ?? [];
+  const org: any[] = data?.org ?? [];
+  const members: any[] = data?.members ?? [];
+  const stats = data?.stats ?? {};
+
+  return (
+    <div ref={revealRef}>
+      <PageHero
+        eyebrow="About the Department"
+        title={settings.deptName || '科技创新部'}
+        description={settings.slogan || '以技术为舟，以创新为帆'}
+        breadcrumb={[{ label: '部门概况' }]}
+      >
+        <p className="max-w-3xl text-pretty text-[14.5px] leading-[1.9] text-muted-foreground">
+          {settings.intro ||
+            '统筹全校学生科技创新工作，为每一个有想法的同学提供从灵感到落地的完整支撑。'}
+        </p>
+
+        {/* 锚点导航 */}
+        <nav className="mt-8 flex flex-wrap gap-2">
+          {ANCHORS.map((a) => (
+            <a
+              key={a.id}
+              href={`#${a.id}`}
+              className="rounded-full border border-white/10 bg-white/[0.045] px-3.5 py-1.5 text-[11.5px] text-muted-foreground transition-all duration-300 hover:border-primary/35 hover:bg-primary/10 hover:text-primary"
+            >
+              {a.label}
+            </a>
+          ))}
+        </nav>
+      </PageHero>
+
+      {error ? (
+        <div className="shell pb-24">
+          <Glass tone="soft" className="p-4">
+            <ErrorState message={error} onRetry={reload} />
+          </Glass>
+        </div>
+      ) : (
+        <>
+          {/* ========================= 部门简介 ========================= */}
+          <Section
+            id="intro"
+            eyebrow="Profile"
+            title="部门简介"
+            description="从竞赛组织到项目孵化，我们搭建的是一条可以被走通的路径。"
+          >
+            {loading ? (
+              <div className="grid gap-8 lg:grid-cols-[1.5fr_1fr]">
+                <Skeleton className="h-[420px]" />
+                <div className="flex flex-col gap-4">
+                  <Skeleton className="h-32" />
+                  <Skeleton className="h-32" />
+                  <Skeleton className="h-32" />
+                </div>
+              </div>
+            ) : (
+              <div className="grid gap-8 lg:grid-cols-[1.5fr_1fr] lg:gap-12">
+                <Glass tone="soft" className="p-6 sm:p-9" data-reveal="left">
+                  {page?.content ? (
+                    <div className="prose-glass" dangerouslySetInnerHTML={{ __html: page.content }} />
+                  ) : (
+                    <EmptyState
+                      icon={<Layers className="h-6 w-6" />}
+                      title="部门简介尚未发布"
+                      description="管理员可在后台「部门概况」中维护这段介绍内容。"
+                    />
+                  )}
+                </Glass>
+
+                <div className="flex flex-col gap-5">
+                  <Glass tone="soft" className="relative overflow-hidden p-6" data-reveal="right">
+                    <GridTexture className="opacity-40" size={40} />
+                    <div className="relative">
+                      <Quote className="h-4 w-4 text-accent" />
+                      <p className="mt-4 text-[14px] leading-[1.9] text-foreground/85">
+                        「创新不是少数人的天赋，而是可以被训练的能力。」
+                      </p>
+                      <p className="mono mt-4 text-[11px] text-muted-foreground">— 部门工作理念</p>
+                    </div>
+                  </Glass>
+
+                  {[
+                    {
+                      icon: Target,
+                      title: '降低创新门槛',
+                      desc: '把复杂的申报流程、分散的竞赛信息、稀缺的导师资源，整合成清晰可走的路径。',
+                    },
+                    {
+                      icon: Users,
+                      title: '服务全体同学',
+                      desc: '无论你来自哪个学院、哪个专业，只要有想法，都能在这里找到支撑与同行的人。',
+                    },
+                    {
+                      icon: Award,
+                      title: '成果导向',
+                      desc: '以真实项目与真实竞赛为抓手，用可交付的成果衡量每一次投入。',
+                    },
+                  ].map((c, i) => (
+                    <Glass
+                      key={c.title}
+                      tone="soft"
+                      hover
+                      sheen
+                      className="p-5"
+                      data-reveal="right"
+                      style={{ transitionDelay: `${i * 70}ms` }}
+                    >
+                      <div className="flex items-start gap-3.5">
+                        <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl border border-white/12 bg-white/[0.055] text-primary">
+                          <c.icon className="h-4 w-4" />
+                        </span>
+                        <div className="min-w-0">
+                          <p className="text-[13.5px] font-medium">{c.title}</p>
+                          <p className="mt-1.5 text-[12.5px] leading-relaxed text-muted-foreground">{c.desc}</p>
+                        </div>
+                      </div>
+                    </Glass>
+                  ))}
+                </div>
+              </div>
+            )}
+          </Section>
+
+          {/* ========================= 数据统计 ========================= */}
+          <Section
+            id="stats"
+            eyebrow="By the Numbers"
+            title="数据统计"
+            description="滚动到此处即播放数字动画，数据来自门户实时库表统计。"
+          >
+            {loading ? (
+              <div className="grid grid-cols-2 gap-4 lg:grid-cols-4">
+                {Array.from({ length: 4 }).map((_, i) => (
+                  <Skeleton key={i} className="h-[136px]" />
+                ))}
+              </div>
+            ) : (
+              <div className="grid grid-cols-2 gap-4 lg:grid-cols-4">
+                <CountCard
+                  icon={<Users className="h-4 w-4" />}
+                  label="部门成员"
+                  value={Number(stats.members ?? members.length ?? 0)}
+                  unit="人"
+                  hint="含指导教师与四个工作组"
+                  delay={0}
+                />
+                <CountCard
+                  icon={<Layers className="h-4 w-4" />}
+                  label="在展项目"
+                  value={Number(stats.projects ?? 0)}
+                  unit="项"
+                  hint="优秀 / 立项 / 结项 / 在研"
+                  delay={70}
+                />
+                <CountCard
+                  icon={<CalendarDays className="h-4 w-4" />}
+                  label="年度活动"
+                  value={Number(stats.activities ?? 0)}
+                  unit="场"
+                  hint="沙龙 · 工坊 · 路演 · 集训"
+                  delay={140}
+                />
+                <CountCard
+                  icon={<Compass className="h-4 w-4" />}
+                  label="服务年数"
+                  value={Number(stats.years ?? 0)}
+                  unit="年"
+                  hint="持续运营学生科创工作"
+                  delay={210}
+                />
+              </div>
+            )}
+          </Section>
+
+          {/* ========================= 发展历程 ========================= */}
+          <Section
+            id="timeline"
+            eyebrow="Milestones"
+            title="发展历程"
+            description="从两个工作组到今天的技术基础设施，每一步都记录在案。"
+            action={
+              <LinkButton to="/changelog">
+                查看版本更新日志
+              </LinkButton>
+            }
+          >
+            {loading ? (
+              <div className="flex flex-col gap-4">
+                {Array.from({ length: 5 }).map((_, i) => (
+                  <Skeleton key={i} className="h-20" />
+                ))}
+              </div>
+            ) : timeline.length ? (
+              <div className="relative max-w-3xl">
+                {timeline.map((t, i) => (
+                  <TimelineItem key={t.id} node={t} index={i} total={timeline.length} />
+                ))}
+              </div>
+            ) : (
+              <Glass tone="soft" className="p-4">
+                <EmptyState
+                  icon={<Clock className="h-6 w-6" />}
+                  title="暂无发展历程记录"
+                  description="后台「发展历程」中新增条目后会在这里按年份展示。"
+                />
+              </Glass>
+            )}
+          </Section>
+
+          {/* ========================= 组织架构 ========================= */}
+          <Section
+            id="org"
+            eyebrow="Organization"
+            title="组织架构"
+            description="部门由指导教师统筹，下设四个工作组协同运转。"
+          >
+            {loading ? (
+              <div className="flex flex-col gap-4">
+                <Skeleton className="h-28" />
+                <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+                  {Array.from({ length: 4 }).map((_, i) => (
+                    <Skeleton key={i} className="h-32" />
+                  ))}
+                </div>
+              </div>
+            ) : org.length ? (
+              <div className="flex flex-col gap-8">
+                {org.map((root) => (
+                  <OrgNode key={root.id} node={root} depth={0} />
+                ))}
+              </div>
+            ) : (
+              <Glass tone="soft" className="p-4">
+                <EmptyState
+                  icon={<Network className="h-6 w-6" />}
+                  title="暂无组织架构数据"
+                  description="后台「组织架构」中维护节点后会在这里递归展示。"
+                />
+              </Glass>
+            )}
+          </Section>
+
+          {/* ========================= 成员风采 ========================= */}
+          <MembersSection members={members} loading={loading} />
+
+          {/* ========================= 联系方式 ========================= */}
+          <Section
+            id="contact"
+            eyebrow="Contact"
+            title="联系方式"
+            description="办公时间、对接人与各工作组邮箱，欢迎随时联系。"
+          >
+            <div className="grid gap-6 lg:grid-cols-[1.4fr_1fr] lg:gap-10">
+              <Glass tone="soft" className="p-6 sm:p-8" data-reveal="left">
+                {loading ? (
+                  <div className="flex flex-col gap-3">
+                    <Skeleton className="h-6 w-40" />
+                    <Skeleton className="h-24" />
+                    <Skeleton className="h-40" />
+                  </div>
+                ) : contact?.content ? (
+                  <div className="prose-glass" dangerouslySetInnerHTML={{ __html: contact.content }} />
+                ) : (
+                  <EmptyState
+                    icon={<Mail className="h-6 w-6" />}
+                    title="联系方式尚未发布"
+                    description="管理员可在后台「页面管理」中维护联系方式内容。"
+                  />
+                )}
+              </Glass>
+
+              <div className="flex flex-col gap-4" data-reveal="right">
+                <ContactCard
+                  icon={<Mail className="h-4 w-4" />}
+                  label="邮箱"
+                  value={settings.email || '—'}
+                  href={settings.email ? `mailto:${settings.email}` : undefined}
+                  hint="招新、竞赛与项目咨询"
+                />
+                <ContactCard
+                  icon={<Phone className="h-4 w-4" />}
+                  label="电话"
+                  value={settings.phone || '—'}
+                  mono
+                  hint="工作日 09:00 — 18:00"
+                />
+                <ContactCard
+                  icon={<MapPin className="h-4 w-4" />}
+                  label="办公地址"
+                  value={settings.address || '—'}
+                  hint="来访请提前电话预约"
+                />
+
+                <Glass tone="soft" className="p-5">
+                  <div className="flex items-center gap-2.5">
+                    <Sparkles className="h-4 w-4 text-accent" />
+                    <p className="text-[13.5px] font-medium">更快的方式</p>
+                  </div>
+                  <p className="mt-2 text-[12.5px] leading-relaxed text-muted-foreground">
+                    活动报名、项目申报与意见反馈均可在线提交，无需到访办公室。
+                  </p>
+                  <div className="mt-4 flex flex-wrap gap-2.5">
+                    <LinkButton to="/feedback" size="sm">
+                      在线反馈
+                    </LinkButton>
+                    <LinkButton to="/join" size="sm" variant="primary">
+                      加入我们
+                    </LinkButton>
+                  </div>
+                </Glass>
+              </div>
+            </div>
+          </Section>
+        </>
+      )}
+    </div>
+  );
+}
+
+/* =============================================================================
+ * 数据统计卡（滚动到就播的数字动画）
+ * ========================================================================== */
+function CountCard({
+  icon,
+  label,
+  value,
+  unit,
+  hint,
+  delay = 0,
+}: {
+  icon: ReactNode;
+  label: string;
+  value: number;
+  unit: string;
+  hint: string;
+  delay?: number;
+}) {
+  const { ref, inView } = useInView<HTMLDivElement>(0.35);
+  const n = useCountUp(value, 1600, inView);
+
+  return (
+    <div ref={ref} data-reveal="scale" style={{ transitionDelay: `${delay}ms` }}>
+      <Glass tone="soft" hover sheen className="flex h-full flex-col p-5 sm:p-6">
+        <span className="flex h-9 w-9 items-center justify-center rounded-xl border border-primary/28 bg-primary/12 text-primary">
+          {icon}
+        </span>
+        <div className="mono mt-4 flex items-baseline gap-1.5 text-[2rem] font-semibold tabular-nums text-foreground">
+          {fnum(Math.round(n))}
+          <span className="text-[12px] font-normal text-muted-foreground">{unit}</span>
+        </div>
+        <p className="mt-2 text-[13px] font-medium text-foreground/90">{label}</p>
+        <p className="mt-1 text-[11px] leading-relaxed text-muted-foreground">{hint}</p>
+      </Glass>
+    </div>
+  );
+}
+
+/* =============================================================================
+ * 组织架构（递归）
+ * ========================================================================== */
+function OrgNode({ node, depth }: { node: any; depth: number }) {
+  const children: any[] = node.children ?? [];
+  const root = depth === 0;
+
+  if (root) {
+    return (
+      <div data-reveal>
+        <Glass tone="default" className="relative overflow-hidden p-6">
+          <GlowOrb className="-left-24 -top-24" size={340} color="rgba(186,230,253,.10)" />
+          <div className="relative flex flex-wrap items-center gap-4">
+            <span className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl border border-primary/32 bg-primary/12 text-primary">
+              <Building2 className="h-5 w-5" />
+            </span>
+            <div className="min-w-0 flex-1">
+              <h3 className="text-lg font-semibold">{node.name}</h3>
+              <p className="mt-1 text-[12.5px] text-muted-foreground">{node.description}</p>
+            </div>
+            {node.leader && (
+              <Chip tone="primary" className="!px-3 !py-1">
+                {node.leader}
+              </Chip>
+            )}
+          </div>
+        </Glass>
+
+        {children.length > 0 && (
+          <div className="mt-5 flex flex-col gap-4 border-l border-white/10 pl-5 sm:ml-4 sm:pl-7">
+            {children.map((c, i) => (
+              <OrgNode key={c.id} node={c} depth={depth + 1} />
+            ))}
+          </div>
+        )}
+      </div>
+    );
+  }
+
+  return (
+    <div className="relative" data-reveal="left">
+      <span aria-hidden className="absolute -left-5 top-7 h-px w-4 bg-white/14 sm:-left-7 sm:w-6" />
+      <Glass tone="thin" hover className="p-4 sm:p-5">
+        <div className="flex flex-wrap items-center gap-3">
+          <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-xl border border-white/12 bg-white/[0.055] text-primary">
+            <Users className="h-3.5 w-3.5" />
+          </span>
+          <p className="text-[13.5px] font-medium">{node.name}</p>
+          {node.leader && <span className="mono text-[10.5px] text-primary/85">负责人 {node.leader}</span>}
+        </div>
+        {node.description && (
+          <p className="mt-2.5 text-[12.5px] leading-relaxed text-muted-foreground">{node.description}</p>
+        )}
+
+        {children.length > 0 && (
+          <div className="mt-3.5 flex flex-col gap-3 border-l border-white/10 pl-4">
+            {children.map((c: any) => (
+              <OrgNode key={c.id} node={c} depth={depth + 1} />
+            ))}
+          </div>
+        )}
+      </Glass>
+    </div>
+  );
+}
+
+/* =============================================================================
+ * 成员风采（按 group 筛选）
+ * ========================================================================== */
+function MembersSection({ members, loading }: { members: any[]; loading: boolean }) {
+  const [group, setGroup] = useState('all');
+
+  const groups = useMemo(() => {
+    const seen: string[] = [];
+    for (const m of members) {
+      const g = String(m.group || '其他');
+      if (!seen.includes(g)) seen.push(g);
+    }
+    return seen;
+  }, [members]);
+
+  const items = useMemo(
+    () => (group === 'all' ? members : members.filter((m) => String(m.group || '其他') === group)),
+    [members, group]
+  );
+
+  const tabs = [
+    { value: 'all', label: '全部', count: members.length },
+    ...groups.map((g) => ({ value: g, label: g, count: members.filter((m) => String(m.group || '其他') === g).length })),
+  ];
+
+  return (
+    <Section
+      id="members"
+      eyebrow="Our People"
+      title="成员风采"
+      description="来自全校多个学院的同学，因为对技术的兴趣聚在一起。"
+      action={
+        !loading && groups.length > 1 ? (
+          <Tabs items={tabs} value={group} onChange={setGroup} size="sm" className="hidden sm:block" />
+        ) : undefined
+      }
+    >
+      {!loading && groups.length > 1 && (
+        <div className="mb-8 no-scrollbar -mx-1 overflow-x-auto px-1 sm:hidden">
+          <Tabs items={tabs} value={group} onChange={setGroup} size="sm" />
+        </div>
+      )}
+
+      {loading ? (
+        <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4">
+          {Array.from({ length: 8 }).map((_, i) => (
+            <Skeleton key={i} className="h-[208px]" />
+          ))}
+        </div>
+      ) : items.length ? (
+        <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4">
+          {items.map((m, i) => (
+            <div key={m.id} data-reveal="scale" style={{ transitionDelay: `${(i % 4) * 60}ms` }}>
+              <Glass tone="soft" hover sheen className="flex h-full flex-col items-center p-5 text-center">
+                {m.avatar ? (
+                  <Avatar name={m.name} src={m.avatar} size={46} />
+                ) : (
+                  <div className="relative">
+                    <LogoMark uid={`about-m${m.id}`} monochrome className="h-12 w-12 text-white/20" />
+                    <span className="absolute inset-0 flex items-center justify-center text-[13px] font-semibold text-foreground">
+                      {String(m.name).slice(-2)}
+                    </span>
+                  </div>
+                )}
+                <p className="mt-3.5 text-[13.5px] font-medium">{m.name}</p>
+                <p className="mt-0.5 text-[10.5px] text-primary">{m.role}</p>
+                {m.group && <p className="mono mt-1 text-[10px] text-muted-foreground/80">{m.group}</p>}
+                <p className="clamp-2 mt-2.5 text-[11.5px] leading-relaxed text-muted-foreground">{m.bio}</p>
+                {Array.isArray(m.tags) && m.tags.length > 0 && (
+                  <div className="mt-3 flex flex-wrap justify-center gap-1.5">
+                    {m.tags.slice(0, 3).map((t: string) => (
+                      <Chip key={t} className="!px-2 !py-0 !text-[10px]">
+                        {t}
+                      </Chip>
+                    ))}
+                  </div>
+                )}
+              </Glass>
+            </div>
+          ))}
+        </div>
+      ) : (
+        <Glass tone="soft" className="p-4">
+          <EmptyState
+            icon={<Users className="h-6 w-6" />}
+            title="该分组暂无成员"
+            description="切换其他分组，或等待后台补充成员信息。"
+            action={
+              group !== 'all' ? (
+                <Button onClick={() => setGroup('all')}>查看全部成员</Button>
+              ) : undefined
+            }
+          />
+        </Glass>
+      )}
+
+      <p className="mono mt-6 text-center text-[11px] text-muted-foreground">
+        当前展示 {items.length} / {members.length} 位成员
+      </p>
+    </Section>
+  );
+}
+
+/* =============================================================================
+ * 联系方式卡片
+ * ========================================================================== */
+function ContactCard({
+  icon,
+  label,
+  value,
+  hint,
+  href,
+  mono = false,
+}: {
+  icon: ReactNode;
+  label: string;
+  value: string;
+  hint?: string;
+  href?: string;
+  mono?: boolean;
+}) {
+  const inner = (
+    <Glass tone="soft" hover sheen className="flex h-full items-start gap-4 p-5">
+      <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl border border-primary/28 bg-primary/12 text-primary">
+        {icon}
+      </span>
+      <span className="min-w-0 flex-1">
+        <span className="block text-[11px] tracking-wide text-muted-foreground">{label}</span>
+        <span className={cn('mt-1.5 block text-[13.5px] text-foreground/90', mono && 'mono')}>{value}</span>
+        {hint && <span className="mt-1 block text-[11px] text-muted-foreground/85">{hint}</span>}
+      </span>
+    </Glass>
+  );
+
+  return href ? (
+    <a href={href} className="block transition-opacity hover:opacity-90">
+      {inner}
+    </a>
+  ) : (
+    inner
+  );
+}
