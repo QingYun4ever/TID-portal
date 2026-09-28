@@ -131,6 +131,8 @@ export const PROJECT_CATEGORIES: Record<string, string> = {
   approved: '立项项目',
   completed: '结项项目',
   ongoing: '在研项目',
+  competition: '竞赛成果',
+  frontend: '前端作品',
 };
 
 export const RESOURCE_CATEGORIES: Record<string, string> = {

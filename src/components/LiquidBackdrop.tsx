@@ -95,18 +95,20 @@ export function LiquidBackdrop({ className, intensity = 1 }: { className?: strin
         }}
       />
 
-      {/* 指针聚光（--orb：深色主题是白光，浅色主题是淡天蓝 —— 浅底上白加白等于没加） */}
-      <div
-        className="absolute inset-0 hidden lg:block"
-        style={{
-          background:
-            'radial-gradient(500px circle at var(--px, 50%) var(--py, 30%), rgb(var(--orb) / .055), transparent 62%)',
-        }}
-      />
-
       {/* 顶部一道冷光，底部沉暗 */}
       <div className="absolute inset-x-0 top-0 h-[38vh] bg-gradient-to-b from-white/[0.035] to-transparent" />
       <div className="absolute inset-x-0 bottom-0 h-[38vh] bg-gradient-to-t from-black to-transparent" />
+
+      {/* 指针聚光 —— 必须画在底部渐暗层之后，否则视口下半部分会被那层黑压掉。
+          --orb：深色主题是白光，浅色主题是淡天蓝（浅底上白加白等于没加）；
+          强度单独走 --pointer-glow-opacity，浅底需要更高的不透明度才看得见。 */}
+      <div
+        className="liquid-pointer-glow absolute inset-0 hidden lg:block"
+        style={{
+          background:
+            'radial-gradient(440px circle at var(--px, 50%) var(--py, 30%), rgb(var(--orb) / var(--pointer-glow-opacity)) 0%, rgb(var(--orb) / calc(var(--pointer-glow-opacity) * 0.55)) 25%, rgb(var(--orb) / calc(var(--pointer-glow-opacity) * 0.18)) 55%, rgb(var(--orb) / 0) 100%)',
+        }}
+      />
     </div>
   );
 }

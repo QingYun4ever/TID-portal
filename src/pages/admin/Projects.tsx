@@ -17,7 +17,7 @@ import {
 
 /* =============================================================================
  * 项目展示库 —— /admin/projects
- * 维护优秀项目 / 立项项目 / 结项项目 / 在研项目，含团队、成员、指导教师与获奖信息
+ * 维护优秀 / 立项 / 结项 / 在研项目、竞赛成果与前端作品，含团队、成果与作品演示地址
  * ========================================================================== */
 
 interface ProjectRow {
@@ -25,6 +25,7 @@ interface ProjectRow {
   title: string;
   slug: string;
   cover: string | null;
+  demoUrl: string | null;
   summary: string;
   content: string;
   category: string;
@@ -43,6 +44,8 @@ const CAT_TONE: Record<string, 'accent' | 'primary' | 'success' | 'warning'> = {
   approved: 'primary',
   completed: 'success',
   ongoing: 'warning',
+  competition: 'accent',
+  frontend: 'primary',
 };
 
 /** 年份筛选：门户数据集中在近四年 */
@@ -108,6 +111,14 @@ const FIELDS: FieldDef[] = [
     type: 'image',
     wide: true,
     hint: '建议 16:9，用于门户项目卡片',
+  },
+  {
+    name: 'demoUrl',
+    label: '作品演示地址',
+    type: 'text',
+    wide: true,
+    placeholder: 'https://example.com',
+    hint: '前端作品可填写公开演示地址；建议使用 https://，仅支持 http(s) 链接。',
   },
   {
     name: 'summary',
@@ -278,7 +289,7 @@ export default function Projects() {
 
       <ResourceManager<ProjectRow>
         title="项目展示库"
-        description="维护项目名称、类别、年份、团队与指导教师、获奖信息与团队成员，供门户项目库展示。"
+        description="维护项目与竞赛成果、前端作品，上传封面并填写团队、获奖信息或公开演示地址。"
         resource="projects"
         fields={FIELDS}
         columns={COLUMNS}

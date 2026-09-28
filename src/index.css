@@ -80,12 +80,14 @@
        --drawer    抽屉 / 侧栏底色
        --orb       光雾 / 指针聚光的色相：深色主题用白（提亮），
                    浅色主题不能用白（白加白等于没加）也不能用墨（会变成脏影），
-                   改用一团淡天蓝 —— 和页面顶部那层天光是同一种光 */
+                   改用一团淡天蓝 —— 和页面顶部那层天光是同一种光
+       --pointer-glow-opacity  指针聚光的强度：浅底需要更高的不透明度才看得见 */
     --tw-white: 255 255 255;
     --tw-black: 0 0 0;
     --shade: 0 0 0;
     --drawer: 7 9 14;
     --orb: 255 255 255;
+    --pointer-glow-opacity: 0.18;
     color-scheme: dark;
   }
 
@@ -138,6 +140,7 @@
     --shade: 71 85 105;
     --drawer: 248 250 252;
     --orb: 132 176 235;
+    --pointer-glow-opacity: 0.32;
     color-scheme: light;
   }
 

@@ -115,7 +115,7 @@ CREATE TABLE IF NOT EXISTS projects (
   id INTEGER PRIMARY KEY AUTOINCREMENT,
   title TEXT NOT NULL,
   slug TEXT NOT NULL UNIQUE,
-  cover TEXT, summary TEXT NOT NULL DEFAULT '', content TEXT NOT NULL DEFAULT '',
+  cover TEXT, demoUrl TEXT, summary TEXT NOT NULL DEFAULT '', content TEXT NOT NULL DEFAULT '',
   category TEXT NOT NULL DEFAULT 'ongoing',
   year INTEGER NOT NULL DEFAULT 2026,
   team TEXT NOT NULL DEFAULT '', members TEXT NOT NULL DEFAULT '[]',
@@ -279,6 +279,7 @@ const MIGRATIONS: [string, string, string][] = [
   ['users', 'oidcIssuer', 'TEXT'],
   ['users', 'oidcSubject', 'TEXT'],
   ['articles', 'rejectReason', 'TEXT'],
+  ['projects', 'demoUrl', 'TEXT'],
   ['project_applications', 'reviewNote', 'TEXT'],
 ];
 

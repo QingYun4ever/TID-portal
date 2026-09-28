@@ -1,6 +1,7 @@
 import React from 'react';
 import { useParams } from 'react-router';
 import {
+  ArrowUpRight,
   AlertTriangle,
   Award,
   Building2,
@@ -18,7 +19,7 @@ import {
 import { PublicApi } from '@/lib/api';
 import { useApi, useRevealScan, useTitle } from '@/lib/hooks';
 import { PROJECT_CATEGORIES, cn, fdate, fnum } from '@/lib/utils';
-import { ProjectCard } from '@/components/cards';
+import { ProjectCard, projectDemoUrl } from '@/components/cards';
 import { GlowOrb } from '@/components/LiquidBackdrop';
 import {
   Avatar,
@@ -43,6 +44,8 @@ const CAT_TONE: Record<string, 'primary' | 'accent' | 'success' | 'warning' | 'd
   approved: 'primary',
   completed: 'success',
   ongoing: 'accent',
+  competition: 'default',
+  frontend: 'primary',
 };
 
 export default function ProjectDetail() {
@@ -105,6 +108,7 @@ export default function ProjectDetail() {
   const categoryLabel = PROJECT_CATEGORIES[project.category] ?? project.category;
   const members: string[] = Array.isArray(project.members) ? project.members : [];
   const tags: string[] = Array.isArray(project.tags) ? project.tags : [];
+  const demoUrl = projectDemoUrl(project);
 
   return (
     <>
@@ -147,6 +151,11 @@ export default function ProjectDetail() {
               <Chip key={t}>{t}</Chip>
             ))}
           </div>
+        )}
+        {demoUrl && (
+          <a href={demoUrl} target="_blank" rel="noopener noreferrer" className="mt-6 inline-flex items-center gap-2 rounded-full border border-primary/40 bg-primary/15 px-5 py-3 text-sm font-medium text-primary transition-colors hover:bg-primary/25">
+            访问前端作品 <ArrowUpRight className="h-4 w-4" />
+          </a>
         )}
       </PageHero>
 

@@ -25,6 +25,7 @@ interface ResourceDef {
   jsonFields?: string[];
   boolFields?: string[];
   slugFrom?: string;
+  validate?: (data: Record<string, unknown>) => string | undefined;
   label: string;
 }
 
@@ -45,6 +46,16 @@ function crud(def: ResourceDef) {
     if (status && status !== 'all' && def.fields.includes('status')) {
       where.push('status=?');
       params.push(status);
+    }
+    const category = c.req.query('category');
+    if (category && category !== 'all' && def.fields.includes('category')) {
+      where.push('category=?');
+      params.push(category);
+    }
+    const year = c.req.query('year');
+    if (year && year !== 'all' && def.fields.includes('year')) {
+      where.push('year=?');
+      params.push(year);
     }
     const w = where.join(' AND ');
     const total = get<{ c: number }>(`SELECT COUNT(*) c FROM ${def.table} WHERE ${w}`, params)!.c;
@@ -74,6 +85,8 @@ function crud(def: ResourceDef) {
       if (body[f] === undefined) continue;
       data[f] = def.jsonFields?.includes(f) ? json(body[f]) : def.boolFields?.includes(f) ? (body[f] ? 1 : 0) : body[f];
     }
+    const error = def.validate?.(data);
+    if (error) return fail(c, error);
     if (def.slugFrom && !data.slug) data.slug = slugify(String(data[def.slugFrom] ?? '')) + '-' + Date.now().toString(36).slice(-4);
     const id = insert(def.table, data);
     logOp({ userId: actor(c)?.id, userName: actor(c)?.name, action: `新建${def.label}`, target: def.table, detail: String(data.title ?? data.name ?? id) });
@@ -89,6 +102,8 @@ function crud(def: ResourceDef) {
       if (body[f] === undefined) continue;
       data[f] = def.jsonFields?.includes(f) ? json(body[f]) : def.boolFields?.includes(f) ? (body[f] ? 1 : 0) : body[f];
     }
+    const error = def.validate?.(data);
+    if (error) return fail(c, error);
     if (!Object.keys(data).length) return fail(c, '没有需要更新的字段');
     run(
       `UPDATE ${def.table} SET ${Object.keys(data).map((k) => `"${k}"=?`).join(',')} WHERE id=?`,
@@ -150,13 +165,23 @@ adminRoutes.route(
     table: 'projects',
     label: '项目',
     fields: [
-      'title', 'slug', 'cover', 'summary', 'content', 'category', 'year', 'team',
+      'title', 'slug', 'cover', 'demoUrl', 'summary', 'content', 'category', 'year', 'team',
       'members', 'advisor', 'tags', 'awards', 'status',
     ],
     search: ['title', 'team', 'advisor'],
     order: 'year DESC, id DESC',
     jsonFields: ['tags', 'members'],
     slugFrom: 'title',
+    validate: (data) => {
+      if (data.demoUrl == null || data.demoUrl === '') return;
+      if (typeof data.demoUrl === 'string') {
+        try {
+          const url = new URL(data.demoUrl);
+          if (url.protocol === 'https:' || url.protocol === 'http:') return;
+        } catch { /* 无效地址 */ }
+      }
+      return '演示地址必须为有效的 HTTP(S) 链接';
+    },
   })
 );
 
@@ -729,7 +754,8 @@ function catLabel(k: string) {
   return ({ notice: '通知公告', dept: '部门新闻', competition: '竞赛信息', policy: '政策文件' } as any)[k] ?? k;
 }
 function projLabel(k: string) {
-  return ({ excellent: '优秀项目', approved: '立项项目', completed: '结项项目', ongoing: '在研项目' } as any)[k] ?? k;
+  const labels: Record<string, string> = { excellent: '优秀项目', approved: '立项项目', completed: '结项项目', ongoing: '在研项目', competition: '竞赛成果', frontend: '前端作品' };
+  return labels[k] ?? k;
 }
 function applyLabel(k: string) {
   return ({ pending: '待审核', reviewing: '审核中', approved: '已通过', rejected: '未通过' } as any)[k] ?? k;

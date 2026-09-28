@@ -1,13 +1,15 @@
 import React from 'react';
 import { Link } from 'react-router';
+import type { Project } from '../../shared/types';
 import {
+  ArrowRight,
   ArrowUpRight,
   Building2,
   CalendarDays,
   Clock,
   Download,
   Eye,
-  FileType2,
+  ExternalLink,
   MapPin,
   Pin,
   Trophy,
@@ -285,111 +287,76 @@ export function ActivityCard({ activity, className }: { activity: any; className
 /* =============================================================================
  * 项目卡片
  * ========================================================================== */
+export function projectDemoUrl(project: { category?: string; demoUrl?: string | null }): string | null {
+  if (project.category !== 'frontend' || !project.demoUrl) return null;
+  try {
+    const url = new URL(project.demoUrl);
+    return url.protocol === 'https:' || url.protocol === 'http:' ? url.href : null;
+  } catch {
+    return null;
+  }
+}
+
 export function ProjectCard({
   project,
   size = 'md',
   className,
 }: {
-  project: any;
+  project: Project;
   size?: 'sm' | 'md' | 'lg';
   className?: string;
 }) {
   const cat = PROJECT_CATEGORIES[project.category] ?? project.category;
-  const tone: 'primary' | 'default' = project.category === 'excellent' ? 'primary' : 'default';
-
-  /* ---------- 宽卡：封面在左 ---------- */
-  if (size === 'lg')
-    return (
-      <Link to={`/projects/${project.slug}`} className={cn('group block h-full', className)}>
-        <div className="card h-full md:flex-row">
-          <div className="card-media aspect-[16/10] md:aspect-auto md:w-[46%] md:shrink-0">
-            {project.cover ? (
-              <img src={project.cover} alt="" loading="lazy" />
-            ) : (
-              <div className="relative h-full min-h-[220px] w-full">
-                <CoverFallback icon={<Trophy className="h-12 w-12 text-white/12" />} />
-              </div>
-            )}
-            {project.awards && (
-              <div className="absolute bottom-3 left-3">
-                <Chip tone="warning" className="!bg-black/50 !py-0.5 backdrop-blur-md">
-                  <Trophy className="h-3 w-3" />
-                  {project.awards}
-                </Chip>
-              </div>
-            )}
-          </div>
-          <div className="card-body md:p-7">
-            <div className="flex flex-wrap items-center gap-2">
-              <Chip tone={tone}>{cat}</Chip>
-              <span className="mono text-sm text-muted-foreground">{project.year}</span>
-            </div>
-            <h3 className="mt-4 text-xl font-semibold leading-snug transition-colors duration-300 group-hover:text-primary">
-              {project.title}
-            </h3>
-            <p className="clamp-3 mt-3 flex-1 text-base leading-relaxed text-muted-foreground">{project.summary}</p>
-            <CardFoot>
-              <span className="flex min-w-0 flex-wrap items-center gap-x-4 gap-y-1.5 text-sm">
-                <span className="clamp-1 flex items-center gap-1.5">
-                  <Users className="h-3.5 w-3.5 shrink-0" />
-                  {project.team}
-                </span>
-                {project.advisor && (
-                  <span className="clamp-1 flex items-center gap-1.5">
-                    <Building2 className="h-3.5 w-3.5 shrink-0" />
-                    {project.advisor}
-                  </span>
-                )}
-              </span>
-              {project.views !== undefined && (
-                <span className="mono flex shrink-0 items-center gap-1.5">
-                  <Eye className="h-3 w-3" />
-                  {fnum(project.views)}
-                </span>
-              )}
-            </CardFoot>
-          </div>
+  const demoUrl = projectDemoUrl(project);
+  const featured = size === 'lg';
+  const media = (
+    <div className={cn('card-media aspect-[16/10] shrink-0', featured && 'md:aspect-auto md:min-h-[260px] md:w-[46%]')}>
+      {project.cover ? (
+        <img src={project.cover} alt="" loading="lazy" />
+      ) : (
+        <CoverFallback
+          label={project.category === 'frontend' ? 'WEB' : project.category === 'competition' ? 'AWARD' : 'STI'}
+          icon={project.category === 'competition' ? <Trophy className="h-12 w-12 text-white/15" /> : undefined}
+        />
+      )}
+      <span className="absolute left-3 top-3 z-10 rounded-full border border-white/20 bg-black/45 px-3 py-1 text-[10px] font-medium tracking-[0.12em] text-white backdrop-blur-md">
+        {cat}
+      </span>
+      <span className="absolute right-3 top-3 z-10 flex h-8 w-8 items-center justify-center rounded-full border border-white/20 bg-black/45 text-white backdrop-blur-md transition-colors group-hover:border-primary/60 group-hover:bg-primary/30">
+        {demoUrl ? <ArrowUpRight className="h-4 w-4" /> : <ArrowRight className="h-4 w-4" />}
+      </span>
+      <span aria-hidden className="card-scrim" />
+      <span className="card-cap mono absolute bottom-3 left-3 text-[11px] tracking-[0.16em]">{project.year} / {project.category === 'frontend' ? 'DIGITAL' : 'INNOVATION'}</span>
+    </div>
+  );
+  const card = (
+    <div className={cn('card h-full', featured && 'md:flex-row')}>
+      {media}
+      <div className={cn('card-body', featured && 'md:p-7')}>
+        <div className="flex items-center gap-2 text-[11px] tracking-[0.12em] text-muted-foreground">
+          <span className="h-px w-5 bg-primary/70" />
+          {project.category === 'frontend' ? '前端作品' : project.category === 'competition' ? '竞赛成果' : '项目档案'}
         </div>
-      </Link>
-    );
-
-  /* ---------- 标准 / 小卡 ---------- */
-  return (
-    <Link to={`/projects/${project.slug}`} className={cn('group block h-full', className)}>
-      <div className="card h-full">
-        {size !== 'sm' && (
-          <div className="card-media aspect-[16/10]">
-            {project.cover ? <img src={project.cover} alt="" loading="lazy" /> : <CoverFallback />}
-          </div>
-        )}
-        <div className="card-body">
-          <div className="flex flex-wrap items-center gap-2">
-            <Chip tone={tone} className="!px-2.5 !py-0.5">
-              {cat}
-            </Chip>
-            <span className="mono ml-auto text-sm text-muted-foreground">{project.year}</span>
-          </div>
-          <h3
-            className={cn(
-              'clamp-2 mt-3 font-semibold leading-snug transition-colors duration-300 group-hover:text-primary',
-              size === 'sm' ? 'text-base' : 'text-[17px]'
-            )}
-          >
-            {project.title}
-          </h3>
-          <p className="clamp-2 mt-2 flex-1 text-sm leading-relaxed text-muted-foreground">{project.summary}</p>
-          <CardFoot className="mt-3.5">
-            <span className="clamp-1">{project.team}</span>
-            {project.views !== undefined && (
-              <span className="mono flex shrink-0 items-center gap-1.5">
-                <Eye className="h-3 w-3" />
-                {fnum(project.views)}
-              </span>
-            )}
-          </CardFoot>
-        </div>
+        <h3 className={cn('clamp-2 mt-3 font-semibold leading-snug transition-colors duration-300 group-hover:text-primary', featured ? 'text-xl' : size === 'sm' ? 'text-[15px]' : 'text-[17px]')}>
+          {project.title}
+        </h3>
+        <p className={cn('mt-2 flex-1 leading-relaxed text-muted-foreground', featured ? 'clamp-3 text-sm md:text-base' : 'clamp-2 text-[13px]')}>
+          {project.summary}
+        </p>
+        <CardFoot className="mt-4">
+          <span className="clamp-1 min-w-0">{project.awards || project.team || cat}</span>
+          <span className="flex shrink-0 items-center gap-1 text-primary">
+            {demoUrl ? <><ExternalLink className="h-3.5 w-3.5" /> 访问作品</> : <>查看详情 <ArrowRight className="h-3.5 w-3.5" /></>}
+          </span>
+        </CardFoot>
       </div>
-    </Link>
+    </div>
+  );
+
+  return demoUrl ? (
+    <a href={demoUrl} target="_blank" rel="noopener noreferrer" aria-label={`访问作品：${project.title}（新窗口打开）`} className={cn('group block h-full', className)}>{card}</a>
+  ) : (
+    <Link to={`/projects/${project.slug}`} className={cn('group block h-full', className)}>{card}</Link>
   );
 }
 

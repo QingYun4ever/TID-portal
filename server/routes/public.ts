@@ -55,7 +55,7 @@ publicRoutes.get('/overview', (c) => {
   );
 
   const projects = all(
-    `SELECT id,title,slug,cover,summary,category,year,team,tags,awards FROM projects
+    `SELECT id,title,slug,cover,demoUrl,summary,category,year,team,tags,awards FROM projects
      WHERE status='published' ORDER BY (category='excellent') DESC, year DESC, id DESC LIMIT 6`
   ).map((p: any) => parseJsonFields(p, ['tags']));
 
@@ -303,7 +303,7 @@ publicRoutes.get('/projects/:slug', (c) => {
   if (!row) return fail(c, '项目不存在', 404);
   if (Number(c.req.query('count')) !== 0) get('UPDATE projects SET views=views+1 WHERE id=?', [row.id]);
   const related = all(
-    `SELECT id,title,slug,summary,cover,category,year FROM projects
+    `SELECT id,title,slug,summary,cover,demoUrl,category,year FROM projects
      WHERE id<>? AND category=? AND status='published' ORDER BY year DESC LIMIT 3`,
     [row.id, row.category]
   );
