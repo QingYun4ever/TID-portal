@@ -967,16 +967,102 @@ export function ProgressBar({
   );
 }
 
+/* =============================================================================
+ * Identicon —— GitHub 那种「没传头像就给你画一个」的默认头像
+ *
+ * 5×5 方块阵，左右镜像：只有左边 3 列需要决定，右边 2 列照抄，
+ * 所以图案天然对称、看着像个「标志」而不是噪点。图案由名字的哈希决定，
+ * 同一个人每次渲染都一样，不同的人几乎不会撞图。
+ *
+ * 和 GitHub 的唯一区别是配色：GitHub 按哈希取色相，那等于把八种彩色引进页面。
+ * 这里身份只靠「图案」区分，格子一律走 foreground / primary 的两档不透明度
+ * —— 见 design.md §2.1「区分层级靠不透明度，不靠换颜色」。
+ * ========================================================================== */
+function identiconSeed(s: string) {
+  // FNV-1a，32 位。短字符串（人名）也能散得比较开
+  let h = 2166136261 >>> 0;
+  for (let i = 0; i < s.length; i++) {
+    h ^= s.charCodeAt(i);
+    h = Math.imul(h, 16777619) >>> 0;
+  }
+  return h || 1;
+}
+
+export function Identicon({
+  seed,
+  tone = 'default',
+  className,
+}: {
+  /** 决定图案的字符串，一般传人名；同一个 seed 永远得到同一张图 */
+  seed: string;
+  /** primary 用于需要强调的人（如部长），其余一律中性白 */
+  tone?: 'default' | 'primary';
+  className?: string;
+}) {
+  const cells = React.useMemo(() => {
+    let x = identiconSeed(seed);
+    // xorshift32：比直接取哈希的各个 bit 散得均匀
+    const next = () => {
+      x ^= x << 13;
+      x >>>= 0;
+      x ^= x >>> 17;
+      x ^= x << 5;
+      x >>>= 0;
+      return x / 4294967296;
+    };
+    const grid = new Array<number>(25).fill(0);
+    for (let col = 0; col < 3; col++) {
+      for (let row = 0; row < 5; row++) {
+        // 两次抽样：先决定亮不亮，再决定深浅 —— 两档深浅让它看起来像张图而不是二维码
+        const v = next() > 0.46 ? (next() > 0.44 ? 2 : 1) : 0;
+        grid[row * 5 + col] = v;
+        grid[row * 5 + (4 - col)] = v;
+      }
+    }
+    // 兜底：抽出一张几乎全空的图（概率不高但存在）就点亮中列，别给人一个空头像
+    if (grid.filter(Boolean).length < 5) for (let row = 0; row < 5; row += 2) grid[row * 5 + 2] = 2;
+    return grid;
+  }, [seed]);
+
+  // 用 currentColor + fill-opacity 而不是 fill="hsl(var(--x))"：
+  // var() 在 SVG 的表现属性里不会被求值，只有走 CSS 声明（这里是 className 上的 color）才行
+  return (
+    <svg
+      viewBox="0 0 5 5"
+      aria-hidden
+      shapeRendering="crispEdges"
+      className={cn('block', tone === 'primary' ? 'text-primary' : 'text-foreground', className)}
+    >
+      {cells.map((v, i) =>
+        v === 0 ? null : (
+          <rect
+            key={i}
+            x={i % 5}
+            y={Math.floor(i / 5)}
+            width="1"
+            height="1"
+            fill="currentColor"
+            fillOpacity={v === 2 ? 0.82 : 0.34}
+          />
+        )
+      )}
+    </svg>
+  );
+}
+
 export function Avatar({
   name,
   src,
   size = 40,
   className,
+  fallback = 'identicon',
 }: {
   name: string;
   src?: string | null;
   size?: number;
   className?: string;
+  /** \u6ca1\u6709 src \u65f6\u753b\u4ec0\u4e48\uff1a\u9ed8\u8ba4 GitHub \u5f0f identicon\uff0c\u9700\u8981\u9996\u5b57\u6bcd\u7684\u5730\u65b9\u663e\u5f0f\u4f20 'initials' */
+  fallback?: 'identicon' | 'initials';
 }) {
   const tones = [
     'from-white/18 to-white/[0.05]',
@@ -998,7 +1084,14 @@ export function Avatar({
       )}
       style={{ width: size, height: size, fontSize: size * 0.36 }}
     >
-      {src ? <img src={src} alt={name} className="h-full w-full object-cover" /> : label}
+      {src ? (
+        <img src={src} alt={name} className="h-full w-full object-cover" />
+      ) : fallback === 'identicon' ? (
+        // 68%\uff1a5\u00d75 \u7684\u9635\u5217\u56db\u89d2\u8981\u7559\u5728\u5706\u5f62\u91cc\uff0c\u4e0d\u7136\u4f1a\u88ab rounded-full \u524a\u6389
+        <Identicon seed={name || 'anonymous'} className="h-[68%] w-[68%]" />
+      ) : (
+        label
+      )}
     </div>
   );
 }

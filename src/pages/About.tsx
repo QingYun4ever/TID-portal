@@ -17,7 +17,6 @@ import { useSettings } from '@/lib/store';
 import { fnum } from '@/lib/utils';
 import { TimelineItem } from '@/components/cards';
 import { useRevealScope } from '@/components/RevealScope';
-import { LogoMark } from '@/components/Brand';
 import { GridTexture } from '@/components/LiquidBackdrop';
 import {
   Avatar,
@@ -261,13 +260,12 @@ export default function About() {
           <Section id="advisors" eyebrow="Faculty Advisors" title="指导教师">
             <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
               {['郭松梅', '杨秋静', '孙博轩', '王非凡'].map((name) => (
-                <Glass key={name} tone="soft" className="flex items-center gap-4 p-5" data-reveal="scale">
-                  <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl border border-primary/25 bg-primary/10 text-primary">
-                    <Users className="h-5 w-5" />
-                  </span>
-                  <div>
-                    <p className="text-base font-medium text-foreground">{name}</p>
-                    <p className="text-xs text-muted-foreground">指导教师</p>
+                <Glass key={name} tone="soft" hover sheen className="flex items-center gap-4 p-5" data-reveal="scale">
+                  {/* 四个人用同一个 Users 图标等于没画头像，换成按姓名生成的 identicon */}
+                  <Avatar name={name} size={46} />
+                  <div className="min-w-0">
+                    <p className="truncate text-base font-medium text-foreground">{name}</p>
+                    <p className="mt-0.5 text-xs text-muted-foreground">指导教师</p>
                   </div>
                 </Glass>
               ))}
@@ -374,16 +372,9 @@ function MembersSection({ members, loading }: { members: any[]; loading: boolean
           {items.map((m, i) => (
             <div key={m.id} data-reveal="scale" style={{ transitionDelay: `${(i % 4) * 60}ms` }}>
               <Glass tone="soft" hover sheen className="flex h-full flex-col items-center p-5 text-center">
-                {m.avatar ? (
-                  <Avatar name={m.name} src={m.avatar} size={46} />
-                ) : (
-                  <div className="relative">
-                    <LogoMark uid={`about-m${m.id}`} monochrome className="h-12 w-12 text-white/20" />
-                    <span className="absolute inset-0 flex items-center justify-center text-[13px] font-semibold text-foreground">
-                      {String(m.name).slice(-2)}
-                    </span>
-                  </div>
-                )}
+                {/* 没传头像就走 Avatar 内置的 identicon —— 原先是拿部门 logo 当底、
+                    再把名字最后两个字压在上面，图案和文字互相糊 */}
+                <Avatar name={m.name} src={m.avatar} size={52} />
                 <p className="mt-3.5 text-base font-medium">{m.name}</p>
                 <p className="mt-1 text-sm text-primary">{m.role}</p>
                 {m.group && <p className="mt-1 text-xs text-muted-foreground">{m.group}</p>}

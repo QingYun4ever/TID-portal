@@ -25,7 +25,7 @@ import { BrandBackdrop } from '@/components/BrandBackdrop';
 import { GlowOrb, GridTexture } from '@/components/LiquidBackdrop';
 import { OrbitalCanvas } from '@/components/OrbitalCanvas';
 import { ActivityCard, ArticleCard, CompetitionCard, ProjectCard } from '@/components/cards';
-import { Chip, Glass, LinkButton, Section, Skeleton, Tabs } from '@/components/ui';
+import { Avatar, Chip, Glass, LinkButton, Section, Skeleton, Tabs } from '@/components/ui';
 
 /* =============================================================================
  * 首页 —— 下滑式「一屏一块」布局
@@ -277,10 +277,8 @@ const QUICK = [
   { icon: Users, title: '加入我们', desc: '查看录取名单 · 联系部门', to: '/join' },
 ];
 
-function QuickAbout({ stats, intro }: { stats: { signups?: number; projects?: number; members?: number }; intro?: string }) {
+function QuickAbout({ stats, intro }: { stats: { projects?: number; members?: number }; intro?: string }) {
   const items = [
-    { label: '成立年份', value: '2015', unit: '年' },
-    { label: '服务学生', value: fnum((stats.signups ?? 0) + 4000), unit: '人次' },
     { label: '在展项目', value: String(stats.projects ?? 0), unit: '项' },
     { label: '部门成员', value: String(stats.members ?? 0), unit: '人' },
   ];
@@ -386,7 +384,7 @@ function HistoryNews({
       id="news"
       eyebrow="Milestones & News"
       title="发展历程与新闻通知"
-      description="从 2015 年成立至今；通知公告、部门新闻、竞赛信息与政策文件实时同步。"
+      description="通知公告、部门新闻、竞赛信息与政策文件实时同步。"
       action={
         <LinkButton to="/news">
           全部内容 <ArrowRight className="h-4 w-4" />
@@ -601,13 +599,19 @@ function ProjectCompetition({
 
         {/* 竞赛信息 */}
         <div className="flex flex-col gap-3.5">
-          {loading
-            ? Array.from({ length: compCount }).map((_, i) => <Skeleton key={i} className="h-[150px]" />)
-            : competitions.slice(0, compCount).map((c, i) => (
-                <div key={c.id} data-reveal="right" style={stagger(i)}>
-                  <CompetitionCard competition={c} />
-                </div>
-              ))}
+          {loading ? (
+            Array.from({ length: compCount }).map((_, i) => <Skeleton key={i} className="h-[150px]" />)
+          ) : !competitions.length ? (
+            <Glass tone="soft" className="flex min-h-[150px] items-center justify-center p-8 text-center text-sm text-muted-foreground">
+              暂无竞赛信息，敬请期待
+            </Glass>
+          ) : (
+            competitions.slice(0, compCount).map((c, i) => (
+              <div key={c.id} data-reveal="right" style={stagger(i)}>
+                <CompetitionCard competition={c} />
+              </div>
+            ))
+          )}
         </div>
       </div>
     </Screen>
@@ -675,11 +679,27 @@ function GalleryBlock({ images, loading }: { images: any[]; loading: boolean }) 
 
 /* =============================================================================
  * 7. 组织架构 + 成员风采（合并一屏）
+ *
+ * 布局：左边一张「组织架构」窄卡，右边是成员网格。
+ * 之前是上下两段 —— 架构那段在只有一个根节点、又没有子工作组的时候会塌成一行字，
+ * 底下再跟一个空的四列网格，整屏看下来就是一片空白。改成左右分栏之后两边互相撑着，
+ * 数据多少都不会塌。
  * ========================================================================== */
+
+/** org_nodes.leader 存的是「部长 庄梓翔」这种「职务 + 姓名」串，拆开分两行显示 */
+function splitLeader(raw?: string | null) {
+  const s = String(raw ?? '').trim();
+  if (!s) return { title: '', name: '' };
+  const parts = s.split(/\s+/);
+  return parts.length > 1
+    ? { title: parts.slice(0, -1).join(' '), name: parts[parts.length - 1] }
+    : { title: '', name: s };
+}
+
 function OrgMembers({ members, loading, dens }: { members: any[]; loading: boolean; dens: number }) {
   const { data, loading: orgLoading } = useApi<any>(() => PublicApi.about(), []);
   const org: any[] = data?.org ?? [];
-  const memberCount = pick([8, 8, 12, 12], dens);
+  const memberCount = pick([6, 9, 12, 16], dens);
 
   return (
     <Screen
@@ -693,66 +713,96 @@ function OrgMembers({ members, loading, dens }: { members: any[]; loading: boole
         </LinkButton>
       }
     >
-      <div className="flex flex-col gap-5">
-        {/* 组织架构 */}
+      <div className="grid gap-5 lg:grid-cols-[minmax(0,330px)_minmax(0,1fr)]">
+        {/* ---------------------------- 左：组织架构 ---------------------------- */}
         {orgLoading ? (
-          <div className="grid gap-3.5 sm:grid-cols-2 lg:grid-cols-4">
-            {Array.from({ length: 4 }).map((_, i) => (
-              <Skeleton key={i} className="h-24" />
-            ))}
-          </div>
+          <Skeleton className="h-[240px]" />
         ) : (
-          <div className="flex flex-col gap-3.5">
-            {org.map((root) => (
-              <React.Fragment key={root.id}>
-                <div className="flex flex-wrap items-center gap-3" data-reveal>
-                  <span className="flex h-8 w-8 items-center justify-center rounded-xl border border-primary/30 bg-primary/12 text-primary">
-                    <Users className="h-3.5 w-3.5" />
-                  </span>
-                  <p className="text-base font-medium">{root.name}</p>
-                  <span className="text-sm text-muted-foreground">{root.leader}</span>
-                  {(root.children ?? []).length > 0 && (
-                    <Chip className="ml-auto">{(root.children ?? []).length} 个工作组</Chip>
-                  )}
-                </div>
-                <div className="grid gap-3.5 sm:grid-cols-2 lg:grid-cols-4">
-                  {(root.children ?? []).map((c: any, i: number) => (
-                    <Glass key={c.id} tone="thin" hover className="flex h-full flex-col p-4" data-reveal="scale" style={stagger(i)}>
-                      <div className="flex items-center gap-2">
-                        <Compass className="h-3.5 w-3.5 text-primary/80" />
-                        <p className="text-sm font-medium">{c.name}</p>
+          <Glass tone="soft" className="flex flex-col gap-5 p-5" data-reveal="left">
+            <div className="flex items-center gap-2.5">
+              <Users className="h-3.5 w-3.5 text-primary" />
+              <span className="eyebrow">Structure</span>
+            </div>
+
+            {org.length ? (
+              org.map((root: any) => {
+                const leader = splitLeader(root.leader);
+                const groups: any[] = root.children ?? [];
+                return (
+                  <div key={root.id} className="flex flex-col gap-4">
+                    {/* 负责人：头像 + 姓名 + 职务，三段分开，不再挤成一行灰字 */}
+                    <div className="flex items-center gap-3.5">
+                      <Avatar name={leader.name || root.name} size={46} />
+                      <div className="min-w-0">
+                        <p className="truncate text-[15px] font-medium leading-tight">{leader.name || root.name}</p>
+                        <p className="mt-1 truncate text-sm text-primary">{leader.title || root.name}</p>
                       </div>
-                      <p className="clamp-2 mt-2 flex-1 text-sm leading-relaxed text-muted-foreground">{c.description}</p>
-                    </Glass>
-                  ))}
-                </div>
-              </React.Fragment>
-            ))}
-          </div>
+                    </div>
+
+                    {root.description && (
+                      <p className="text-sm leading-relaxed text-muted-foreground">{root.description}</p>
+                    )}
+
+                    {groups.length > 0 && (
+                      <>
+                        <div className="hairline" />
+                        <div className="flex flex-col gap-3">
+                          {groups.map((c: any) => (
+                            <div key={c.id} className="flex items-start gap-2.5">
+                              <Compass className="mt-[3px] h-3.5 w-3.5 shrink-0 text-primary/75" />
+                              <div className="min-w-0">
+                                <p className="text-sm font-medium">{c.name}</p>
+                                {c.description && (
+                                  <p className="clamp-2 mt-0.5 text-sm leading-relaxed text-muted-foreground">
+                                    {c.description}
+                                  </p>
+                                )}
+                              </div>
+                            </div>
+                          ))}
+                        </div>
+                      </>
+                    )}
+                  </div>
+                );
+              })
+            ) : (
+              <p className="text-sm text-muted-foreground">组织架构信息待补充。</p>
+            )}
+          </Glass>
         )}
 
-        {/* 成员风采 */}
-        <div className={cn('grid grid-cols-2 gap-3.5 sm:grid-cols-4', memberCount > 8 && '2xl:grid-cols-6')}>
-          {loading
-            ? Array.from({ length: memberCount }).map((_, i) => <Skeleton key={i} className="h-[104px]" />)
-            : members.slice(0, memberCount).map((m: any, i: number) => (
-                <Glass
-                  key={m.id}
-                  tone="soft"
-                  hover
-                  sheen
-                  className="flex flex-col items-center p-3.5 text-center"
-                  data-reveal="scale"
-                  style={stagger(i % 6, 38)}
-                >
-                  <div className="relative">
-                    <LogoMark uid={`m${m.id}`} monochrome className="h-9 w-9 text-white/18" />
-                    <span className="absolute inset-0 flex items-center justify-center text-sm font-medium text-foreground">{m.name.slice(-2)}</span>
-                  </div>
-                  <p className="mt-2 text-sm font-medium">{m.name}</p>
-                  <p className="clamp-1 mt-0.5 text-sm text-primary">{m.role}</p>
-                </Glass>
-              ))}
+        {/* ---------------------------- 右：成员风采 ---------------------------- */}
+        <div className="flex flex-col gap-3.5">
+          <div className="flex items-center justify-between gap-3">
+            <span className="eyebrow">Members</span>
+            {!loading && members.length > 0 && (
+              <Chip>{Math.min(memberCount, members.length)} / {members.length}</Chip>
+            )}
+          </div>
+
+          {/* 横排卡片：头像在左、姓名职务在右 —— 比居中竖排更好扫，一行也能多塞一个 */}
+          <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 2xl:grid-cols-4">
+            {loading
+              ? Array.from({ length: memberCount }).map((_, i) => <Skeleton key={i} className="h-[66px]" />)
+              : members.slice(0, memberCount).map((m: any, i: number) => (
+                  <Glass
+                    key={m.id}
+                    tone="thin"
+                    hover
+                    sheen
+                    className="flex items-center gap-3 p-3"
+                    data-reveal="scale"
+                    style={stagger(i % 6, 38)}
+                  >
+                    <Avatar name={m.name} src={m.avatar} size={38} />
+                    <div className="min-w-0">
+                      <p className="truncate text-sm font-medium">{m.name}</p>
+                      <p className="clamp-1 mt-0.5 text-sm text-primary">{m.role}</p>
+                    </div>
+                  </Glass>
+                ))}
+          </div>
         </div>
       </div>
     </Screen>
