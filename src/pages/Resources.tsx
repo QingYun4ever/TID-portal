@@ -38,8 +38,8 @@ import {
 const CAT_ORDER = ['template', 'policy', 'guide', 'training', 'faq'];
 
 const EXTERNAL_SITES = [
-  { name: '大学生创新创业训练计划平台', desc: '国创计划项目申报与结题', url: 'https://cxcy.upln.cn/' },
-  { name: '全国大学生创业服务网', desc: '中国国际大学生创新大赛', url: 'https://cy.ncss.cn/' },
+  { name: '创新项目申报平台', desc: '项目申报与结题', url: 'https://cxcy.upln.cn/' },
+  { name: '创新赛事服务平台', desc: '赛事报名与信息服务', url: 'https://cy.ncss.cn/' },
   { name: '「挑战杯」竞赛官网', desc: '课外学术科技作品竞赛', url: 'https://www.tiaozhanbei.net/' },
   { name: '教育部官网', desc: '政策文件与通知公告', url: 'http://www.moe.gov.cn/' },
 ];

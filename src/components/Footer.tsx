@@ -112,10 +112,11 @@ export function Footer() {
           <p>
             © {year} 科技创新部 · Technology &amp; Innovation Department
             {settings.icp && <span className="ml-3 opacity-70">{settings.icp}</span>}
+            <span className="ml-3">Made by U-235 with love.</span>
           </p>
           <div className="flex items-center gap-5">
             <a
-              href="https://github.com"
+              href="https://github.com/QingYun4ever"
               target="_blank"
               rel="noreferrer noopener"
               className="transition hover:text-foreground"

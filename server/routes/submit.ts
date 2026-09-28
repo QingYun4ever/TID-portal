@@ -111,7 +111,7 @@ submitRoutes.post('/projects/apply', async (c) => {
     insert('user_messages', {
       userId: user.id,
       title: '项目申报已提交',
-      content: `「${title}」已提交，项目孵化组将在 5 个工作日内完成初审，可在「用户中心 → 我的项目」查看进度。`,
+      content: `「${title}」已提交，部门将在 5 个工作日内完成初审，可在「用户中心 → 我的项目」查看进度。`,
       link: '/account/applications',
     });
   }

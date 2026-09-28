@@ -16,7 +16,7 @@ import { ResourceManager, type Column, type FieldDef } from '@/components/AdminK
  *  - 组织架构：org_nodes 自关联树，靠 parentId 建立上下级
  * ========================================================================== */
 
-const MEMBER_GROUPS = ['主席团', '竞赛管理组', '项目孵化组', '宣传设计组', '技术服务组', '教师'];
+const MEMBER_GROUPS = ['部长团', '学生成员', '顾问', '教师'];
 
 interface MemberRow {
   id: number;
@@ -53,7 +53,7 @@ const MEMBER_FIELDS: FieldDef[] = [
     name: 'group',
     label: '所属工作组',
     type: 'select',
-    default: '主席团',
+    default: '部长团',
     options: MEMBER_GROUPS.map((v) => ({ value: v, label: v })),
   },
   { name: 'avatar', label: '头像', type: 'image', hint: '建议 1:1 正方形，未上传时使用姓名首字生成' },
@@ -116,7 +116,7 @@ const MEMBER_COLUMNS: Column<MemberRow>[] = [
 
 /* ------------------------------ 组织架构 ------------------------------ */
 const ORG_FIELDS: FieldDef[] = [
-  { name: 'name', label: '节点名称', type: 'text', required: true, placeholder: '例如：竞赛管理组' },
+  { name: 'name', label: '节点名称', type: 'text', required: true, placeholder: '例如：科技创新部' },
   {
     name: 'parentId',
     label: '上级节点 ID',

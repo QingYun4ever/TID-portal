@@ -12,6 +12,7 @@ const BRAND_FIELDS: { name: string; label: string; placeholder?: string; hint?: 
   { name: 'deptName', label: '部门名称', placeholder: '科技创新部' },
   { name: 'deptNameEn', label: '英文名称', placeholder: 'TECHNOLOGY & INNOVATION DEPT.', hint: '显示在 Logo 锁定组合中' },
   { name: 'slogan', label: '宣传语', placeholder: '以技术为舟，以创新为帆' },
+  { name: 'foundedAt', label: '成立时间', placeholder: '2026-01', hint: '用于部门概况「服务年数」统计' },
   { name: 'icp', label: '备案号', placeholder: '例如 京ICP备00000000号', hint: '留空则页脚不显示备案信息' },
 ];
 

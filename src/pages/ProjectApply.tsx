@@ -279,7 +279,7 @@ export default function ProjectApply() {
       <PageHero
         eyebrow="Project Application"
         title="项目在线申报"
-        description="大学生创新创业训练计划项目全年受理在线申报。填写项目基本信息、团队信息与项目简介，5 个工作日内反馈初审结果。"
+        description="学生创新项目全年受理在线申报。填写项目基本信息、团队信息与项目简介，5 个工作日内反馈初审结果。"
         breadcrumb={[{ label: '创新项目', to: '/projects' }, { label: '在线申报' }]}
       >
         <div className="flex flex-wrap items-center gap-2.5">
@@ -799,7 +799,7 @@ function SuccessView({
             申报已提交成功
           </h2>
           <p className="mt-4 max-w-2xl text-pretty text-[13.5px] leading-relaxed text-muted-foreground">
-            项目孵化组将在 <span className="text-foreground/85">5 个工作日内</span> 完成初审并通过短信 / 邮件反馈结果。
+            部门将在 <span className="text-foreground/85">5 个工作日内</span> 完成初审并通过短信 / 邮件反馈结果。
             请记录下方申报编号，后续查询与沟通时请提供该编号。
           </p>
 
@@ -906,7 +906,7 @@ function SuccessView({
           <ul className="mt-4 flex flex-col gap-3">
             {[
               '保持手机号与邮箱畅通，初审结果将通过短信与邮件通知。',
-              '如需修改信息，可在初审前联系项目孵化组并提供申报编号。',
+              '如需修改信息，可在初审前联系部门并提供申报编号。',
               '申报书、学生证等材料在初审通过后按通知补充上传。',
               '同一项目请勿重复提交，重复申报将影响评审优先级。',
             ].map((t) => (

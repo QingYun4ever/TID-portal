@@ -64,7 +64,7 @@ const FIELDS: FieldDef[] = [
     type: 'text',
     required: true,
     wide: true,
-    placeholder: '例如：关于开展 2026 年度大学生创新创业训练计划项目立项申报的通知',
+    placeholder: '例如：关于开展 2026 年度学生创新项目立项申报的通知',
   },
   {
     name: 'category',

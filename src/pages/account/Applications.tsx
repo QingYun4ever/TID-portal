@@ -137,7 +137,7 @@ export default function Applications() {
             title="暂无项目申报记录"
             description={
               user?.studentId
-                ? '你可以为大学生创新创业训练计划提交申报，审核进度会实时同步到这里。'
+                ? '你可以为学生创新项目提交申报，审核进度会实时同步到这里。'
                 : '建议先在「个人资料」补全学号与手机号，便于申报记录与账号自动关联。'
             }
             action={

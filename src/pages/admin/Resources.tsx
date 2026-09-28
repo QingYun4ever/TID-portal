@@ -47,7 +47,7 @@ const FIELDS: FieldDef[] = [
     type: 'text',
     required: true,
     wide: true,
-    placeholder: '例如：大学生创新创业训练计划项目申报书模板',
+    placeholder: '例如：学生创新项目申报书模板',
   },
   {
     name: 'category',

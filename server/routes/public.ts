@@ -7,6 +7,14 @@ import { ok, fail, paging } from '../util.ts';
 
 export const publicRoutes = new Hono();
 
+/** 服务年数：由「成立时间」设置推导，未配置时按 2026 年起算 */
+function serviceYears(): number {
+  const value = get<{ value: string }>('SELECT value FROM settings WHERE key=?', ['foundedAt'])?.value ?? '';
+  const year = Number(String(value).slice(0, 4));
+  if (!Number.isInteger(year) || year < 1900) return 1;
+  return Math.max(1, new Date().getFullYear() - year + 1);
+}
+
 /* ------------------------------- 站点设置 ------------------------------- */
 publicRoutes.get('/settings', (c) => {
   const rows = all<{ key: string; value: string }>('SELECT key,value FROM settings');
@@ -80,7 +88,7 @@ publicRoutes.get('/overview', (c) => {
       views: one('SELECT COALESCE(SUM(views),0) c FROM articles') + one('SELECT COALESCE(SUM(views),0) c FROM projects'),
       signups: one('SELECT COUNT(*) c FROM activity_signups'),
       applications: one('SELECT COUNT(*) c FROM project_applications'),
-      years: 11,
+      years: serviceYears(),
     },
     featuredArticles,
     notices,
@@ -358,13 +366,10 @@ publicRoutes.get('/join', (c) => {
     parseJsonFields(p, ['requirements'])
   );
   const notice = get('SELECT * FROM pages WHERE key=?', ['join-notice']);
-  const groups = all<{ group: string; c: number }>(
-    'SELECT "group", COUNT(*) c FROM join_positions WHERE active=1 GROUP BY "group" ORDER BY MIN(sortOrder)'
-  );
   const admissions = all<{ id: number; name: string; className: string }>(
     'SELECT id, name, className FROM join_admissions ORDER BY sortOrder ASC'
   );
-  return ok(c, { positions, notice, groups: groups.map((g) => ({ name: g.group, count: g.c })), admissions });
+  return ok(c, { positions, notice, admissions });
 });
 
 /* ------------------------------ 互动与反馈 ----------------------------- */
@@ -472,7 +477,7 @@ publicRoutes.get('/about', (c) => {
     members: get<{ c: number }>('SELECT COUNT(*) c FROM members')!.c,
     projects: get<{ c: number }>("SELECT COUNT(*) c FROM projects WHERE status='published'")!.c,
     activities: get<{ c: number }>("SELECT COUNT(*) c FROM activities WHERE status='published'")!.c,
-    years: 11,
+    years: serviceYears(),
   };
   return ok(c, { page, contact, intro: intro?.value ?? '', timeline, org, members, stats });
 });

@@ -100,7 +100,7 @@ const FIELDS: FieldDef[] = [
     name: 'awards',
     label: '获奖信息',
     type: 'text',
-    placeholder: '例如：2025 年全国大学生创新创业大赛省级一等奖',
+    placeholder: '例如：2025 年省级创新大赛一等奖',
   },
   {
     name: 'cover',

@@ -50,7 +50,7 @@ const FIELDS: FieldDef[] = [
     type: 'text',
     required: true,
     wide: true,
-    placeholder: '例如：中国国际大学生创新大赛（2026）',
+    placeholder: '例如：校级创新大赛（2026）',
   },
   {
     name: 'level',

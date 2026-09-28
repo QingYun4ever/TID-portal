@@ -429,6 +429,7 @@ export function seed() {
       '科技创新部是校团委指导下负责全校学生科技创新工作的职能部门，统筹学生科技竞赛、创新创业项目孵化、科技文化活动与创新人才培养，为每一位有想法的同学提供从灵感到落地的完整支撑。',
     email: 'notpaperxiang@gmail.com',
     address: '北京市陈经纶中学本部高中',
+    foundedAt: '2026-01',
     wechatQr: '',
     icp: '',
   };
@@ -445,7 +446,7 @@ export function seed() {
 <h2>核心职责</h2>
 <ul>
 <li>统筹全校学生科技创新竞赛的组织、报名、培训与选拔；</li>
-<li>负责大学生创新创业训练计划项目的立项、中期检查与结题验收；</li>
+<li>负责学生创新项目的立项、中期检查与结题验收；</li>
 <li>运营科技创新部门户、成果展示画廊与竞赛信息聚合平台；</li>
 <li>开展科技文化节、技术沙龙、创新工作坊等品牌活动；</li>
 <li>建设与维护部门技术基础设施，为其他学生组织提供技术支持。</li>
@@ -456,7 +457,7 @@ export function seed() {
     [
       'join-notice',
       '2026 年春季招新公告',
-      `<p>科技创新部 2026 年春季招新正式启动，本次面向全校本科生、研究生招募 <strong>28 名</strong>新成员。</p>
+      `<p>科技创新部 2026 年春季招新正式启动，本次面向全校学生招募 <strong>28 名</strong>新成员。</p>
 <h2>招新流程</h2>
 <ol>
 <li><b>在线报名</b>：填写报名表并提交个人作品集（可选）；</li>
@@ -478,9 +479,15 @@ export function seed() {
   /* ---- 发展历程 ---- */
   insert('timeline', {
     year: '2026',
+    title: '青云宗成立',
+    description: '2026 年 1 月，青云宗成立。',
+    sortOrder: 0,
+  });
+  insert('timeline', {
+    year: '2026',
     title: '部门官网上线',
     description: '2026 年 9 月 28 日，科技创新部门户网站正式上线。',
-    sortOrder: 0,
+    sortOrder: 1,
   });
 
   /* ---- 组织架构 ---- */
@@ -517,6 +524,7 @@ export function seed() {
   const members = [
     ...leadership.map(([name, role]) => ({ name, role, group: '部长团' })),
     ...admitted.map(([name, className]) => ({ name, role: className, group: '学生成员' })),
+    { name: 'U-235', role: '清朝顾问', group: '顾问' },
   ];
   members.forEach(({ name, role, group }, i) =>
     insert('members', {
@@ -541,6 +549,7 @@ export function seed() {
 
   /* ---- 竞赛 ---- */
   /* 样例竞赛已清空：竞赛由后台「竞赛信息」录入，此处不再播种 */
+
   /* ---- 申报记录 ---- */
   const apps: Array<Partial<Row>> = [
     ['「灵眸」—— 面向视障人群的室内导航系统', 'approved', '创新训练', '林一鸣'],
@@ -613,29 +622,7 @@ export function seed() {
   );
 
   /* ---- 留言反馈 ---- */
-  const fbs: Array<[string, string, string, string, boolean, number]> = [
-    ['question', '大创项目可以跨学院组队吗？', '我来自外国语学院，想和计算机学院的同学一起申报大创，不确定跨学院组队是否需要额外流程。', 'answered', '', true, 24],
-    ['suggestion', '建议门户增加竞赛截止日期的日历订阅功能', '希望能把竞赛截止时间导出成 iCal，直接订阅到手机日历里，这样就不会错过了。', 'replied', '非常好的建议！我们已经在排期开发「竞赛日历订阅」功能，预计下个版本上线。', false, 41],
-    ['consult', '创新工坊的 3D 打印机怎么预约？', '想打印一个项目原型外壳，请问需要提前多久预约？材料费怎么算？', 'replied', '通过门户「资源中心 → 创客空间预约」提交申请，建议提前 3 天。PLA 材料由部门免费提供，每人每学期 500g 额度。', false, 33],
-    ['question', '国赛获奖可以认定多少学分？', '想确认一下中国国际大学生创新大赛金奖对应多少创新创业学分。', 'replied', '根据最新学分认定办法，国赛金奖项目负责人可认定 4 学分，团队成员认定 2 学分。', true, 57],
-    ['suggestion', '希望开放实验室夜间使用权限', '很多硬件调试需要连续长时间占用设备，建议对认证过的团队开放 22:00 后的实验室权限。', 'open', '', false, 19],
-    ['vote', '你希望下一期技术沙龙讲什么？', '选项：A. 大模型微调实战　B. 云原生与 K8s 入门　C. 硬件电路设计基础　D. 产品思维与需求分析', 'open', '', true, 88],
-  ];
-  fbs.forEach(([type, title, content, status, reply, anonymous, likes], i) =>
-    insert('feedback', {
-      type,
-      title,
-      content,
-      anonymous: anonymous ? 1 : 0,
-      authorName: anonymous ? null : ['林一鸣', '吴桐', '郑好'][i % 3],
-      contact: anonymous ? null : 'user@university.edu.cn',
-      status,
-      reply: reply || null,
-      repliedAt: reply ? daysAgo(i) : null,
-      likes,
-      createdAt: daysAgo(i * 2 + 1),
-    })
-  );
+  /* 样例留言已清空：留言由访客在门户「互动与反馈」提交，此处不再播种 */
 
   /* ---- 画廊 ---- */
   const areas: [string, string | null, string][] = [
@@ -724,7 +711,7 @@ export function seed() {
 
   /* ---- 消息 ---- */
   const msgs: [number, string, string, boolean][] = [
-    [4, '你的项目申报已通过初审', '「灵眸」室内导航系统已通过项目孵化组初审，请于 5 个工作日内提交补充材料。', false],
+    [4, '你的项目申报已通过初审', '「灵眸」室内导航系统已通过部门初审，请于 5 个工作日内提交补充材料。', false],
     [3, '你有 1 条待回复的留言', '有同学在留言板中询问大创跨学院组队问题，请及时回复。', false],
   ];
   msgs.forEach(([userId, title, content, read], i) =>

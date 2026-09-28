@@ -1,16 +1,12 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import {
   AlertCircle,
-  ArrowRight,
   BadgeCheck,
   Clock,
-  HelpCircle,
-  Info,
   MessageSquare,
   Send,
   Shield,
   ThumbsUp,
-  Timer,
   UserRound,
 } from 'lucide-react';
 
@@ -75,37 +71,6 @@ const STATUS_TONE: Record<string, 'warning' | 'success' | 'primary'> = {
   replied: 'success',
   answered: 'primary',
 };
-
-/* 常见问题快捷入口：点击后自动填入留言表单 */
-const QUICK_QUESTIONS: { q: string; type: string; body: string }[] = [
-  {
-    q: '大创项目可以跨学院组队吗？',
-    type: 'question',
-    body: '我来自其他学院，想和计算机学院的同学一起申报大创项目，请问跨学院组队是否需要额外流程或材料？',
-  },
-  {
-    q: '创新工坊的设备怎么预约？',
-    type: 'consult',
-    body: '想使用创新工坊的 3D 打印与嵌入式开发设备完成项目原型，请问预约方式、开放时间与材料费用是怎样的？',
-  },
-  {
-    q: '竞赛获奖如何认定学分？',
-    type: 'question',
-    body: '想确认中国国际大学生创新大赛等赛事的获奖认定标准，以及需要提交哪些材料才能完成学分认定。',
-  },
-  {
-    q: '希望门户增加新功能',
-    type: 'suggestion',
-    body: '建议门户增加以下功能：（请补充你的具体想法与使用场景）',
-  },
-];
-
-const SLA = [
-  { t: '在线咨询', d: '24 小时内首次响应，工作日优先处理' },
-  { t: '意见反馈', d: '3 个工作日内评估并给出处理计划' },
-  { t: '问题解答', d: '1-2 个工作日内由对应工作组答复' },
-  { t: '问卷投票', d: '投票结束后 3 日内公布统计结果' },
-];
 
 /* =============================================================================
  * 页面
@@ -233,7 +198,7 @@ export default function Feedback() {
         authorName: form.anonymous ? null : form.authorName.trim(),
         contact: form.anonymous ? null : form.contact.trim() || null,
       });
-      toast.success('留言已提交', form.anonymous ? '已匿名发布，我们会在承诺时限内回复' : '我们会通过你留下的联系方式回复');
+      toast.success('留言已提交', form.anonymous ? '已匿名发布，我们会尽快回复' : '我们会通过你留下的联系方式回复');
       setForm((f) => ({ ...f, title: '', content: '', anonymous: true, contact: '' }));
       setErrors({});
       setPage(1);
@@ -247,13 +212,6 @@ export default function Feedback() {
     } finally {
       setSubmitting(false);
     }
-  };
-
-  const applyQuick = (q: (typeof QUICK_QUESTIONS)[number]) => {
-    setForm((f) => ({ ...f, type: q.type, title: q.q, content: q.body }));
-    setErrors({});
-    setFormError(null);
-    formRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
   };
 
   return (
@@ -373,54 +331,6 @@ export default function Feedback() {
 
           {/* ---------- 右侧栏 ---------- */}
           <aside className="flex flex-col gap-4 lg:sticky lg:top-24 lg:self-start">
-            <Glass tone="soft" className="p-6" data-reveal="right">
-              <h3 className="flex items-center gap-2.5 text-[15px] font-semibold">
-                <HelpCircle className="h-4 w-4 text-primary" />
-                常见问题快捷入口
-              </h3>
-              <p className="mt-2 text-[12px] leading-relaxed text-muted-foreground">
-                点击任一条，自动填入右侧留言表单并定位到输入区。
-              </p>
-              <div className="mt-4 flex flex-col gap-1">
-                {QUICK_QUESTIONS.map((q) => (
-                  <button
-                    key={q.q}
-                    type="button"
-                    onClick={() => applyQuick(q)}
-                    className="group flex items-start gap-3 rounded-2xl px-3 py-2.5 text-left transition-colors duration-300 hover:bg-white/[0.05]"
-                  >
-                    <span className="mt-[6px] h-1.5 w-1.5 shrink-0 rounded-full bg-primary/80 transition-transform group-hover:scale-125" />
-                    <span className="min-w-0 flex-1 text-[13px] leading-snug text-foreground/85 transition-colors group-hover:text-primary">
-                      {q.q}
-                    </span>
-                    <ArrowRight className="mt-0.5 h-3.5 w-3.5 shrink-0 opacity-0 transition-all duration-300 group-hover:translate-x-0.5 group-hover:opacity-70" />
-                  </button>
-                ))}
-              </div>
-            </Glass>
-
-            <Glass tone="soft" className="p-6" data-reveal="right">
-              <h3 className="flex items-center gap-2.5 text-[15px] font-semibold">
-                <Timer className="h-4 w-4 text-[hsl(var(--warning))]" />
-                回复时效说明
-              </h3>
-              <ul className="mt-4 flex flex-col gap-3.5">
-                {SLA.map((s) => (
-                  <li key={s.t} className="flex items-start gap-3">
-                    <Clock className="mt-0.5 h-3.5 w-3.5 shrink-0 text-primary/80" />
-                    <div className="min-w-0">
-                      <p className="text-[13px] font-medium">{s.t}</p>
-                      <p className="mt-0.5 text-[12px] leading-relaxed text-muted-foreground">{s.d}</p>
-                    </div>
-                  </li>
-                ))}
-              </ul>
-              <p className="mt-5 flex items-start gap-2.5 rounded-2xl border border-white/8 bg-white/[0.03] px-4 py-3 text-[11.5px] leading-relaxed text-muted-foreground">
-                <Info className="mt-0.5 h-3.5 w-3.5 shrink-0 text-primary/70" />
-                节假日与考试周的响应时间可能延后，紧急事项请直接联系部门邮箱。
-              </p>
-            </Glass>
-
             <Glass tone="soft" className="p-6" data-reveal="right">
               <h3 className="flex items-center gap-2.5 text-[15px] font-semibold">
                 <BadgeCheck className="h-4 w-4 text-[hsl(var(--success))]" />

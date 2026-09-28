@@ -180,7 +180,6 @@ export default function About() {
             id="stats"
             eyebrow="By the Numbers"
             title="数据统计"
-            description="滚动到此处即播放数字动画，数据来自门户实时库表统计。"
           >
             {loading ? (
               <div className="grid grid-cols-2 gap-4 lg:grid-cols-4">
@@ -231,7 +230,7 @@ export default function About() {
             id="timeline"
             eyebrow="Milestones"
             title="发展历程"
-            description="从两个工作组到今天的技术基础设施，每一步都记录在案。"
+            description="部门大事记，每一步都记录在案。"
           >
             {loading ? (
               <div className="flex flex-col gap-4">

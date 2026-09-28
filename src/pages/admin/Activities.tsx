@@ -100,7 +100,7 @@ const FIELDS: FieldDef[] = [
     label: '活动地点',
     type: 'text',
     required: true,
-    placeholder: '例如：大学生活动中心 301 报告厅',
+    placeholder: '例如：学校报告厅 301',
   },
   {
     name: 'capacity',
