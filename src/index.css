@@ -77,11 +77,15 @@
        --tw-white  Tailwind 的 white：深色主题=白，浅色主题=墨色
        --tw-black  Tailwind 的 black：深色主题=黑，浅色主题=白
        --shade     投影色：深色主题用纯黑，浅色主题用带蓝的石板灰（纯黑投影在浅底上发脏）
-       --drawer    抽屉 / 侧栏底色 */
+       --drawer    抽屉 / 侧栏底色
+       --orb       光雾 / 指针聚光的色相：深色主题用白（提亮），
+                   浅色主题不能用白（白加白等于没加）也不能用墨（会变成脏影），
+                   改用一团淡天蓝 —— 和页面顶部那层天光是同一种光 */
     --tw-white: 255 255 255;
     --tw-black: 0 0 0;
     --shade: 0 0 0;
     --drawer: 7 9 14;
+    --orb: 255 255 255;
     color-scheme: dark;
   }
 
@@ -133,6 +137,7 @@
     --tw-black: 255 255 255;
     --shade: 71 85 105;
     --drawer: 248 250 252;
+    --orb: 132 176 235;
     color-scheme: light;
   }
 
@@ -409,21 +414,39 @@
         中间留 5px 的暗缝 —— 这条缝就是玻璃的厚度。
      3) 收紧几何。圆角 20/15px（原 22~26px 在小卡上过于圆润发胖），
         悬浮位移从 4px 降到 2px，把注意力交给内容而不是位移。
+
+     v2 优化：
+       · 外观全部收进 --card-* 变量，浅色主题只换变量、不重写结构；
+       · 外壳改为 ~88% 不透明：背后的光雾能极轻地透上来（「透光」），
+         但不加 backdrop-filter —— 一屏十几张卡，每张一层模糊代价太高；
+       · 描边拆成「外圈 1px + 上沿 1px 内倒角」两道，边缘更像玻璃的厚度；
+       · 按下有 1px 回落（:active），点击反馈更实在；
+       · 媒体板多一圈内描边，照片边缘不再和卡底糊在一起。
      ================================================================== */
   .card {
+    --card-bg:
+      linear-gradient(180deg, rgba(255, 255, 255, 0.05) 0%, rgba(255, 255, 255, 0.012) 42%, rgba(255, 255, 255, 0.028) 100%),
+      linear-gradient(180deg, rgba(10, 13, 20, 0.9) 0%, rgba(5, 7, 11, 0.92) 100%);
+    --card-ring: rgba(255, 255, 255, 0.075);
+    --card-ring-hover: rgba(255, 255, 255, 0.15);
+    --card-bevel: rgba(255, 255, 255, 0.045);
+    --card-spec: rgba(255, 255, 255, 0.32);
+    --card-drop: 0 1px 2px -1px rgba(0, 0, 0, 0.9), 0 20px 44px -30px rgba(0, 0, 0, 0.95);
+    --card-drop-hover: 0 1px 2px -1px rgba(0, 0, 0, 0.9), 0 28px 56px -30px rgba(0, 0, 0, 1),
+      0 0 30px -22px hsl(var(--primary) / 0.5);
+    --card-lift: hsl(var(--primary) / 0.1);
+
     position: relative;
     isolation: isolate;
     display: flex;
     flex-direction: column;
     border-radius: 20px;
     padding: 5px;
-    background:
-      linear-gradient(180deg, rgba(255, 255, 255, 0.05) 0%, rgba(255, 255, 255, 0.012) 42%, rgba(255, 255, 255, 0.028) 100%),
-      linear-gradient(180deg, #090c12 0%, #05070b 100%);
+    background: var(--card-bg);
     box-shadow:
-      inset 0 0 0 1px rgba(255, 255, 255, 0.07),
-      0 1px 2px -1px rgba(0, 0, 0, 0.9),
-      0 20px 44px -30px rgba(0, 0, 0, 0.95);
+      inset 0 0 0 1px var(--card-ring),
+      inset 0 1px 0 0 var(--card-bevel),
+      var(--card-drop);
     transition:
       box-shadow 0.42s cubic-bezier(0.22, 1, 0.36, 1),
       translate 0.42s cubic-bezier(0.22, 1, 0.36, 1);
@@ -435,13 +458,9 @@
     position: absolute;
     inset: 0 13px auto;
     height: 1px;
-    background: linear-gradient(
-      90deg,
-      transparent,
-      rgba(255, 255, 255, 0.32) 30%,
-      rgba(255, 255, 255, 0.05) 74%,
-      transparent
-    );
+    background: linear-gradient(90deg, transparent, var(--card-spec) 30%, transparent 74%);
+    opacity: 0.8;
+    transition: opacity 0.42s ease;
     pointer-events: none;
     z-index: 3;
   }
@@ -453,7 +472,7 @@
     inset: auto 0 0;
     height: 62%;
     border-radius: inherit;
-    background: linear-gradient(0deg, hsl(var(--primary) / 0.1), transparent 72%);
+    background: linear-gradient(0deg, var(--card-lift), transparent 72%);
     opacity: 0;
     transition: opacity 0.45s ease;
     pointer-events: none;
@@ -463,20 +482,31 @@
   .card:hover {
     translate: 0 -2px;
     box-shadow:
-      inset 0 0 0 1px rgba(255, 255, 255, 0.135),
-      0 1px 2px -1px rgba(0, 0, 0, 0.9),
-      0 28px 56px -30px rgba(0, 0, 0, 1),
-      0 0 30px -22px hsl(var(--primary) / 0.5);
+      inset 0 0 0 1px var(--card-ring-hover),
+      inset 0 1px 0 0 var(--card-bevel),
+      var(--card-drop-hover);
+  }
+  .card:hover::before {
+    opacity: 1;
   }
   .card:hover::after {
     opacity: 1;
+  }
+  /* 按下回落 1px：比 hover 快得多的过渡，手感更「实」 */
+  .card:active {
+    translate: 0 -1px;
+    transition-duration: 0.12s;
   }
   /* 卡片被键盘聚焦时给出同样的强调（外层 Link 持有焦点） */
   a:focus-visible .card,
   .card:focus-visible {
     box-shadow:
-      inset 0 0 0 1px hsl(var(--primary) / 0.5),
-      0 20px 44px -30px rgba(0, 0, 0, 0.95);
+      inset 0 0 0 1px hsl(var(--primary) / 0.55),
+      0 0 0 3px hsl(var(--primary) / 0.16),
+      var(--card-drop);
+  }
+  a:focus-visible:has(.card) {
+    outline: none;
   }
 
   /* 封面 / 媒体板：自带圆角与裁剪，永不依赖外壳裁剪 */
@@ -484,9 +514,18 @@
     position: relative;
     overflow: hidden;
     border-radius: 15px;
-    background: linear-gradient(160deg, rgba(255, 255, 255, 0.055), rgba(255, 255, 255, 0.012));
-    box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.055);
+    background: linear-gradient(160deg, rgb(var(--tw-white) / 0.055), rgb(var(--tw-white) / 0.012));
     z-index: 1;
+  }
+  /* 内描边画在最上层的伪元素上：压住照片边缘，四角不会露出底色毛边 */
+  .card-media::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    box-shadow: inset 0 0 0 1px rgb(var(--tw-white) / 0.07);
+    pointer-events: none;
+    z-index: 2;
   }
   .card-media img {
     display: block;
@@ -503,7 +542,7 @@
   .card-ph {
     position: absolute;
     inset: 0;
-    background-image: radial-gradient(rgba(255, 255, 255, 0.075) 1px, transparent 1px);
+    background-image: radial-gradient(rgb(var(--tw-white) / 0.075) 1px, transparent 1px);
     background-size: 20px 20px;
     opacity: 0.55;
   }
@@ -521,25 +560,25 @@
   /* 卡内分隔线 —— 左端亮、右端隐没，比通栏 border 更安静 */
   .card-rule {
     height: 1px;
-    background: linear-gradient(90deg, rgba(255, 255, 255, 0.13), rgba(255, 255, 255, 0.02) 62%, transparent);
+    background: linear-gradient(90deg, rgb(var(--tw-white) / 0.13), rgb(var(--tw-white) / 0.02) 62%, transparent);
   }
 
   /* 卡内图标砖 / 日期砖 */
   .card-tile {
     position: relative;
     border-radius: 13px;
-    background: linear-gradient(165deg, rgba(255, 255, 255, 0.075), rgba(255, 255, 255, 0.02));
+    background: linear-gradient(165deg, rgb(var(--tw-white) / 0.075), rgb(var(--tw-white) / 0.02));
     box-shadow:
-      inset 0 0 0 1px rgba(255, 255, 255, 0.08),
-      inset 0 1px 0 0 rgba(255, 255, 255, 0.1);
+      inset 0 0 0 1px rgb(var(--tw-white) / 0.08),
+      inset 0 1px 0 0 var(--card-bevel, rgba(255, 255, 255, 0.1));
   }
 
   /* 卡内次级动作（下载 / 前往） */
   .card-act {
     @apply inline-flex items-center gap-1.5 rounded-full px-3.5 py-1.5 text-[11.5px] font-medium transition-all duration-300;
     color: hsl(var(--foreground) / 0.88);
-    box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.11);
-    background: rgba(255, 255, 255, 0.05);
+    box-shadow: inset 0 0 0 1px rgb(var(--tw-white) / 0.11);
+    background: rgb(var(--tw-white) / 0.05);
   }
   .card-act:hover {
     color: hsl(var(--primary));
@@ -547,13 +586,19 @@
     box-shadow: inset 0 0 0 1px hsl(var(--primary) / 0.38);
   }
 
-  /* 媒体板底部压暗，保证浮在图上的文字可读 */
+  /* 媒体板底部压暗，保证浮在图上的文字可读。
+     照片上的压暗与文字不随主题翻转（照片永远是照片），
+     只有「没有封面图」时才跟随主题（见文件末尾浅色主题部分）。 */
   .card-scrim {
     position: absolute;
     inset: auto 0 0;
     height: 58%;
     background: linear-gradient(0deg, rgba(0, 0, 0, 0.8), rgba(0, 0, 0, 0.32) 42%, transparent);
     pointer-events: none;
+  }
+  .card-cap {
+    color: rgba(255, 255, 255, 0.85);
+    z-index: 1;
   }
 
   /* ------------------------------------------------------------------
@@ -604,7 +649,7 @@
   }
   .btn-ghost:hover {
     color: hsl(var(--foreground));
-    background: rgba(255, 255, 255, 0.07);
+    background: rgb(var(--tw-white) / 0.07);
   }
 
   .btn-danger {
@@ -677,8 +722,8 @@
      ------------------------------------------------------------------ */
   .chip {
     @apply inline-flex items-center gap-1.5 rounded-full border px-3 py-1 text-xs font-medium tracking-wide;
-    background: rgba(255, 255, 255, 0.055);
-    border-color: rgba(255, 255, 255, 0.11);
+    background: rgb(var(--tw-white) / 0.055);
+    border-color: rgb(var(--tw-white) / 0.11);
     color: hsl(var(--muted-foreground));
     backdrop-filter: blur(10px);
     -webkit-backdrop-filter: blur(10px);
@@ -759,8 +804,8 @@
     background: linear-gradient(
       90deg,
       transparent,
-      rgba(255, 255, 255, 0.14) 18%,
-      rgba(255, 255, 255, 0.14) 82%,
+      rgb(var(--tw-white) / 0.14) 18%,
+      rgb(var(--tw-white) / 0.14) 82%,
       transparent
     );
   }
@@ -768,8 +813,8 @@
   /* 网格背景（点线网格） */
   .grid-bg {
     background-image:
-      linear-gradient(to right, rgba(255, 255, 255, 0.038) 1px, transparent 1px),
-      linear-gradient(to bottom, rgba(255, 255, 255, 0.038) 1px, transparent 1px);
+      linear-gradient(to right, rgb(var(--tw-white) / 0.038) 1px, transparent 1px),
+      linear-gradient(to bottom, rgb(var(--tw-white) / 0.038) 1px, transparent 1px);
     background-size: 64px 64px;
     mask-image: radial-gradient(80% 60% at 50% 40%, #000 20%, transparent 78%);
     -webkit-mask-image: radial-gradient(80% 60% at 50% 40%, #000 20%, transparent 78%);
@@ -879,10 +924,27 @@
   }
   /* 顶栏玻璃 */
   .nav-glass {
-    background: linear-gradient(180deg, rgba(0, 0, 0, 0.78), rgba(0, 0, 0, 0.55));
+    background: linear-gradient(180deg, rgb(var(--tw-black) / 0.78), rgb(var(--tw-black) / 0.55));
     backdrop-filter: blur(22px) saturate(180%);
     -webkit-backdrop-filter: blur(22px) saturate(180%);
-    border-bottom: 1px solid rgba(255, 255, 255, 0.075);
+    border-bottom: 1px solid rgb(var(--tw-white) / 0.075);
+  }
+  /* 抽屉 / 侧栏底色（跟随主题） */
+  .surface-drawer {
+    background-color: rgb(var(--drawer) / 0.9);
+  }
+
+  /* 遮罩层 —— 不随主题翻转
+     ------------------------------------------------------------------
+     「压暗」在浅色主题里同样是压暗：白色遮罩会让浮在上面的白面板直接消失。
+     所以这里写死深色，只在浅色主题下略微收一点浓度（周围本来就亮，
+     不需要压到那么黑）。scrim-deep 用于灯箱：照片永远需要一个暗房。
+     ------------------------------------------------------------------ */
+  .scrim {
+    background-color: rgba(0, 0, 0, 0.72);
+  }
+  .scrim-deep {
+    background-color: rgba(0, 0, 0, 0.92);
   }
 }
 
@@ -1082,7 +1144,7 @@
   position: relative;
   height: 1px;
   overflow: hidden;
-  background: linear-gradient(90deg, rgba(255, 255, 255, 0.16), rgba(255, 255, 255, 0.03) 64%, transparent);
+  background: linear-gradient(90deg, rgb(var(--tw-white) / 0.16), rgb(var(--tw-white) / 0.03) 64%, transparent);
 }
 .st-rule::after {
   content: '';
@@ -1131,7 +1193,7 @@
   content: '';
   position: absolute;
   inset: 0;
-  background: linear-gradient(180deg, transparent, rgba(255, 255, 255, 0.85), transparent);
+  background: linear-gradient(180deg, transparent, rgb(var(--tw-white) / 0.85), transparent);
   animation: sti-scroll-cue 2.4s ease-in-out infinite;
 }
 
@@ -1213,3 +1275,269 @@ main section[id] {
     filter: none !important;
   }
 }
+
+/* ==========================================================================
+   浅色主题 —— 组件层覆盖
+   ==========================================================================
+
+   文件开头的 html.light 只换了 token（--background / --foreground / …）和两条
+   翻转通道（--tw-white / --tw-black）。靠这两条通道，全站几百处
+   bg-white/[0.05]、border-white/10、text-white/60 已经自动翻转成
+   「一点点墨色叠加」，不需要逐个改类名。
+
+   下面处理的是**翻转救不了的那部分** —— 组件层里写死的 rgba(255,255,255,…)
+   与 rgba(0,0,0,…)。它们表达的是「光从上面来」的物理关系，而不是前景色：
+   玻璃的顶沿高光在深浅两个主题里都应该是白的，投影在浅色底上必须从纯黑
+   换成带蓝的石板灰（纯黑投影压在浅灰上会发脏、显得像脏手印）。
+
+   为什么整块写在 @layer 之外：
+   未分层的规则在层叠里永远胜过 @layer components / utilities，
+   于是这里既能盖住组件类，也能盖住 Nav 里那种 shadow-[…] 的行内工具类，
+   不用堆 !important。代价是要**手动镜像每一个状态选择器** ——
+   写了 .lg 就必须补 .lg-hover:hover，否则 hover 态会被基态盖掉。
+   卡片是唯一的例外：.card 全部视觉都走 --card-* 变量，
+   所以这里只换变量值，hover / focus 规则原样复用。
+
+   玻璃参数参考 skill 里的两套：
+     · 亮面 #ffffff80 + 边框 #c8c8c87b + blur(20px)（Natayark）
+     · 卡片投影 0 1px 3px #0000001a, 0 1px 2px -1px #0000001a（Credit）
+   ========================================================================== */
+
+/* ---- 1. 液态玻璃基元 ------------------------------------------------- */
+html.light .lg,
+html.light .lg-strong,
+html.light .lg-thin,
+html.light .lg-soft {
+  border-color: rgba(15, 23, 38, 0.085);
+  box-shadow:
+    inset 0 1px 0 0 rgba(255, 255, 255, 0.9),
+    inset 0 -1px 0 0 rgba(15, 23, 38, 0.045),
+    0 1px 2px -1px rgb(var(--shade) / 0.26),
+    0 20px 44px -30px rgb(var(--shade) / 0.5);
+}
+
+html.light .lg {
+  background: linear-gradient(
+    150deg,
+    rgba(255, 255, 255, 0.78) 0%,
+    rgba(255, 255, 255, 0.6) 46%,
+    rgba(255, 255, 255, 0.72) 100%
+  );
+}
+
+html.light .lg-strong {
+  background: linear-gradient(
+    150deg,
+    rgba(255, 255, 255, 0.92) 0%,
+    rgba(255, 255, 255, 0.8) 48%,
+    rgba(255, 255, 255, 0.88) 100%
+  );
+  border-color: rgba(15, 23, 38, 0.1);
+  box-shadow:
+    inset 0 1px 0 0 rgba(255, 255, 255, 1),
+    inset 0 -1.5px 0 0 rgba(15, 23, 38, 0.05),
+    0 1px 3px -1px rgb(var(--shade) / 0.3),
+    0 34px 72px -34px rgb(var(--shade) / 0.6);
+}
+
+html.light .lg-thin {
+  background: linear-gradient(150deg, rgba(255, 255, 255, 0.72), rgba(255, 255, 255, 0.46));
+  border-color: rgba(15, 23, 38, 0.075);
+  box-shadow:
+    inset 0 1px 0 0 rgba(255, 255, 255, 0.85),
+    0 1px 2px -1px rgb(var(--shade) / 0.22),
+    0 12px 28px -22px rgb(var(--shade) / 0.45);
+}
+
+/* 平底玻璃：背后没内容可透，用「白纸 + 棱台」而不是半透明 */
+html.light .lg-soft {
+  background:
+    linear-gradient(168deg, rgba(255, 255, 255, 0.9) 0%, rgba(255, 255, 255, 0.4) 55%, rgba(255, 255, 255, 0.75) 100%),
+    linear-gradient(180deg, hsl(216 32% 99.5%) 0%, hsl(214 26% 97%) 100%);
+  border-color: rgba(15, 23, 38, 0.08);
+}
+
+/* 折射描边：受光方向不变（光始终来自左上），只是上沿由白变得更白、
+   下沿由黑变成很淡的墨 —— 深色主题那套 rgba(0,0,0,.4) 压在白面板上会发脏 */
+html.light .lg-refract::after {
+  box-shadow:
+    inset 0 1px 0 0 rgba(255, 255, 255, 0.95),
+    inset 1px 0 0 0 rgba(255, 255, 255, 0.6),
+    inset -1px 0 0 0 rgba(15, 23, 38, 0.055),
+    inset 0 -1px 0 0 rgba(15, 23, 38, 0.085);
+}
+
+html.light .lg-hover:hover {
+  border-color: rgba(15, 23, 38, 0.15);
+  box-shadow:
+    inset 0 1px 0 0 rgba(255, 255, 255, 1),
+    inset 0 -1px 0 0 rgba(15, 23, 38, 0.05),
+    0 1px 2px -1px rgb(var(--shade) / 0.3),
+    0 28px 56px -28px rgb(var(--shade) / 0.6),
+    0 0 30px -20px hsl(var(--primary) / 0.32);
+}
+
+/* 指针高光：面板本身约八成白，再叠一层「接近纯白」才看得出被照亮 */
+@media (hover: hover) and (pointer: fine) {
+  html.light .lg-sheen::before {
+    background: radial-gradient(
+      300px circle at var(--mx) var(--my),
+      rgba(255, 255, 255, 0.85),
+      rgba(255, 255, 255, 0.3) 44%,
+      transparent 70%
+    );
+  }
+}
+
+/* ---- 2. 卡片 ---------------------------------------------------------
+   只换变量：.card:hover / :active / :focus-visible 与 ::before / ::after
+   全都读这些变量，规则本身不用重写。
+   卡片保持半透明（约 .8 白），底下的冷白光雾会透上来一点点 ——
+   这是「玻璃拟态」里最值钱的一点透光感，而且不用再为每张卡付一次
+   backdrop-filter 的合成开销。
+   ---------------------------------------------------------------------- */
+html.light .card {
+  --card-bg: linear-gradient(
+    180deg,
+    rgba(255, 255, 255, 0.88) 0%,
+    rgba(255, 255, 255, 0.7) 45%,
+    rgba(255, 255, 255, 0.82) 100%
+  );
+  --card-ring: rgba(15, 23, 38, 0.085);
+  --card-ring-hover: rgba(15, 23, 38, 0.16);
+  --card-bevel: rgba(255, 255, 255, 0.95);
+  /* 「刻面」在浅色主题里是反过来的：黑卡上的那道刻痕是亮的，
+     白卡上就该是暗的 —— 纯白的镜面流光压在 88% 白的卡上等于没画 */
+  --card-spec: rgba(15, 23, 38, 0.1);
+  --card-drop: 0 1px 2px -1px rgb(var(--shade) / 0.3), 0 14px 30px -22px rgb(var(--shade) / 0.5);
+  --card-drop-hover: 0 1px 2px -1px rgb(var(--shade) / 0.32), 0 22px 46px -24px rgb(var(--shade) / 0.6),
+    0 0 26px -18px hsl(var(--primary) / 0.45);
+  --card-lift: hsl(var(--primary) / 0.06);
+}
+
+/* 有封面图时压暗层保持深色（照片永远是照片）；
+   只有占位底纹（.card-ph）那一档才跟着主题翻成「白→透明」，
+   否则浅色卡片的下半截会莫名其妙黑一块。 */
+html.light .card-media:has(.card-ph) .card-scrim {
+  background: linear-gradient(0deg, rgba(255, 255, 255, 0.92), rgba(255, 255, 255, 0.4) 42%, transparent);
+}
+html.light .card-media:has(.card-ph) .card-cap {
+  color: hsl(var(--foreground) / 0.72);
+}
+
+/* ---- 3. 按钮 ---------------------------------------------------------- */
+/* 主按钮仍是蓝胶囊，内部镜面本来就该是白的；只把外投影从「发光」
+   改成「落影」—— 浅底上过强的蓝色辉光会糊成一团 */
+html.light .btn-primary {
+  border-color: hsl(205 96% 38% / 0.45);
+  box-shadow:
+    inset 0 1px 0 0 rgba(255, 255, 255, 0.45),
+    inset 0 -1px 0 0 rgba(0, 0, 0, 0.12),
+    0 8px 20px -10px hsl(var(--primary) / 0.55);
+}
+html.light .btn-primary:hover {
+  box-shadow:
+    inset 0 1px 0 0 rgba(255, 255, 255, 0.55),
+    0 14px 30px -12px hsl(var(--primary) / 0.6);
+}
+
+html.light .btn-glass {
+  background: linear-gradient(150deg, rgba(255, 255, 255, 0.92), rgba(255, 255, 255, 0.68));
+  border-color: rgba(15, 23, 38, 0.1);
+  box-shadow:
+    inset 0 1px 0 0 rgba(255, 255, 255, 1),
+    0 1px 2px -1px rgb(var(--shade) / 0.28),
+    0 10px 24px -18px rgb(var(--shade) / 0.5);
+}
+html.light .btn-glass:hover {
+  background: linear-gradient(150deg, rgba(255, 255, 255, 1), rgba(255, 255, 255, 0.84));
+  border-color: rgba(15, 23, 38, 0.18);
+}
+
+/* ---- 4. 表单控件 ------------------------------------------------------
+   用 background-color 而不是 background 简写：简写会把 select.field
+   的下拉箭头 background-image 一起清掉。 */
+html.light .field {
+  background-color: rgba(255, 255, 255, 0.86);
+  border-color: rgba(15, 23, 38, 0.12);
+  box-shadow: inset 0 1px 2px 0 rgb(var(--shade) / 0.12);
+}
+html.light .field:focus {
+  background-color: #ffffff;
+  border-color: hsl(var(--primary) / 0.55);
+  box-shadow: 0 0 0 3px hsl(var(--primary) / 0.14);
+}
+html.light select.field option {
+  background: #ffffff;
+  color: hsl(var(--foreground));
+}
+
+/* ---- 5. 顶栏 ----------------------------------------------------------
+   .nav-glass 的底色本身走 --tw-black（已自动翻成白），这里只需要把
+   Nav.tsx 上那条写死的 rgba(0,0,0,1) 投影换成柔和的石板灰。 */
+html.light .nav-glass {
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.86), rgba(255, 255, 255, 0.66));
+  border-bottom-color: rgba(15, 23, 38, 0.08);
+  box-shadow: 0 10px 34px -26px rgb(var(--shade) / 0.85);
+}
+
+/* ---- 6. 渐变文字 ------------------------------------------------------
+   只换 background-image：background-clip / color / background-size
+   都由组件层那条规则继续提供。 */
+html.light .spotlight-text {
+  background-image: linear-gradient(178deg, hsl(220 38% 13%) 6%, hsl(217 30% 23%) 42%, hsl(215 18% 47%) 100%);
+}
+html.light .aurora-text {
+  background-image: linear-gradient(
+    96deg,
+    hsl(220 38% 15%) 0%,
+    hsl(212 62% 32%) 34%,
+    hsl(203 88% 44%) 64%,
+    hsl(220 38% 15%) 100%
+  );
+}
+
+/* ---- 7. 品牌标识 ------------------------------------------------------
+   Brand.tsx 里的 lm-* 类只是给 CSS 留的抓手；SVG 的 stop-color / fill
+   属性值会被这里的 CSS 覆盖，所以深色主题下完全不用写任何分支。
+   白 → 深藏青墨色，光束 → 主蓝。 */
+html.light .lm-ray {
+  stop-color: hsl(var(--primary));
+}
+html.light .lm-hot {
+  fill: hsl(var(--primary));
+  opacity: 0.9;
+}
+html.light .lm-ink {
+  stop-color: hsl(220 38% 15%);
+}
+html.light .lm-ink2 {
+  stop-color: hsl(212 52% 29%);
+}
+html.light .lm-ink3 {
+  stop-color: hsl(204 74% 41%);
+}
+html.light .lm-inkf {
+  fill: hsl(220 38% 15%);
+}
+
+/* ---- 8. 背景层 --------------------------------------------------------
+   轨道画布画的是叠加式的白色粒子。浅色主题下不改绘制逻辑，
+   用 invert 做明度翻转（invert 只动 RGB、不动 alpha，透明处仍然透明），
+   再用 hue-rotate 把被反相的蓝转回蓝，最后整体压一点浓度 ——
+   浅底的对比余量比深底小得多，同样的浓度会显得脏。 */
+html.light .orbital-canvas {
+  filter: invert(1) hue-rotate(180deg);
+  opacity: 0.55;
+}
+/* 冷白光雾同理：浅底上留一点点就够，多了就成了色偏 */
+html.light .liquid-orb {
+  opacity: 0.7;
+}
+
+/* ---- 9. 遮罩 ----------------------------------------------------------
+   周围本来就亮，不需要压到那么黑；但依然必须是深色（见 .scrim 的说明）。 */
+html.light .scrim {
+  background-color: rgba(15, 23, 38, 0.46);
+}
+

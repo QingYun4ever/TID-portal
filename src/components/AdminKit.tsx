@@ -1118,7 +1118,7 @@ export function MiniBars({
   );
 }
 
-export function Sparkline({ data, className, tone = '#38BDF8' }: { data: number[]; className?: string; tone?: string }) {
+export function Sparkline({ data, className, tone = 'hsl(var(--primary))' }: { data: number[]; className?: string; tone?: string }) {
   if (data.length < 2) return <div className={cn('h-10', className)} />;
   const max = Math.max(...data, 1);
   const min = Math.min(...data, 0);

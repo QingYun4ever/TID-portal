@@ -45,7 +45,7 @@ export default function Login() {
         <div className="shell">
           <Glass tone="strong" className="relative overflow-hidden p-6 sm:p-10 lg:p-14" data-reveal="scale">
             <GlowOrb className="-left-24 -top-28" size={520} color="rgba(186,230,253,.11)" />
-            <GlowOrb className="-bottom-32 -right-24" size={480} color="rgba(255,255,255,.055)" />
+            <GlowOrb className="-bottom-32 -right-24" size={480} color="rgb(var(--orb) / .055)" />
             <GridTexture className="opacity-40" size={52} />
 
             <div className="relative grid gap-12 lg:grid-cols-[1fr_minmax(0,430px)] lg:items-center lg:gap-16">

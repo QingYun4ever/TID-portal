@@ -439,7 +439,7 @@ export function Modal({
   return createPortal(
     <div className="fixed inset-0 z-[90] flex items-center justify-center p-4 sm:p-6">
       <div
-        className="absolute inset-0 bg-black/72 backdrop-blur-md"
+        className="scrim absolute inset-0 backdrop-blur-md"
         style={{ animation: 'sti-fade .25s ease both' }}
         onClick={onClose}
       />
@@ -540,7 +540,7 @@ export function Drawer({
   if (!open) return null;
   return createPortal(
     <div className="fixed inset-0 z-[90] flex">
-      <div className="absolute inset-0 bg-black/70 backdrop-blur-md" onClick={onClose} style={{ animation: 'sti-fade .25s ease both' }} />
+      <div className="scrim absolute inset-0 backdrop-blur-md" onClick={onClose} style={{ animation: 'sti-fade .25s ease both' }} />
       <div
         className={cn(
           'surface-drawer relative z-10 ml-auto flex h-full w-full flex-col border-l border-white/10 backdrop-blur-2xl',

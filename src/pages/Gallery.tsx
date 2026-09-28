@@ -674,7 +674,7 @@ function Lightbox({
   return createPortal(
     <div className="fixed inset-0 z-[100] flex flex-col" role="dialog" aria-modal="true" aria-label="图片查看器">
       <div
-        className="absolute inset-0 bg-black/92 backdrop-blur-xl"
+        className="scrim-deep absolute inset-0 backdrop-blur-xl"
         style={{ animation: 'sti-fade .25s ease both' }}
         onClick={onClose}
       />

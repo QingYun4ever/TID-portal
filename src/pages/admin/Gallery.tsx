@@ -1145,7 +1145,7 @@ export default function AdminGallery() {
       {/* ============================ 灯箱预览 ============================ */}
       {lightbox.open && lightboxItem && (
         <div className="fixed inset-0 z-[95] flex flex-col">
-          <div className="absolute inset-0 bg-black/88 backdrop-blur-md" onClick={closeLightbox} style={{ animation: 'sti-fade .25s ease both' }} />
+          <div className="scrim-deep absolute inset-0 backdrop-blur-md" onClick={closeLightbox} style={{ animation: 'sti-fade .25s ease both' }} />
 
           <div
             className="relative z-10 flex items-center justify-between gap-4 border-b border-white/8 px-5 py-3.5"

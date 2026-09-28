@@ -224,9 +224,9 @@ export default function AdminLayout() {
       {/* ---------------- 移动端抽屉导航 ---------------- */}
       {mobileNav && (
         <div className="fixed inset-0 z-[88] lg:hidden">
-          <div className="absolute inset-0 bg-black/75 backdrop-blur-md" onClick={() => setMobileNav(false)} />
+          <div className="scrim absolute inset-0 backdrop-blur-md" onClick={() => setMobileNav(false)} />
           <div
-            className="absolute inset-y-0 left-0 flex w-[min(88vw,300px)] flex-col border-r border-white/10 bg-[#070a0f]/94 backdrop-blur-2xl"
+            className="surface-drawer absolute inset-y-0 left-0 flex w-[min(88vw,300px)] flex-col border-r border-white/10 backdrop-blur-2xl"
             style={{ animation: 'sti-slide-left .32s cubic-bezier(.22,1,.36,1) both' }}
           >
             <div className="flex items-center justify-between border-b border-white/8 px-5 py-4">

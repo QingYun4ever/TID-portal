@@ -95,12 +95,12 @@ export function LiquidBackdrop({ className, intensity = 1 }: { className?: strin
         }}
       />
 
-      {/* 指针聚光 */}
+      {/* 指针聚光（--orb：深色主题是白光，浅色主题是淡天蓝 —— 浅底上白加白等于没加） */}
       <div
         className="absolute inset-0 hidden lg:block"
         style={{
           background:
-            'radial-gradient(500px circle at var(--px, 50%) var(--py, 30%), rgba(255,255,255,.05), transparent 62%)',
+            'radial-gradient(500px circle at var(--px, 50%) var(--py, 30%), rgb(var(--orb) / .055), transparent 62%)',
         }}
       />
 
@@ -119,11 +119,12 @@ export function LiquidBackdrop({ className, intensity = 1 }: { className?: strin
  * ========================================================================== */
 export function GlowOrb({
   className,
-  color = 'rgba(255,255,255,.07)',
+  color = 'rgb(var(--orb) / .07)',
   size = 420,
   style,
 }: {
   className?: string;
+  /** 默认走 --orb 通道：深色主题是冷白，浅色主题自动变成淡天蓝 */
   color?: string;
   size?: number;
   /** 用于错开 .st-breathe 的相位（animationDelay: '-6s'）等场合 */

@@ -50,12 +50,12 @@ export function Footer() {
       <div
         aria-hidden
         className="pointer-events-none absolute inset-x-0 top-0 h-[1px]"
-        style={{ background: 'linear-gradient(90deg, transparent, rgba(186,230,253,.35), transparent)' }}
+        style={{ background: 'linear-gradient(90deg, transparent, rgb(var(--orb) / .35), transparent)' }}
       />
       <div
         aria-hidden
         className="pointer-events-none absolute -top-40 left-1/2 h-[420px] w-[820px] -translate-x-1/2 rounded-full blur-[120px]"
-        style={{ background: 'radial-gradient(circle, rgba(186,230,253,.08), transparent 68%)' }}
+        style={{ background: 'radial-gradient(circle, rgb(var(--orb) / .09), transparent 68%)' }}
       />
 
       <div className="shell relative py-16 lg:py-20">

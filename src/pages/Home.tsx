@@ -761,7 +761,7 @@ function JoinBlock({ stats }: { stats: { projects?: number; activities?: number;
       <Glass tone="strong" className="relative overflow-hidden p-8 sm:p-12 lg:p-14" data-reveal="scale">
         {/* 尾屏留一对错相位的呼吸光晕 —— 14s 一次、只动 opacity/scale，纯合成 */}
         <GlowOrb className="st-breathe -left-24 -top-24" size={520} color="rgba(186,230,253,.11)" />
-        <GlowOrb className="st-breathe -bottom-32 -right-20" size={480} color="rgba(255,255,255,.06)" style={{ animationDelay: '-7s' }} />
+        <GlowOrb className="st-breathe -bottom-32 -right-20" size={480} color="rgb(var(--orb) / .06)" style={{ animationDelay: '-7s' }} />
         <GridTexture className="opacity-40" size={52} />
 
         <div className="relative grid gap-10 lg:grid-cols-[1.2fr_1fr] lg:items-center">

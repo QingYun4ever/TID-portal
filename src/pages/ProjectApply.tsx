@@ -789,7 +789,7 @@ function SuccessView({
     <div className="grid gap-8 lg:grid-cols-[minmax(0,1fr)_340px]" data-reveal="scale">
       <Glass tone="strong" className="relative overflow-hidden p-7 sm:p-10">
         <GlowOrb className="-right-24 -top-28" size={460} color="rgba(186,230,253,.085)" />
-        <GlowOrb className="-bottom-32 -left-24" size={420} color="rgba(255,255,255,.055)" />
+        <GlowOrb className="-bottom-32 -left-24" size={420} color="rgb(var(--orb) / .055)" />
         <div className="relative">
           <span className="flex h-14 w-14 items-center justify-center rounded-2xl border border-[hsl(var(--success))]/35 bg-[hsl(var(--success))]/12 text-[hsl(var(--success))]">
             <CheckCircle2 className="h-7 w-7" />

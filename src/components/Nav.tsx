@@ -177,7 +177,7 @@ export function Nav() {
                     <Avatar name={user.name} src={user.avatar} size={28} />
                     <span className="hidden max-w-[80px] truncate text-[13px] font-medium lg:inline">{user.name}</span>
                     {unread > 0 && (
-                      <span className="absolute -right-0.5 -top-0.5 flex h-4 min-w-4 items-center justify-center rounded-full bg-[hsl(var(--destructive))] px-1 text-[9px] font-bold text-white">
+                      <span className="absolute -right-0.5 -top-0.5 flex h-4 min-w-4 items-center justify-center rounded-full bg-[hsl(var(--destructive))] px-1 text-[9px] font-bold text-snow">
                         {unread > 9 ? '9+' : unread}
                       </span>
                     )}
@@ -394,7 +394,7 @@ function NavItem({
       <Icon className="h-4 w-4 text-muted-foreground" />
       {label}
       {!!badge && (
-        <span className="ml-auto flex h-4 min-w-4 items-center justify-center rounded-full bg-[hsl(var(--destructive))] px-1 text-[9px] font-bold text-white">
+        <span className="ml-auto flex h-4 min-w-4 items-center justify-center rounded-full bg-[hsl(var(--destructive))] px-1 text-[9px] font-bold text-snow">
           {badge > 9 ? '9+' : badge}
         </span>
       )}
@@ -416,7 +416,7 @@ function MobileMenu({
 }) {
   return (
     <div className="fixed inset-0 z-[85] xl:hidden">
-      <div className="absolute inset-0 bg-black/75 backdrop-blur-md" onClick={onClose} style={{ animation: 'sti-fade .25s ease both' }} />
+      <div className="scrim absolute inset-0 backdrop-blur-md" onClick={onClose} style={{ animation: 'sti-fade .25s ease both' }} />
       <div
         className="surface-drawer absolute inset-y-0 right-0 flex w-[min(90vw,380px)] flex-col border-l border-white/10 backdrop-blur-2xl"
         style={{ animation: 'sti-slide-right .35s cubic-bezier(.22,1,.36,1) both' }}
