@@ -46,6 +46,7 @@ const CAT_TONE: Record<string, 'primary' | 'accent' | 'success' | 'warning' | 'd
   ongoing: 'accent',
   competition: 'default',
   frontend: 'primary',
+  service: 'default',
 };
 
 export default function ProjectDetail() {
@@ -154,7 +155,7 @@ export default function ProjectDetail() {
         )}
         {demoUrl && (
           <a href={demoUrl} target="_blank" rel="noopener noreferrer" className="mt-6 inline-flex items-center gap-2 rounded-full border border-primary/40 bg-primary/15 px-5 py-3 text-sm font-medium text-primary transition-colors hover:bg-primary/25">
-            访问前端作品 <ArrowUpRight className="h-4 w-4" />
+            访问项目 <ArrowUpRight className="h-4 w-4" />
           </a>
         )}
       </PageHero>

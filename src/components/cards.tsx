@@ -289,7 +289,7 @@ export function ActivityCard({ activity, className }: { activity: any; className
  * 项目卡片
  * ========================================================================== */
 export function projectDemoUrl(project: { category?: string; demoUrl?: string | null }): string | null {
-  if (project.category !== 'frontend' || !project.demoUrl) return null;
+  if (project.category !== 'frontend' && project.category !== 'service' || !project.demoUrl) return null;
   try {
     const url = new URL(project.demoUrl);
     return url.protocol === 'https:' || url.protocol === 'http:' ? url.href : null;
@@ -316,7 +316,7 @@ export function ProjectCard({
         <img src={project.cover} alt="" loading="lazy" />
       ) : (
         <CoverFallback
-          label={project.category === 'frontend' ? 'WEB' : project.category === 'competition' ? 'AWARD' : 'STI'}
+          label={project.category === 'frontend' ? 'WEB' : project.category === 'service' ? 'TOOLS' : project.category === 'competition' ? 'AWARD' : 'STI'}
           icon={project.category === 'competition' ? <Trophy className="h-12 w-12 text-white/15" /> : undefined}
         />
       )}
@@ -327,7 +327,7 @@ export function ProjectCard({
         {demoUrl ? <ArrowUpRight className="h-4 w-4" /> : <ArrowRight className="h-4 w-4" />}
       </span>
       <span aria-hidden className="card-scrim" />
-      <span className="card-cap mono absolute bottom-3 left-3 text-[11px] tracking-[0.16em]">{project.year} / {project.category === 'frontend' ? 'DIGITAL' : 'INNOVATION'}</span>
+      <span className="card-cap mono absolute bottom-3 left-3 text-[11px] tracking-[0.16em]">{project.year} / {project.category === 'frontend' ? 'DIGITAL' : project.category === 'service' ? 'SERVICE' : 'INNOVATION'}</span>
     </div>
   );
   const card = (
@@ -336,7 +336,7 @@ export function ProjectCard({
       <div className={cn('card-body', featured && 'md:p-7')}>
         <div className="flex items-center gap-2 text-[11px] tracking-[0.12em] text-muted-foreground">
           <span className="h-px w-5 bg-primary/70" />
-          {project.category === 'frontend' ? '前端作品' : project.category === 'competition' ? '竞赛成果' : '项目档案'}
+          {project.category === 'frontend' ? '前端作品' : project.category === 'service' ? '工具服务' : project.category === 'competition' ? '竞赛成果' : '项目档案'}
         </div>
         <h3 className={cn('clamp-2 mt-3 font-semibold leading-snug transition-colors duration-300 group-hover:text-primary', featured ? 'text-xl' : size === 'sm' ? 'text-[15px]' : 'text-[17px]')}>
           {project.title}
@@ -347,7 +347,7 @@ export function ProjectCard({
         <CardFoot className="mt-4">
           <span className="clamp-1 min-w-0">{project.awards || project.team || cat}</span>
           <span className="flex shrink-0 items-center gap-1 text-primary">
-            {demoUrl ? <><ExternalLink className="h-3.5 w-3.5" /> 访问作品</> : <>查看详情 <ArrowRight className="h-3.5 w-3.5" /></>}
+            {demoUrl ? <><ExternalLink className="h-3.5 w-3.5" /> 访问项目</> : <>查看详情 <ArrowRight className="h-3.5 w-3.5" /></>}
           </span>
         </CardFoot>
       </div>

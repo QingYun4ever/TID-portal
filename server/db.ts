@@ -386,8 +386,41 @@ export function boolFields<T = Row>(row: Row | undefined, fields: string[]): T |
 /*  播种                                                                      */
 /* -------------------------------------------------------------------------- */
 const SEED_FLAG = 'seeded_v1';
+const SHOWCASE_FLAG = 'showcase_projects_2026';
+
+/** 一次性导入已确认的作品；已有记录不覆盖，后台删除后也不会在重启时复活。 */
+function seedShowcaseProjects() {
+  if (get('SELECT 1 FROM settings WHERE key=?', [SHOWCASE_FLAG])) return;
+  const projects = [
+    {
+      title: 'ToDoList 二开（支持上传）',
+      slug: 'todolist-upload',
+      category: 'frontend',
+      summary: '支持上传与待办事项管理的 ToDoList 二开作品。',
+      cover: 'https://img.paperchan.cn/file/1790604926786_image.png',
+      demoUrl: 'https://todo.paperchan.cn/',
+    },
+    {
+      title: 'CJLRouter 中转站',
+      slug: 'cjlrouter',
+      category: 'service',
+      summary: 'CJLRouter 中转站，提供在线模型服务入口。',
+      cover: 'https://img.paperchan.cn/file/1790604969304_image.png',
+      demoUrl: 'https://ai.qingyun.best/',
+    },
+  ];
+  tx(() => {
+    for (const project of projects) {
+      if (!get('SELECT 1 FROM projects WHERE slug=?', [project.slug])) {
+        insert('projects', { ...project, year: new Date().getFullYear(), status: 'published' });
+      }
+    }
+    run('INSERT INTO settings (key,value) VALUES (?,?)', [SHOWCASE_FLAG, now()]);
+  });
+}
 
 export function seedIfEmpty() {
+  seedShowcaseProjects();
   const flag = get<{ value: string }>('SELECT value FROM settings WHERE key=?', [SEED_FLAG]);
   if (flag) return;
   const hasUsers = get<{ c: number }>('SELECT COUNT(*) c FROM users')!.c > 0;
@@ -626,29 +659,15 @@ export function seed() {
   /* 样例留言已清空：留言由访客在门户「互动与反馈」提交，此处不再播种 */
 
   /* ---- 画廊 ---- */
+  /* 只播种有影像的分类：空分类会让画廊侧栏出现 0 张的条目 */
   const areas: [string, string | null, string][] = [
-    ['科技文化节', null, '历届校园科技文化节的现场记录'],
-    ['竞赛现场', null, '各大赛事的备赛与比赛瞬间'],
-    ['创新工坊', null, '动手实践与设备开放的日常'],
-    ['讲座与沙龙', null, '技术分享与思想碰撞'],
     ['活动影像', null, '活动影像'],
+    ['人形机器人', null, '人形机器人'],
+    ['全国人工智能创新挑战赛', null, '全国人工智能创新挑战赛'],
   ];
   const areaIds: number[] = [];
   areas.forEach(([name, parent, description], i) =>
     areaIds.push(insert('gallery_areas', { name, slug: slugify(name), parentId: null, description, sortOrder: i }))
-  );
-  // 二级区域
-  const subs: [string, number][] = [
-    ['2025 第四届', 0],
-    ['2024 第三届', 0],
-    ['国赛现场', 1],
-    ['省赛现场', 1],
-    ['3D 打印', 2],
-    ['电子实验', 2],
-    ['技术沙龙', 3],
-  ];
-  const subIds = subs.map(([name, p], i) =>
-    insert('gallery_areas', { name, slug: slugify(name) + '-' + i, parentId: areaIds[p], description: null, sortOrder: i })
   );
 
   const galleryUrls = [
@@ -663,15 +682,22 @@ export function seed() {
     'https://img.paperchan.cn/file/1790516056935_mmexport1790515673147.jpg',
     'https://img.paperchan.cn/file/1790516061279_mmexport1790515693630.jpg',
   ];
+  /* 影像 → 分类下标（对应上面的 areas）：01 与 09/10 属于挑战赛，
+     03/04/05/07/08 属于人形机器人，02 与 06 留在「活动影像」 */
+  const areaOfImage = [2, 0, 1, 1, 1, 0, 1, 1, 2, 2];
+  const perArea: number[] = [];
   galleryUrls.forEach((url, i) => {
+    const a = areaOfImage[i];
+    const sortOrder = perArea[a] ?? 0;
+    perArea[a] = sortOrder + 1;
     insert('gallery_images', {
-      areaId: areaIds[4],
+      areaId: areaIds[a],
       url,
       title: `活动影像 ${String(i + 1).padStart(2, '0')}`,
       description: null,
       width: 0,
       height: 0,
-      sortOrder: i,
+      sortOrder,
     });
   });
 

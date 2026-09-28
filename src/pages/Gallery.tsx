@@ -143,7 +143,6 @@ export default function Gallery() {
       <PageHero
         eyebrow="Gallery"
         title="活动画廊"
-        description="科技文化节、竞赛现场、创新工坊与讲座沙龙的影像记录。按分类浏览，点击任意图片进入全屏查看。"
         breadcrumb={[{ label: '活动画廊' }]}
       >
         <div className="flex flex-wrap items-center gap-x-3 gap-y-2 text-[12px] text-muted-foreground">

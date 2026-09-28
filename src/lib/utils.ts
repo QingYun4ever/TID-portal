@@ -133,6 +133,7 @@ export const PROJECT_CATEGORIES: Record<string, string> = {
   ongoing: '在研项目',
   competition: '竞赛成果',
   frontend: '前端作品',
+  service: '工具服务',
 };
 
 export const RESOURCE_CATEGORIES: Record<string, string> = {

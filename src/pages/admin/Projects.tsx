@@ -17,7 +17,7 @@ import {
 
 /* =============================================================================
  * 项目展示库 —— /admin/projects
- * 维护优秀 / 立项 / 结项 / 在研项目、竞赛成果与前端作品，含团队、成果与作品演示地址
+ * 维护优秀 / 立项 / 结项 / 在研项目、竞赛成果、前端作品与工具服务
  * ========================================================================== */
 
 interface ProjectRow {
@@ -46,6 +46,7 @@ const CAT_TONE: Record<string, 'accent' | 'primary' | 'success' | 'warning'> = {
   ongoing: 'warning',
   competition: 'accent',
   frontend: 'primary',
+  service: 'accent',
 };
 
 /** 年份筛选：门户数据集中在近四年 */
@@ -114,11 +115,11 @@ const FIELDS: FieldDef[] = [
   },
   {
     name: 'demoUrl',
-    label: '作品演示地址',
+    label: '项目访问地址',
     type: 'text',
     wide: true,
     placeholder: 'https://example.com',
-    hint: '前端作品可填写公开演示地址；建议使用 https://，仅支持 http(s) 链接。',
+    hint: '前端作品或工具服务可填写公开地址；建议使用 https://，仅支持 http(s) 链接。',
   },
   {
     name: 'summary',

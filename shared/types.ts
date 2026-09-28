@@ -90,7 +90,7 @@ export interface ActivitySignup {
 }
 
 /* ---------------------------- 创新项目与竞赛 ---------------------------- */
-export type ProjectCategory = 'excellent' | 'approved' | 'completed' | 'ongoing' | 'competition' | 'frontend';
+export type ProjectCategory = 'excellent' | 'approved' | 'completed' | 'ongoing' | 'competition' | 'frontend' | 'service';
 export type ApplyStatus = 'pending' | 'reviewing' | 'approved' | 'rejected';
 
 export interface Project {
