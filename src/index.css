@@ -794,8 +794,12 @@
   .shell-wide {
     @apply mx-auto w-full max-w-[1560px] px-5 sm:px-8;
   }
+  /* 内页分区的上下留白。
+     两个相邻分区之间的空白 = 上一个的 pb + 下一个的 pt，所以这里的数值要按「一半」来读：
+     lg 下 py-20 意味着分区之间有 160px 的间隔，已经足够把两块内容读成两件事。
+     之前是 py-40（分区间 320px ≈ 三分之一屏纯空白），在内容被精简之后就变成了大段空白。 */
   .section-pad {
-    @apply py-24 sm:py-32 lg:py-40;
+    @apply py-14 sm:py-16 lg:py-20;
   }
 
   /* 玻璃分隔线 */

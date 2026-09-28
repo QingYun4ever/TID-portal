@@ -476,16 +476,12 @@ export function seed() {
   for (const [key, title, content] of pages) insert('pages', { key, title, content });
 
   /* ---- 发展历程 ---- */
-  const timeline: [string, string, string][] = [
-    ['2015', '部门成立', '科技创新部正式成立，初期设立竞赛管理组与项目孵化组。'],
-    ['2017', '首届科技文化节', '首届校园科技文化节举办，参与人数突破 2000 人次。'],
-    ['2019', '成果展示平台上线', '部门首个线上成果展示平台上线，实现项目申报流程数字化。'],
-    ['2021', '竞赛信息聚合', '整合校内外 40 余项科技竞赛信息，建立统一的竞赛信息发布机制。'],
-    ['2023', '创新工坊落成', '创新工坊在大学生活动中心落成，配备 3D 打印与嵌入式开发设备。'],
-    ['2025', '斩获国赛金奖', '在中国国际大学生创新大赛中斩获金奖 2 项、银奖 5 项。'],
-    ['2026', '门户网站 3.0', '全新门户网站上线，打通竞赛、项目、活动、资源全流程。'],
-  ];
-  timeline.forEach(([year, title, description], i) => insert('timeline', { year, title, description, sortOrder: i }));
+  insert('timeline', {
+    year: '2026',
+    title: '部门官网上线',
+    description: '2026 年 9 月 28 日，科技创新部门户网站正式上线。',
+    sortOrder: 0,
+  });
 
   /* ---- 组织架构 ---- */
   const root = insert('org_nodes', {
@@ -495,15 +491,6 @@ export function seed() {
     description: '统筹部门整体工作',
     sortOrder: 0,
   });
-  const groups: [string, string][] = [
-    ['竞赛管理组', '负责科技竞赛的组织、报名、培训与选拔工作'],
-    ['项目孵化组', '负责大创项目的立项、中期检查、结题与成果转化'],
-    ['宣传设计组', '负责视觉设计、内容运营与新媒体系列宣传'],
-    ['技术服务组', '负责门户网站、服务器运维与技术工具支持'],
-  ];
-  groups.forEach(([name, description], i) =>
-    insert('org_nodes', { name, parentId: root, leader: null, description, sortOrder: i })
-  );
 
   const admitted: [string, string][] = [
     ['刘航麟', '高一-2班'],
@@ -561,7 +548,7 @@ export function seed() {
 <ul><li>系统申报：2026-03-01 至 2026-03-31</li><li>学院审核：2026-04-01 至 2026-04-10</li><li>学校评审：2026-04-11 至 2026-04-25</li><li>结果公示：2026-04-30</li></ul>
 <h2>四、申报方式</h2>
 <p>请登录<a href="/projects/apply">门户网站项目申报入口</a>在线填写申报书，并上传签字盖章后的 PDF 扫描件。系统将于 3 月 31 日 24:00 自动关闭。</p>
-<p>联系人：李岩　电话：010-8888 6666 转 305</p>
+<p>联系人：李岩　邮箱：notpaperxiang@gmail.com</p>
 <p style="text-align:right">科技创新部<br/>2026 年 2 月 28 日</p>`,
       tags: ['大创', '项目申报', '通知'],
       pinned: true,
@@ -675,223 +662,10 @@ export function seed() {
   });
 
   /* ---- 活动 ---- */
-  const activities: Array<Partial<Row>> = [
-    {
-      title: 'AI Agent 时代的技术栈选择 —— 技术沙龙第 12 期',
-      category: '技术沙龙',
-      location: '大学生活动中心 报告厅',
-      summary: '邀请两位一线工程师，聊聊大模型应用开发中的工程化实践与踩坑经验。',
-      content: `<p>本期技术沙龙邀请到两位在 AI 应用一线工作的工程师，围绕「大模型应用到底该怎么落地」这一话题展开。</p>
-<h2>分享主题</h2>
-<ul><li><b>《从 Demo 到产品：Agent 应用的工程化陷阱》</b>　主讲人：周航</li>
-<li><b>《RAG 不是银弹：知识库问答的真实准确率》</b>　主讲人：特邀嘉宾</li></ul>
-<h2>适合人群</h2>
-<p>对 AI 应用开发感兴趣的同学，无需前置基础，有编程经验更佳。</p>`,
-      startAt: daysFromNow(6, 19, 0),
-      endAt: daysFromNow(6, 21, 0),
-      signupEnd: daysFromNow(5, 23, 59),
-      capacity: 120,
-    },
-    {
-      title: '2026 年大学生创新创业训练计划申报宣讲会',
-      category: '宣讲会',
-      location: '大学生活动中心 301',
-      summary: '详细解读 2026 年度大创立项政策、申报书撰写要点与评审标准。',
-      content: `<p>为帮助同学们顺利申报 2026 年度大学生创新创业训练计划项目，特举办本次宣讲会。</p>
-<h2>内容提纲</h2>
-<ul><li>2026 年大创政策变化与经费支持力度</li><li>申报书撰写：从选题到技术路线</li><li>评审专家最看重的三个维度</li><li>往届优秀项目案例拆解</li><li>现场答疑</li></ul>`,
-      startAt: daysFromNow(3, 18, 30),
-      endAt: daysFromNow(3, 20, 30),
-      signupEnd: daysFromNow(3, 12, 0),
-      capacity: 200,
-    },
-    {
-      title: '创新工作坊：从 0 到 1 做出你的第一个硬件原型',
-      category: '工作坊',
-      location: '创新工坊（活动中心 401）',
-      summary: '两天动手实践，带你完成一个可运行的嵌入式小项目，材料与设备由部门提供。',
-      content: `<p>本工作坊为动手实践型，两天时间完成一个完整的硬件小项目。</p>
-<h2>你将收获</h2>
-<ul><li>嵌入式开发环境搭建与烧录流程</li><li>传感器数据采集与串口通信</li><li>3D 打印外壳建模基础</li><li>一个属于你自己的可运行原型</li></ul>
-<h2>注意事项</h2>
-<p>需自备笔记本电脑，Windows / macOS 均可。名额 30 人，按报名顺序录取。</p>`,
-      startAt: daysFromNow(11, 9, 0),
-      endAt: daysFromNow(12, 17, 0),
-      signupEnd: daysFromNow(9, 23, 59),
-      capacity: 30,
-    },
-    {
-      title: '第四届校园科技文化节 · 创新成果展',
-      category: '文化节',
-      location: '图书馆 一楼中庭',
-      summary: '展出全校 60 余项学生创新成果，现场设有互动体验区与项目路演环节。',
-      content: `<p>第四届校园科技文化节重磅环节——创新成果展，将在图书馆一楼中庭举行为期三天的展览。</p>
-<h2>展区分布</h2>
-<ul><li><b>A 区</b>　人工智能与具身智能</li><li><b>B 区</b>　智能硬件与机器人</li><li><b>C 区</b>　绿色能源与新材料</li><li><b>D 区</b>　数字人文与社会创新</li><li><b>互动体验区</b>　VR / 机械臂 / 3D 打印现场体验</li></ul>`,
-      startAt: daysFromNow(20, 9, 0),
-      endAt: daysFromNow(22, 18, 0),
-      capacity: 500,
-    },
-    {
-      title: '专利与知识产权实务讲座',
-      category: '讲座',
-      location: '线上（腾讯会议）',
-      summary: '专利代理人讲解大学生如何低成本、高效率地完成第一件专利布局。',
-      content: `<p>很多同学的项目技术不错，却因为不了解专利规则而错失保护时机。本次讲座由资深专利代理人主讲。</p>
-<h2>内容</h2>
-<ul><li>发明专利、实用新型、外观设计的区别与选择</li><li>技术交底书怎么写</li><li>学生申请的费用减免政策</li><li>常见驳回原因与规避</li></ul>`,
-      startAt: daysFromNow(-8, 19, 0),
-      endAt: daysFromNow(-8, 20, 30),
-      capacity: 300,
-    },
-    {
-      title: '往届国赛金奖团队经验分享会',
-      category: '分享会',
-      location: '大学生活动中心 报告厅',
-      summary: '三支国赛金奖团队现场复盘：从选题、组队到路演答辩的完整心路。',
-      content: `<p>三支在国赛中斩获金奖的团队将现场分享他们的备赛历程。</p>
-<h2>分享团队</h2>
-<ul><li>「芯光」存算一体芯片团队</li><li>「澜图」城市内涝预警团队</li><li>「织语」无障碍交互团队</li></ul>`,
-      startAt: daysFromNow(-20, 19, 0),
-      endAt: daysFromNow(-20, 21, 0),
-      capacity: 150,
-    },
-  ];
-  activities.forEach((a, i) => {
-    const id = insert('activities', {
-      title: a.title,
-      slug: slugify(String(a.title)),
-      summary: a.summary,
-      content: a.content,
-      location: a.location,
-      category: a.category,
-      startAt: a.startAt,
-      endAt: a.endAt,
-      signupStart: daysAgo(20),
-      signupEnd: a.signupEnd ?? null,
-      capacity: a.capacity ?? 100,
-      status: 'published',
-    });
-    // 报名数据
-    const n = [86, 142, 30, 233, 178, 121][i] ?? 40;
-    const names = ['陈曦', '刘思远', '孙佳怡', '赵子墨', '林一鸣', '吴桐', '郑好', '何雨', '马骁', '许清'];
-    const colleges = ['计算机科学与技术学院', '自动化学院', '微电子学院', '机械工程学院', '材料科学与工程学院'];
-    for (let k = 0; k < n; k++) {
-      try {
-        insert('activity_signups', {
-          activityId: id,
-          name: names[k % names.length] + (k > 9 ? String(k) : ''),
-          studentId: `2023${String(100000 + k).slice(0, 6)}`,
-          college: colleges[k % colleges.length],
-          major: '计算机科学与技术',
-          phone: `138${String(10000000 + k * 137).slice(0, 8)}`,
-          email: `stu${k}@university.edu.cn`,
-          checkedIn: i >= 4 ? 1 : 0,
-          createdAt: daysAgo(10 - Math.min(9, Math.floor(k / 20))),
-        });
-      } catch {
-        /* 忽略唯一索引冲突 */
-      }
-    }
-  });
+  /* 样例活动已清空：活动由后台「活动管理」录入，此处不再播种 */
 
   /* ---- 项目 ---- */
-  const projects: Array<Partial<Row>> = [
-    {
-      title: '「芯光」—— 面向边缘计算的低功耗存算一体芯片',
-      category: 'excellent',
-      summary: '基于阻变存储器的存算一体架构，能效比较同类边缘推理方案提升 3.2 倍，已完成三代流片验证。',
-      content: `<h2>项目简介</h2><p>随着边缘侧 AI 推理需求爆发，传统冯·诺依曼架构的「存储墙」问题日益突出。「芯光」项目基于 RRAM 阻变存储器构建存算一体宏单元，将乘累加运算下沉到存储阵列内部，从根本上消除了权重搬运带来的能耗。</p>
-<h2>技术亮点</h2><ul><li>定制 8T2R 存算单元，单元面积较同类设计缩小 27%</li><li>提出分层权重量化策略，在 ResNet-18 上精度损失 < 0.6%</li><li>能效比 42.6 TOPS/W，为同工艺数字加速器的 3.2 倍</li></ul>
-<h2>成果</h2><p>已授权发明专利 3 项，发表 SCI 二区论文 1 篇，获中国国际大学生创新大赛（2025）金奖。</p>`,
-      team: '芯光团队',
-      members: ['周航', '林一鸣', '许清', '马骁'],
-      advisor: '王建国 教授',
-      tags: ['芯片', '存算一体', '边缘计算'],
-      awards: '中国国际大学生创新大赛（2025）金奖',
-      year: 2025,
-    },
-    {
-      title: '「澜图」—— 城市内涝智能预警与调度系统',
-      category: 'excellent',
-      summary: '融合多源气象数据与管网拓扑模型的城市内涝预警系统，试点区域预警准确率 91.7%。',
-      content: `<h2>项目简介</h2><p>极端降雨频发背景下，城市内涝成为突出的公共安全问题。「澜图」通过融合雷达回波、地面雨量站、管网拓扑与地形高程数据，构建了分钟级的内涝积水预测模型，并给出泵站调度建议。</p>
-<h2>核心能力</h2><ul><li>30 分钟提前量积水深度预测，MAE 3.2cm</li><li>基于管网拓扑的积水溯源，定位溢流节点</li><li>泵站调度建议生成，降低峰值积水 24%</li></ul>
-<h2>落地情况</h2><p>已在三个城区完成试点部署，累计服务汛期 87 天。</p>`,
-      team: '澜图团队',
-      members: ['李岩', '吴桐', '郑好'],
-      advisor: '陈立 副教授',
-      tags: ['智慧城市', '时序预测', '数字孪生'],
-      awards: '中国国际大学生创新大赛（2025）金奖',
-      year: 2025,
-    },
-    {
-      title: '「织语」—— 面向听障人群的实时手语翻译手套',
-      category: 'completed',
-      summary: '基于柔性应变传感器与轻量时序模型的实时手语识别手套，识别 400 个常用词汇，准确率 94.3%。',
-      content: `<h2>项目简介</h2><p>听障人群在日常沟通中面临显著障碍。「织语」以柔性应变传感器编织成可穿戴手套，采集手部关节形变信号，通过轻量时序网络实时识别手语并转化为语音与文字。</p>
-<h2>技术要点</h2><ul><li>自研柔性应变传感纱线，可水洗、可长时间佩戴</li><li>端侧推理延迟 < 60ms，无需联网</li><li>400 词识别准确率 94.3%，句子级准确率 88.1%</li></ul>`,
-      team: '织语团队',
-      members: ['陈曦', '何雨', '孙佳怡'],
-      advisor: '刘敏 教授',
-      tags: ['无障碍', '可穿戴', '柔性传感'],
-      awards: '全国大学生电子设计竞赛 一等奖',
-      year: 2025,
-    },
-    {
-      title: '面向校园场景的多模态智能巡检机器人',
-      category: 'ongoing',
-      summary: '集视觉、激光雷达与语音交互于一体的校园巡检机器人，可实现自主导航与异常事件上报。',
-      content: `<h2>项目简介</h2><p>项目目标是构建一台可在校园开放环境中自主巡检的移动机器人，替代重复性人工巡查工作。</p>
-<h2>当前进度</h2><ul><li>✅ 底盘与线控改造完成</li><li>✅ 多传感器融合建图（LIO-SAM）跑通</li><li>🚧 异常事件识别模型训练中</li><li>⏳ 语音交互模块集成</li></ul>`,
-      team: '巡光团队',
-      members: ['赵子墨', '刘思远', '马骁', '林一鸣'],
-      advisor: '张海 教授',
-      tags: ['机器人', 'SLAM', '多模态'],
-      year: 2026,
-    },
-    {
-      title: '基于扩散模型的传统纹样智能生成与设计辅助工具',
-      category: 'approved',
-      summary: '面向非遗纹样的生成式设计工具，帮助设计师快速产出可商用的纹样方案。',
-      content: `<h2>项目简介</h2><p>传统纹样设计高度依赖经验，年轻设计师上手困难。本项目构建了包含 12,000 张标注纹样的数据集，微调扩散模型实现可控纹样生成。</p>
-<h2>核心功能</h2><ul><li>按母题、结构、配色条件生成</li><li>纹样矢量化与无缝拼接</li><li>版权合规性检测</li></ul>`,
-      team: '纹语团队',
-      members: ['吴桐', '何雨'],
-      advisor: '孙艺 副教授',
-      tags: ['AIGC', '设计工具', '非遗'],
-      year: 2026,
-    },
-    {
-      title: '校园共享实验设备预约与安全管理系统',
-      category: 'approved',
-      summary: '解决实验室设备预约信息不透明、安全培训记录缺失问题的管理系统。',
-      content: `<h2>项目简介</h2><p>针对实验设备「不知道有没有空、不知道谁能用、不知道会不会用」的痛点，构建统一预约与准入管理平台。</p>
-<h2>核心功能</h2><ul><li>设备实时状态与预约日历</li><li>安全培训与准入资格绑定</li><li>使用记录与耗材统计</li></ul>`,
-      team: '实验室数字化小组',
-      members: ['郑好', '许清'],
-      advisor: '王建国 教授',
-      tags: ['校园信息化', '设备管理'],
-      year: 2026,
-    },
-  ];
-  projects.forEach((p, i) => {
-    insert('projects', {
-      title: p.title,
-      slug: slugify(String(p.title)),
-      summary: p.summary,
-      content: p.content,
-      category: p.category,
-      year: p.year,
-      team: p.team,
-      members: JSON.stringify(p.members ?? []),
-      advisor: p.advisor,
-      tags: JSON.stringify(p.tags ?? []),
-      awards: p.awards ?? null,
-      status: 'published',
-      views: 340 + i * 156,
-    });
-  });
+  /* 样例项目已清空：项目由后台「项目展示库」录入，此处不再播种 */
 
   /* ---- 竞赛 ---- */
   const comps: Array<Partial<Row>> = [
@@ -1176,7 +950,6 @@ export function seed() {
   /* ---- 消息 ---- */
   const msgs: [number, string, string, boolean][] = [
     [4, '你的项目申报已通过初审', '「灵眸」室内导航系统已通过项目孵化组初审，请于 5 个工作日内提交补充材料。', false],
-    [4, '活动报名成功', '你已成功报名「AI Agent 时代的技术栈选择」技术沙龙，请准时参加。', true],
     [4, '新的竞赛信息', '中国国际大学生创新大赛（2026）校内报名已开放，截止时间 5 月 10 日。', true],
     [3, '你有 1 条待回复的留言', '有同学在留言板中询问大创跨学院组队问题，请及时回复。', false],
   ];
@@ -1188,10 +961,8 @@ export function seed() {
   const oplogs: [string, string, string][] = [
     ['发布文章', 'news', '发布《关于开展 2026 年度大学生创新创业训练计划项目立项申报的通知》'],
     ['审核通过', 'project', '审核通过项目申报「灵眸——面向视障人群的室内导航系统」'],
-    ['发布活动', 'activity', '发布活动「AI Agent 时代的技术栈选择 —— 技术沙龙第 12 期」'],
     ['上传图片', 'gallery', '批量上传 8 张科技文化节现场照片'],
     ['修改配置', 'settings', '更新门户公告栏与联系方式'],
-    ['导出数据', 'signup', '导出「2026 年大学生创新创业训练计划申报宣讲会」报名名单（142 条）'],
   ];
   oplogs.forEach(([action, target, detail], i) =>
     insert('operation_logs', {

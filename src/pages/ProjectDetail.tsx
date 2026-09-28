@@ -227,7 +227,6 @@ export default function ProjectDetail() {
                 指导教师：<span className="text-foreground/85">{project.advisor || '未填写'}</span>
               </p>
             </Glass>
-
           </div>
 
           {/* ============================= 侧栏 ============================= */}

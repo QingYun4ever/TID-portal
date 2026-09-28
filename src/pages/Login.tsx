@@ -140,7 +140,6 @@ export default function Login() {
           </p>
         </div>
       </section>
-      <div className="pb-16" />
     </div>
   );
 }

@@ -45,8 +45,10 @@ export function Footer() {
   const { settings } = useSettings();
   const year = new Date().getFullYear();
 
+  /* 页脚不再额外加 mt —— 每个页面自己的末尾留白（section-pad / pb-24）已经够了，
+     再叠一层 mt-20 就会在正文和页脚之间多出近 180px 的空白 */
   return (
-    <footer className="relative mt-20 overflow-hidden border-t border-white/8">
+    <footer className="relative overflow-hidden border-t border-white/8">
       <div
         aria-hidden
         className="pointer-events-none absolute inset-x-0 top-0 h-[1px]"

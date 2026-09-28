@@ -31,7 +31,8 @@ import { Chip, Glass, LinkButton, Section, Skeleton, Tabs } from '@/components/u
  * 首页 —— 下滑式「一屏一块」布局
  *
  * 布局约定：
- *   · 每个分区独占一整屏（<Screen> = <Section screen>）
+ *   · 每个分区是一「屏」（<Screen> = <Section screen>），高度取 min-h 而非固定一屏：
+ *     内容多就自然撑开，内容少也不会被拉成半屏空白
  *   · 相关内容合并到同一屏，共 8 屏
  *   · 卡片数量随分辨率自适应（useDensity），保证「一屏装满且不溢出」
  *   · 原生滚动，不劫持滚轮、不做整屏吸附（节奏由右侧导航轨道的锚点承担）
@@ -59,7 +60,7 @@ const SECTIONS = [
   { id: 'join', label: '加入我们' },
 ];
 
-/** 首页专用：让每个分区独占一整屏 */
+/** 首页专用：给每个分区一个「一屏」的下限（min-h），内容更多则自然撑开 */
 function Screen(props: React.ComponentProps<typeof Section>) {
   return <Section screen {...props} />;
 }
@@ -576,6 +577,10 @@ function ProjectCompetition({
                 <Skeleton className="h-[130px]" />
               </div>
             </>
+          ) : !projects.length ? (
+            <Glass tone="soft" className="flex min-h-[210px] items-center justify-center p-8 text-center text-sm text-muted-foreground">
+              项目展示库暂无内容，敬请期待
+            </Glass>
           ) : (
             <>
               {hero && (
@@ -706,7 +711,9 @@ function OrgMembers({ members, loading, dens }: { members: any[]; loading: boole
                   </span>
                   <p className="text-base font-medium">{root.name}</p>
                   <span className="text-sm text-muted-foreground">{root.leader}</span>
-                  <Chip className="ml-auto">{(root.children ?? []).length} 个工作组</Chip>
+                  {(root.children ?? []).length > 0 && (
+                    <Chip className="ml-auto">{(root.children ?? []).length} 个工作组</Chip>
+                  )}
                 </div>
                 <div className="grid gap-3.5 sm:grid-cols-2 lg:grid-cols-4">
                   {(root.children ?? []).map((c: any, i: number) => (
@@ -753,7 +760,7 @@ function OrgMembers({ members, loading, dens }: { members: any[]; loading: boole
 }
 
 /* =============================================================================
- * 8. 加入我们（独占一屏）
+ * 8. 加入我们（尾屏）
  * ========================================================================== */
 function JoinBlock({ stats }: { stats: { projects?: number; activities?: number; competitions?: number; galleryImages?: number } }) {
   return (

@@ -591,7 +591,13 @@ export function Section({
   className?: string;
   align?: 'left' | 'center';
   container?: 'shell' | 'wide' | 'none';
-  /** 独占一整屏（默认开启）—— 让下滑式滚动「一次滚轮 = 一整屏」步长恒定 */
+  /**
+   * 「一屏一块」模式（首页用，默认关闭）。
+   * 注意这里给的是 min-h 而不是 h：分区至少占到视口的 68%，内容更高就自然撑开。
+   * 不再用 min-h-dvh —— 一旦某一屏的内容装不满一整屏（比如画廊只有一张图、
+   * 组织架构数据为空），justify-center 就会在上下各留半屏空白，
+   * 相邻两屏叠起来就是一整屏什么都没有的「大段空白」。
+   */
   screen?: boolean;
 }) {
   const cont = container === 'shell' ? 'shell' : container === 'wide' ? 'shell-wide' : '';
@@ -600,7 +606,7 @@ export function Section({
       id={id}
       className={cn(
         'relative scroll-mt-24',
-        screen ? 'flex min-h-dvh flex-col justify-center pb-4 pt-20' : 'section-pad',
+        screen ? 'flex min-h-[68dvh] flex-col justify-center py-16 sm:py-20' : 'section-pad',
         className
       )}
     >
@@ -638,7 +644,11 @@ export function Section({
   );
 }
 
-/** 页面头部（内页用）—— 同样独占一整屏 */
+/**
+ * 页面头部（内页用）。
+ * pt 要压住那条 68px 的固定导航；pb 只负责和下方第一个分区的 pt 拼出呼吸感，
+ * 所以给得比 pt 小得多 —— 两边都给足反而会在标题和正文之间挖出一段空白。
+ */
 export function PageHero({
   eyebrow,
   title,
@@ -653,7 +663,7 @@ export function PageHero({
   breadcrumb?: { label: string; to?: string }[];
 }) {
   return (
-    <header className="relative overflow-hidden pb-12 pt-32 sm:pb-16 sm:pt-40">
+    <header className="relative overflow-hidden pb-10 pt-28 sm:pb-12 sm:pt-32">
       <div
         aria-hidden
         className="pointer-events-none absolute inset-x-0 top-0 h-[46vh]"

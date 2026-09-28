@@ -619,8 +619,6 @@ export default function Feedback() {
           </div>
         </div>
       </Section>
-
-      <div className="pb-24" />
     </div>
   );
 }

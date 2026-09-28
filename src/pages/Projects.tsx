@@ -109,7 +109,7 @@ export default function Projects() {
 
       <section className="shell pb-24">
         {/* ============================ 筛选栏 ============================ */}
-        <Glass tone="soft" className="mt-8 p-5" data-reveal>
+        <Glass tone="soft" className="p-5" data-reveal>
           <div className="flex flex-col gap-4 xl:flex-row xl:items-center xl:justify-between">
             <Tabs items={tabs} value={category} onChange={setCategory} size="sm" className="w-full xl:w-auto" />
             <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
