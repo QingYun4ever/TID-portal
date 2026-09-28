@@ -34,7 +34,7 @@ import {
 
 const PAGE_SIZE = 7;
 
-const CATEGORY_ORDER = ['competition', 'frontend', 'service', 'excellent', 'approved', 'completed', 'ongoing'] as const;
+const CATEGORY_ORDER = ['competition', 'frontend', 'service', 'hardware', 'excellent', 'approved', 'completed', 'ongoing'] as const;
 
 export default function Projects() {
   useTitle('创新项目');
@@ -89,7 +89,7 @@ export default function Projects() {
       <PageHero
         eyebrow="Innovation Showcase"
         title="创新项目展示库"
-        description="收录我们的竞赛成果、前端作品与工具服务，也记录从立项到结项的创新实践。点击带演示地址的卡片即可访问。"
+        description="收录竞赛成果、前端作品、工具服务与实体设计，也记录从立项到结项的创新实践。点击卡片查看作品。"
         breadcrumb={[{ label: '创新项目' }]}
       >
         <div className="flex flex-wrap items-center gap-2.5">

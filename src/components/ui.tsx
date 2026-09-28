@@ -5,6 +5,7 @@ import React, {
   useContext,
   useEffect,
   useId,
+  useLayoutEffect,
   useRef,
   useState,
 } from 'react';
@@ -725,13 +726,26 @@ export function Tabs({
   const listRef = useRef<HTMLDivElement>(null);
   const [indicator, setIndicator] = useState({ left: 0, width: 0, ready: false });
 
-  useEffect(() => {
-    const el = listRef.current?.querySelector<HTMLElement>(`[data-tab="${value}"]`);
-    if (el && listRef.current) {
-      const p = listRef.current.getBoundingClientRect();
+  /* 指示器位置必须在布局阶段量，否则首帧会先闪一下错位的高亮。
+     标签宽度在挂载后还会继续变：异步计数落位（「全部项目」→「全部项目 2」）、
+     Web 字体换入、容器变窄。只依赖 value / items.length 的话，数据到达时
+     不会重跑，指示器就停在首帧的旧宽度上 —— 点一下才恢复。
+     所以再挂一层 ResizeObserver 到每个标签：谁变宽谁触发重量。 */
+  useLayoutEffect(() => {
+    const list = listRef.current;
+    if (!list) return;
+    const measure = () => {
+      const el = list.querySelector<HTMLElement>(`[data-tab="${value}"]`);
+      if (!el) return;
+      const p = list.getBoundingClientRect();
       const r = el.getBoundingClientRect();
-      setIndicator({ left: r.left - p.left + listRef.current.scrollLeft, width: r.width, ready: true });
-    }
+      setIndicator({ left: r.left - p.left + list.scrollLeft, width: r.width, ready: true });
+    };
+    measure();
+    if (typeof ResizeObserver === 'undefined') return;
+    const ro = new ResizeObserver(measure);
+    for (const btn of list.querySelectorAll('button')) ro.observe(btn);
+    return () => ro.disconnect();
   }, [value, items.length]);
 
   return (

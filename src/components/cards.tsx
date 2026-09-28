@@ -2,6 +2,7 @@ import React from 'react';
 import { Link } from 'react-router';
 import type { Project } from '../../shared/types';
 import {
+  Box,
   ArrowRight,
   ArrowUpRight,
   Building2,
@@ -28,6 +29,8 @@ import {
   fnum,
 } from '@/lib/utils';
 import { Chip, Countdown, ProgressBar } from './ui';
+
+const ProjectModelViewer = React.lazy(() => import('./ProjectModelViewer'));
 
 /* =============================================================================
  * 内容卡片 —— 「刻面玻璃 / Etched Glass」
@@ -307,8 +310,10 @@ export function ProjectCard({
   size?: 'sm' | 'md' | 'lg';
   className?: string;
 }) {
+  const [viewerOpen, setViewerOpen] = React.useState(false);
   const cat = PROJECT_CATEGORIES[project.category] ?? project.category;
   const demoUrl = projectDemoUrl(project);
+  const modelUrl = project.modelUrl?.startsWith('/models/') && project.modelUrl.endsWith('.obj') ? project.modelUrl : null;
   const featured = size === 'lg';
   const media = (
     <div className={cn('card-media aspect-[16/10] shrink-0', featured && 'md:aspect-auto md:min-h-[260px] md:w-[46%]')}>
@@ -316,18 +321,18 @@ export function ProjectCard({
         <img src={project.cover} alt="" loading="lazy" />
       ) : (
         <CoverFallback
-          label={project.category === 'frontend' ? 'WEB' : project.category === 'service' ? 'TOOLS' : project.category === 'competition' ? 'AWARD' : 'STI'}
-          icon={project.category === 'competition' ? <Trophy className="h-12 w-12 text-white/15" /> : undefined}
+          label={modelUrl ? '3D' : project.category === 'frontend' ? 'WEB' : project.category === 'service' ? 'TOOLS' : project.category === 'competition' ? 'AWARD' : 'STI'}
+          icon={modelUrl ? <Box className="h-12 w-12 text-white/20" /> : project.category === 'competition' ? <Trophy className="h-12 w-12 text-white/15" /> : undefined}
         />
       )}
       <span className="absolute left-3 top-3 z-10 rounded-full border border-white/20 bg-black/45 px-3 py-1 text-[10px] font-medium tracking-[0.12em] text-white backdrop-blur-md">
         {cat}
       </span>
       <span className="absolute right-3 top-3 z-10 flex h-8 w-8 items-center justify-center rounded-full border border-white/20 bg-black/45 text-white backdrop-blur-md transition-colors group-hover:border-primary/60 group-hover:bg-primary/30">
-        {demoUrl ? <ArrowUpRight className="h-4 w-4" /> : <ArrowRight className="h-4 w-4" />}
+        {demoUrl ? <ArrowUpRight className="h-4 w-4" /> : modelUrl ? <Box className="h-4 w-4" /> : <ArrowRight className="h-4 w-4" />}
       </span>
       <span aria-hidden className="card-scrim" />
-      <span className="card-cap mono absolute bottom-3 left-3 text-[11px] tracking-[0.16em]">{project.year} / {project.category === 'frontend' ? 'DIGITAL' : project.category === 'service' ? 'SERVICE' : 'INNOVATION'}</span>
+      <span className="card-cap mono absolute bottom-3 left-3 text-[11px] tracking-[0.16em]">{project.year} / {modelUrl ? '3D OBJECT' : project.category === 'frontend' ? 'DIGITAL' : project.category === 'service' ? 'SERVICE' : 'INNOVATION'}</span>
     </div>
   );
   const card = (
@@ -336,7 +341,7 @@ export function ProjectCard({
       <div className={cn('card-body', featured && 'md:p-7')}>
         <div className="flex items-center gap-2 text-[11px] tracking-[0.12em] text-muted-foreground">
           <span className="h-px w-5 bg-primary/70" />
-          {project.category === 'frontend' ? '前端作品' : project.category === 'service' ? '工具服务' : project.category === 'competition' ? '竞赛成果' : '项目档案'}
+          {modelUrl ? '实体设计 · 3D' : project.category === 'frontend' ? '前端作品' : project.category === 'service' ? '工具服务' : project.category === 'competition' ? '竞赛成果' : '项目档案'}
         </div>
         <h3 className={cn('clamp-2 mt-3 font-semibold leading-snug transition-colors duration-300 group-hover:text-primary', featured ? 'text-xl' : size === 'sm' ? 'text-[15px]' : 'text-[17px]')}>
           {project.title}
@@ -347,11 +352,18 @@ export function ProjectCard({
         <CardFoot className="mt-4">
           <span className="clamp-1 min-w-0">{project.awards || project.team || cat}</span>
           <span className="flex shrink-0 items-center gap-1 text-primary">
-            {demoUrl ? <><ExternalLink className="h-3.5 w-3.5" /> 访问项目</> : <>查看详情 <ArrowRight className="h-3.5 w-3.5" /></>}
+            {modelUrl ? <><Box className="h-3.5 w-3.5" /> 查看 3D</> : demoUrl ? <><ExternalLink className="h-3.5 w-3.5" /> 访问项目</> : <>查看详情 <ArrowRight className="h-3.5 w-3.5" /></>}
           </span>
         </CardFoot>
       </div>
     </div>
+  );
+
+  if (modelUrl) return (
+    <>
+      <button type="button" onClick={() => setViewerOpen(true)} aria-label={`查看${project.title}三维模型`} className={cn('group block h-full w-full text-left', className)}>{card}</button>
+      {viewerOpen && <React.Suspense fallback={null}><ProjectModelViewer modelUrl={modelUrl} title={project.title} onClose={() => setViewerOpen(false)} /></React.Suspense>}
+    </>
   );
 
   return demoUrl ? (

@@ -551,7 +551,7 @@ function ProjectCompetition({
       id="projects"
       eyebrow="Showcase & Competitions"
       title="创新成果与竞赛信息"
-      description="项目展示库覆盖优秀、立项、结项与在研项目；竞赛信息聚合，倒计时提醒不错过截止。"
+      description="展示竞赛成果、前端作品、工具服务与实体设计；竞赛日历同步提醒报名截止。"
       action={
         <>
           <LinkButton to="/projects">

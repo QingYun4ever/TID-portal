@@ -115,7 +115,7 @@ CREATE TABLE IF NOT EXISTS projects (
   id INTEGER PRIMARY KEY AUTOINCREMENT,
   title TEXT NOT NULL,
   slug TEXT NOT NULL UNIQUE,
-  cover TEXT, demoUrl TEXT, summary TEXT NOT NULL DEFAULT '', content TEXT NOT NULL DEFAULT '',
+  cover TEXT, demoUrl TEXT, modelUrl TEXT, summary TEXT NOT NULL DEFAULT '', content TEXT NOT NULL DEFAULT '',
   category TEXT NOT NULL DEFAULT 'ongoing',
   year INTEGER NOT NULL DEFAULT 2026,
   team TEXT NOT NULL DEFAULT '', members TEXT NOT NULL DEFAULT '[]',
@@ -280,6 +280,7 @@ const MIGRATIONS: [string, string, string][] = [
   ['users', 'oidcSubject', 'TEXT'],
   ['articles', 'rejectReason', 'TEXT'],
   ['projects', 'demoUrl', 'TEXT'],
+  ['projects', 'modelUrl', 'TEXT'],
   ['project_applications', 'reviewNote', 'TEXT'],
 ];
 
@@ -387,6 +388,8 @@ export function boolFields<T = Row>(row: Row | undefined, fields: string[]): T |
 /* -------------------------------------------------------------------------- */
 const SEED_FLAG = 'seeded_v1';
 const SHOWCASE_FLAG = 'showcase_projects_2026';
+const NFC_CARD_FLAG = 'showcase_nfc_card_2026';
+const DEPT_TOOLS_FLAG = 'showcase_dept_tools_2026';
 
 /** 一次性导入已确认的作品；已有记录不覆盖，后台删除后也不会在重启时复活。 */
 function seedShowcaseProjects() {
@@ -418,9 +421,78 @@ function seedShowcaseProjects() {
     run('INSERT INTO settings (key,value) VALUES (?,?)', [SHOWCASE_FLAG, now()]);
   });
 }
+/** 部门实体卡片单独导入，已存在的项目和后台后续编辑保持原样。 */
+function seedDepartmentCard() {
+  if (get('SELECT 1 FROM settings WHERE key=?', [NFC_CARD_FLAG])) return;
+  tx(() => {
+    if (!get('SELECT 1 FROM projects WHERE slug=?', ['department-nfc-card'])) {
+      insert('projects', {
+        title: '科技创新部 NFC 卡片',
+        slug: 'department-nfc-card',
+        category: 'hardware',
+        summary: '部门 NFC 卡片 PCB 三维设计，可拖拽旋转、滚轮放大查看。',
+        modelUrl: '/models/nfc-card.obj',
+        cover: '/models/nfc-card-cover.svg',
+        year: new Date().getFullYear(),
+        status: 'published',
+      });
+    }
+    run('INSERT INTO settings (key,value) VALUES (?,?)', [NFC_CARD_FLAG, now()]);
+  });
+}
+
+/** 部门自建工具单独导入，归属「工具服务」；已存在的 slug 不覆盖，后台删除后不会复活。 */
+function seedDepartmentTools() {
+  if (get('SELECT 1 FROM settings WHERE key=?', [DEPT_TOOLS_FLAG])) return;
+  const tools = [
+    {
+      title: 'OIDC 服务',
+      slug: 'oidc-service',
+      summary: '统一身份认证（OIDC）服务入口。',
+      cover: 'https://img.paperchan.cn/file/1790605473010_image.png',
+      demoUrl: 'https://auth.cjlwall.cc/',
+    },
+    {
+      title: '部门博客',
+      slug: 'department-blog',
+      summary: '部门博客站点入口。',
+      cover: 'https://img.paperchan.cn/file/1790605507314_image.png',
+      demoUrl: 'https://blog.cjlwall.cc/',
+    },
+    {
+      title: '意见箱',
+      slug: 'feedback-box',
+      summary: '意见与建议收集入口。',
+      cover: 'https://img.paperchan.cn/file/1790605550132_image.png',
+      demoUrl: 'https://yjx.qingyun.best/',
+    },
+    {
+      title: '点名器',
+      slug: 'roll-caller',
+      summary: '随机点名工具。',
+      cover: 'https://img.paperchan.cn/file/1790605584294_image.png',
+      demoUrl: 'https://roll.paperchan.cn/',
+    },
+  ];
+  tx(() => {
+    for (const tool of tools) {
+      if (!get('SELECT 1 FROM projects WHERE slug=?', [tool.slug])) {
+        insert('projects', {
+          ...tool,
+          category: 'service',
+          year: new Date().getFullYear(),
+          status: 'published',
+        });
+      }
+    }
+    run('INSERT INTO settings (key,value) VALUES (?,?)', [DEPT_TOOLS_FLAG, now()]);
+  });
+}
 
 export function seedIfEmpty() {
   seedShowcaseProjects();
+  seedDepartmentCard();
+  seedDepartmentTools();
   const flag = get<{ value: string }>('SELECT value FROM settings WHERE key=?', [SEED_FLAG]);
   if (flag) return;
   const hasUsers = get<{ c: number }>('SELECT COUNT(*) c FROM users')!.c > 0;

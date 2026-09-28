@@ -90,7 +90,7 @@ export interface ActivitySignup {
 }
 
 /* ---------------------------- 创新项目与竞赛 ---------------------------- */
-export type ProjectCategory = 'excellent' | 'approved' | 'completed' | 'ongoing' | 'competition' | 'frontend' | 'service';
+export type ProjectCategory = 'excellent' | 'approved' | 'completed' | 'ongoing' | 'competition' | 'frontend' | 'service' | 'hardware';
 export type ApplyStatus = 'pending' | 'reviewing' | 'approved' | 'rejected';
 
 export interface Project {
@@ -99,6 +99,7 @@ export interface Project {
   slug: string;
   cover: string | null;
   demoUrl: string | null;
+  modelUrl: string | null;
   summary: string;
   content: string;
   category: ProjectCategory;

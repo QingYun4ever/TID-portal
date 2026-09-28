@@ -26,6 +26,7 @@ interface ProjectRow {
   slug: string;
   cover: string | null;
   demoUrl: string | null;
+  modelUrl: string | null;
   summary: string;
   content: string;
   category: string;
@@ -47,6 +48,7 @@ const CAT_TONE: Record<string, 'accent' | 'primary' | 'success' | 'warning'> = {
   competition: 'accent',
   frontend: 'primary',
   service: 'accent',
+  hardware: 'accent',
 };
 
 /** 年份筛选：门户数据集中在近四年 */
@@ -120,6 +122,14 @@ const FIELDS: FieldDef[] = [
     wide: true,
     placeholder: 'https://example.com',
     hint: '前端作品或工具服务可填写公开地址；建议使用 https://，仅支持 http(s) 链接。',
+  },
+  {
+    name: 'modelUrl',
+    label: '三维模型路径',
+    type: 'text',
+    wide: true,
+    placeholder: '/models/nfc-card.obj',
+    hint: '实体设计可填写站内 /models/ 目录下的 OBJ 模型路径，配套同名 MTL 材质。',
   },
   {
     name: 'summary',
@@ -290,7 +300,7 @@ export default function Projects() {
 
       <ResourceManager<ProjectRow>
         title="项目展示库"
-        description="维护项目与竞赛成果、前端作品，上传封面并填写团队、获奖信息或公开演示地址。"
+        description="维护竞赛成果、前端作品、工具服务与实体设计；上传封面，填写演示地址或站内 OBJ 模型路径。"
         resource="projects"
         fields={FIELDS}
         columns={COLUMNS}

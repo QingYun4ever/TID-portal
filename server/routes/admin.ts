@@ -165,7 +165,7 @@ adminRoutes.route(
     table: 'projects',
     label: '项目',
     fields: [
-      'title', 'slug', 'cover', 'demoUrl', 'summary', 'content', 'category', 'year', 'team',
+      'title', 'slug', 'cover', 'demoUrl', 'modelUrl', 'summary', 'content', 'category', 'year', 'team',
       'members', 'advisor', 'tags', 'awards', 'status',
     ],
     search: ['title', 'team', 'advisor'],
