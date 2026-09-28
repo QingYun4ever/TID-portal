@@ -28,15 +28,13 @@ import {
 
 /* =============================================================================
  * 创新项目展示库（/projects）
- *  - 仅展示项目成果，支持类别、年份与关键词筛选
- *  - Tabs（全部 / 优秀 / 立项 / 结项 / 在研，带 meta.counts 数量）
- *  - 年份筛选（meta.years）+ 搜索 + 分页
- *  - 第一个「优秀项目」用 ProjectCard size="lg" 突出展示，其余网格排布
+ *  - 分类、年份与关键词筛选，支持竞赛成果和可访问的前端作品
+ *  - 首张精选宽幅封面，其余缩略图网格；由后台维护封面和作品地址
  * ========================================================================== */
 
 const PAGE_SIZE = 7;
 
-const CATEGORY_ORDER = ['excellent', 'approved', 'completed', 'ongoing'] as const;
+const CATEGORY_ORDER = ['competition', 'frontend', 'excellent', 'approved', 'completed', 'ongoing'] as const;
 
 export default function Projects() {
   useTitle('创新项目');
@@ -91,7 +89,7 @@ export default function Projects() {
       <PageHero
         eyebrow="Innovation Showcase"
         title="创新项目展示库"
-        description="覆盖优秀项目、立项项目、结项项目与在研项目，展示技术路线、团队构成与获奖成果。"
+        description="收录我们的竞赛成果与前端作品，也记录从立项到结项的创新实践。点击作品封面，即可访问在线演示。"
         breadcrumb={[{ label: '创新项目' }]}
       >
         <div className="flex flex-wrap items-center gap-2.5">
@@ -100,7 +98,7 @@ export default function Projects() {
             共收录 <span className="mono ml-1 text-foreground">{fnum(sum)}</span> 个项目
           </Chip>
           {CATEGORY_ORDER.map((c) => (
-            <Chip key={c} tone={c === 'excellent' ? 'warning' : c === 'approved' ? 'primary' : c === 'completed' ? 'success' : 'default'}>
+            <Chip key={c} tone={c === 'excellent' || c === 'frontend' ? 'primary' : 'default'}>
               {PROJECT_CATEGORIES[c]} {counts[c] ?? 0}
             </Chip>
           ))}
@@ -110,9 +108,9 @@ export default function Projects() {
       <section className="shell pb-24">
         {/* ============================ 筛选栏 ============================ */}
         <Glass tone="soft" className="p-5" data-reveal>
-          <div className="flex flex-col gap-4 xl:flex-row xl:items-center xl:justify-between">
-            <Tabs items={tabs} value={category} onChange={setCategory} size="sm" className="w-full xl:w-auto" />
-            <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
+          <div className="flex flex-col gap-4">
+            <Tabs items={tabs} value={category} onChange={setCategory} size="sm" className="w-full min-w-0" />
+            <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-end">
               <Select
                 value={year}
                 onChange={(e) => setYear(e.target.value)}

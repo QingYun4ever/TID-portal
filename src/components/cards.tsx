@@ -9,6 +9,7 @@ import {
   Clock,
   Download,
   Eye,
+  FileType2,
   ExternalLink,
   MapPin,
   Pin,
