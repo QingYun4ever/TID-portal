@@ -12,11 +12,14 @@ import {
   FileText,
   Layers,
   MessageSquare,
+  Pause,
+  Play,
   Rocket,
   Trophy,
   Users,
 } from 'lucide-react';
 
+import type { GalleryImage } from '../../shared/types';
 import { PublicApi } from '@/lib/api';
 import { useApi, useActiveSection, useScrollVar } from '@/lib/hooks';
 import { NEWS_CATEGORIES, cn, fnum, plain } from '@/lib/utils';
@@ -622,18 +625,56 @@ function ProjectCompetition({
 }
 
 /* =============================================================================
- * 6. 活动画廊（单张横向滚动）
+ * 6. 活动画廊（层叠轮播）
  * ========================================================================== */
-function GalleryBlock({ images, loading }: { images: any[]; loading: boolean }) {
-  const track = useRef<HTMLDivElement>(null);
+function GalleryBlock({ images, loading }: { images: GalleryImage[]; loading: boolean }) {
+  const gallery = useRef<HTMLDivElement>(null);
+  const gesture = useRef<{ x: number; y: number } | null>(null);
+  const suppressClick = useRef(false);
   const [active, setActive] = useState(0);
-  const move = (direction: number) => {
-    const el = track.current;
-    if (!el) return;
-    const next = Math.max(0, Math.min(images.length - 1, active + direction));
-    setActive(next);
-    const instant = window.matchMedia('(prefers-reduced-motion: reduce)').matches || document.documentElement.dataset.motionInput === 'keyboard';
-    el.scrollTo({ left: next * el.clientWidth, behavior: instant ? 'instant' : 'smooth' });
+  const [paused, setPaused] = useState(false);
+  const [hovered, setHovered] = useState(false);
+  const [visible, setVisible] = useState(false);
+  const [pageVisible, setPageVisible] = useState(true);
+  const [reducedMotion, setReducedMotion] = useState(false);
+  const count = images.length;
+  const current = count ? active % count : 0;
+  const playing = count > 1 && !loading && !paused && !hovered && visible && pageVisible && !reducedMotion;
+
+  useEffect(() => {
+    const media = window.matchMedia('(prefers-reduced-motion: reduce)');
+    const updateMotion = () => {
+      setReducedMotion(media.matches);
+      if (media.matches) setPaused(true);
+    };
+    const updateVisibility = () => setPageVisible(!document.hidden);
+    updateMotion();
+    updateVisibility();
+    media.addEventListener('change', updateMotion);
+    document.addEventListener('visibilitychange', updateVisibility);
+    const observer = new IntersectionObserver(([entry]) => setVisible(entry.isIntersecting && entry.intersectionRatio >= 0.25), { threshold: 0.25 });
+    if (gallery.current) observer.observe(gallery.current);
+    return () => {
+      media.removeEventListener('change', updateMotion);
+      document.removeEventListener('visibilitychange', updateVisibility);
+      observer.disconnect();
+    };
+  }, []);
+
+  useEffect(() => {
+    setActive((index) => count ? index % count : 0);
+  }, [count]);
+
+  useEffect(() => {
+    if (!playing) return;
+    const timer = window.setInterval(() => setActive((index) => (index + 1) % count), 5000);
+    return () => window.clearInterval(timer);
+  }, [playing, count]);
+
+  const select = (index: number) => {
+    if (!count) return;
+    setPaused(true);
+    setActive((index + count) % count);
   };
 
   return (
@@ -641,42 +682,107 @@ function GalleryBlock({ images, loading }: { images: any[]; loading: boolean }) 
       id="gallery"
       eyebrow="Gallery"
       title="活动画廊"
-      description="逐张浏览部门活动影像，左右滑动或使用箭头切换。"
-      action={
-        <LinkButton to="/gallery">
-          进入画廊 <ArrowRight className="h-4 w-4" />
-        </LinkButton>
-      }
+      description="影像在此展开。自动轮播，可暂停细看，也可滑动或使用箭头切换。"
+      action={<LinkButton to="/gallery">进入画廊 <ArrowRight className="h-4 w-4" /></LinkButton>}
     >
-      {loading ? (
-        <Skeleton className="h-[min(55vh,560px)] min-h-[250px] w-full" />
-      ) : images.length ? (
-        <div aria-label="活动影像" aria-roledescription="轮播图">
-          <div
-            ref={track}
-            className="no-scrollbar flex snap-x snap-mandatory overflow-x-auto overscroll-x-contain rounded-2xl scroll-smooth"
-            onScroll={(e) => setActive(Math.round(e.currentTarget.scrollLeft / e.currentTarget.clientWidth))}
-            tabIndex={0}
-            aria-label="左右滚动浏览活动影像"
-          >
-            {images.map((img: any, i: number) => (
-              <div key={img.id} className="relative h-[min(55vh,560px)] min-h-[250px] w-full shrink-0 snap-start overflow-hidden bg-black/45" aria-label={`${i + 1} / ${images.length}: ${img.title}`}>
-                <img src={img.url} alt={img.title} loading={i === 0 ? 'eager' : 'lazy'} className="h-full w-full object-contain" />
-                <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/75 to-transparent px-5 pb-5 pt-12 text-sm text-white">{img.title}</div>
-              </div>
-            ))}
-          </div>
-          <div className="mt-4 flex items-center justify-between gap-4">
-            <span className="mono text-xs tabular-nums text-muted-foreground">{active + 1} / {images.length}</span>
-            <div className="flex gap-2">
-              <button type="button" onClick={() => move(-1)} disabled={active === 0} aria-label="上一张" className="rounded-full border border-white/15 p-2.5 text-foreground transition hover:border-primary/50 disabled:cursor-not-allowed disabled:opacity-35"><ChevronLeft className="h-5 w-5" /></button>
-              <button type="button" onClick={() => move(1)} disabled={active === images.length - 1} aria-label="下一张" className="rounded-full border border-white/15 p-2.5 text-foreground transition hover:border-primary/50 disabled:cursor-not-allowed disabled:opacity-35"><ChevronRight className="h-5 w-5" /></button>
+      <div
+        ref={gallery}
+        className="home-gallery"
+        role="region"
+        aria-label="活动影像"
+        aria-roledescription="轮播图"
+        onPointerEnter={(event) => {
+          if (event.pointerType === 'mouse' && window.matchMedia('(hover: hover) and (pointer: fine)').matches) setHovered(true);
+        }}
+        onPointerLeave={() => setHovered(false)}
+        onFocusCapture={(event) => {
+          if (!event.currentTarget.contains(event.relatedTarget)) setPaused(true);
+        }}
+      >
+        {loading ? (
+          <Skeleton className="home-gallery-stage w-full" />
+        ) : count ? (
+          <>
+            <div
+              className="home-gallery-stage"
+              tabIndex={0}
+              aria-label="图片展示，左右方向键切换"
+              onKeyDown={(event) => {
+                if (event.target !== event.currentTarget) return;
+                if (event.key === 'ArrowLeft' || event.key === 'ArrowRight') {
+                  event.preventDefault();
+                  select(current + (event.key === 'ArrowLeft' ? -1 : 1));
+                }
+              }}
+              onPointerDown={(event) => {
+                if (!event.isPrimary || event.button !== 0) return;
+                setPaused(true);
+                suppressClick.current = false;
+                gesture.current = { x: event.clientX, y: event.clientY };
+              }}
+              onPointerUp={(event) => {
+                const start = gesture.current;
+                gesture.current = null;
+                if (!start) return;
+                const dx = event.clientX - start.x;
+                const dy = event.clientY - start.y;
+                if (Math.abs(dx) > 40 && Math.abs(dx) > Math.abs(dy) * 1.5) {
+                  suppressClick.current = true;
+                  select(current + (dx < 0 ? 1 : -1));
+                }
+              }}
+              onPointerCancel={() => { gesture.current = null; }}
+              onClickCapture={(event) => {
+                if (!suppressClick.current) return;
+                event.preventDefault();
+                event.stopPropagation();
+                suppressClick.current = false;
+              }}
+            >
+              {images.map((image, index) => {
+                let offset = (index - current + count) % count;
+                if (offset > count / 2) offset -= count;
+                const position = Math.max(-2, Math.min(2, offset));
+                const selected = offset === 0;
+                return (
+                  <div
+                    key={image.id}
+                    className="home-gallery-slide"
+                    data-position={position}
+                    aria-hidden={!selected}
+                    role="group"
+                    aria-roledescription="幻灯片"
+                    aria-label={`${index + 1} / ${count}: ${image.title}`}
+                  >
+                    <img src={image.url} alt={selected ? image.title : ''} loading={Math.abs(offset) <= 1 ? 'eager' : 'lazy'} draggable={false} />
+                    {!selected && Math.abs(offset) === 1 && (
+                      <button type="button" tabIndex={-1} className="home-gallery-preview" onClick={() => select(index)} aria-label={`查看${image.title}`} />
+                    )}
+                  </div>
+                );
+              })}
             </div>
-          </div>
-        </div>
-      ) : (
-        <Glass tone="soft" className="p-8 text-center text-sm text-muted-foreground">暂无活动影像</Glass>
-      )}
+            <div className="home-gallery-toolbar">
+              <div className="min-w-0" aria-live={playing ? 'off' : 'polite'} aria-atomic="true">
+                <p className="truncate text-sm font-medium">{images[current].title}</p>
+                <p className="mono mt-1 text-xs tabular-nums text-muted-foreground">{current + 1} / {count}</p>
+              </div>
+              <div className="flex shrink-0 items-center gap-2">
+                {count > 1 && !reducedMotion && (
+                  <button type="button" className="home-gallery-control gap-2 px-3.5" onClick={() => setPaused((value) => !value)} aria-label={paused ? '继续自动轮播' : '暂停自动轮播'}>
+                    {paused ? <Play className="h-4 w-4" /> : <Pause className="h-4 w-4" />}
+                    <span className="text-xs">{paused ? '继续' : '暂停'}</span>
+                  </button>
+                )}
+                <button type="button" className="home-gallery-control" onClick={() => select(current - 1)} disabled={count < 2} aria-label="上一张"><ChevronLeft className="h-5 w-5" /></button>
+                <button type="button" className="home-gallery-control" onClick={() => select(current + 1)} disabled={count < 2} aria-label="下一张"><ChevronRight className="h-5 w-5" /></button>
+              </div>
+            </div>
+          </>
+        ) : (
+          <Glass tone="soft" className="p-8 text-center text-sm text-muted-foreground">暂无活动影像</Glass>
+        )}
+      </div>
     </Screen>
   );
 }
