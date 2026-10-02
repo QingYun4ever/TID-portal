@@ -38,9 +38,6 @@ import {
 const CAT_ORDER = ['template', 'policy', 'guide', 'training', 'faq'];
 
 const EXTERNAL_SITES = [
-  { name: '创新项目申报平台', desc: '项目申报与结题', url: 'https://cxcy.upln.cn/' },
-  { name: '创新赛事服务平台', desc: '赛事报名与信息服务', url: 'https://cy.ncss.cn/' },
-  { name: '「挑战杯」竞赛官网', desc: '课外学术科技作品竞赛', url: 'https://www.tiaozhanbei.net/' },
   { name: '教育部官网', desc: '政策文件与通知公告', url: 'http://www.moe.gov.cn/' },
 ];
 
@@ -120,7 +117,7 @@ export default function Resources() {
       <PageHero
         eyebrow="Resource Center"
         title="资源中心"
-        description="申报书模板、商业计划书、政策文件、竞赛指南与培训资料，一站式查阅与下载。全部文件由科技创新部整理发布。"
+        description="科普资料、活动方案、竞赛规则与培训资料，一站式查阅与下载。全部文件由科技创新部整理发布。"
         breadcrumb={[{ label: '资源中心' }]}
       >
         <div className="flex flex-wrap items-center gap-x-5 gap-y-2.5 text-[12px] text-muted-foreground">
@@ -216,7 +213,7 @@ export default function Resources() {
                   常见问题
                 </h2>
                 <p className="mt-3 max-w-2xl text-[13px] leading-relaxed text-muted-foreground">
-                  关于申报、下载与材料提交的高频疑问，来自资源中心「常见问题」分类。
+                  关于资料查阅、下载与使用的高频疑问，来自资源中心「常见问题」分类。
                 </p>
               </div>
 

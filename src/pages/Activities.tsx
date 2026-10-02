@@ -39,7 +39,7 @@ const PAGE_SIZE = 9;
 
 const SCOPE_TABS = [
   { value: 'upcoming', label: '即将开始' },
-  { value: 'past', label: '往期活动' },
+  { value: 'past', label: '已结束的活动' },
   { value: 'all', label: '全部活动' },
 ];
 
@@ -90,7 +90,7 @@ export default function Activities() {
       <PageHero
         eyebrow="Events & Sign-up"
         title="活动报名"
-        description="技术沙龙、创新工作坊、竞赛集训、科技文化节与经验分享会。支持在线报名、名额限制与截止倒计时提醒。"
+        description="校内科技活动与科技比赛的报名入口：在线报名、名额限制与截止倒计时提醒。"
         breadcrumb={[{ label: '活动报名' }]}
       >
         <div className="flex flex-wrap items-center gap-2.5">
@@ -196,7 +196,7 @@ export default function Activities() {
                     dq
                       ? '换个关键词或清空搜索条件再试试。'
                       : scope === 'upcoming'
-                        ? '近期暂无即将开始的活动，可在「往期活动」中查看历史记录。'
+                        ? '近期暂无活动，敬请期待后续通知。'
                         : '当前筛选条件下暂无活动记录。'
                   }
                   action={
@@ -211,7 +211,7 @@ export default function Activities() {
                           清空筛选
                         </Button>
                       )}
-                      <LinkButton to="/activities?scope=past">查看往期活动</LinkButton>
+                      <LinkButton to="/activities?scope=past">查看已结束的活动</LinkButton>
                     </div>
                   }
                 />
@@ -229,8 +229,8 @@ export default function Activities() {
               <CalendarRange className="h-5 w-5" />
             </span>
             <div>
-              <p className="text-[14px] font-medium">找不到想参加的活动？</p>
-              <p className="mt-1 text-[12.5px] text-muted-foreground">竞赛信息与项目申报入口同样在门户开放。</p>
+              <p className="text-[14px] font-medium">想了解后续活动？</p>
+              <p className="mt-1 text-[12.5px] text-muted-foreground">竞赛信息与活动报名入口同样在门户开放。</p>
             </div>
           </div>
           <div className="flex flex-wrap gap-3">

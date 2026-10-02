@@ -101,7 +101,7 @@ submitRoutes.post('/projects/apply', async (c) => {
     advisor: body.advisor || null,
     teamSize: Number(body.teamSize) || 1,
     members: JSON.stringify(body.members ?? []),
-    category: body.category || '创新训练',
+    category: body.category || '科技制作',
     intro: String(body.intro).trim(),
     materials: JSON.stringify(body.materials ?? []),
     status: 'pending',
@@ -141,7 +141,7 @@ submitRoutes.post('/join/apply', async (c) => {
   if (!name) return fail(c, '请填写姓名');
   if (!studentId) return fail(c, '请填写学号');
   if (!phone) return fail(c, '请填写手机号');
-  if (!body.college) return fail(c, '请选择学院');
+  if (!body.college) return fail(c, '请选择班级');
   if (!body.intro || String(body.intro).trim().length < 10) return fail(c, '自我介绍至少 10 字');
 
   const dup = get(
@@ -169,7 +169,7 @@ submitRoutes.post('/join/apply', async (c) => {
     insert('user_messages', {
       userId: user.id,
       title: '招新报名已提交',
-      content: '报名已提交，我们会在 3 个工作日内完成简历筛选并邮件通知面试安排。',
+      content: '报名已提交，我们会在 3 个工作日内完成报名审核并邮件通知面试安排。',
       link: '/account/join',
     });
   }
@@ -235,19 +235,19 @@ submitRoutes.post('/team-requests', requireAuth(), async (c) => {
   return ok(c, { sent: true });
 });
 
-/* --------------------------- 用户中心：导师预约 ------------------------- */
+/* -------------------------- 用户中心：指导老师预约 ----------------------- */
 submitRoutes.post('/advisor-appointments', requireAuth(), async (c) => {
   const user = c.get('user')!;
   const body = await readBody<any>(c);
-  if (!body.advisor) return fail(c, '请选择导师');
+  if (!body.advisor) return fail(c, '请选择指导老师');
   if (!body.slot) return fail(c, '请选择预约时间');
   const id = insert('user_messages', {
     userId: user.id,
-    title: '导师预约已提交',
+    title: '指导老师预约已提交',
     content: `已向 ${body.advisor} 提交预约申请，时间：${body.slot}。${body.topic ? '议题：' + body.topic : ''}`,
     link: '/account',
   });
-  logOp({ userId: user.id, userName: user.name, action: '导师预约', target: 'advisor', detail: String(body.advisor) });
+  logOp({ userId: user.id, userName: user.name, action: '指导老师预约', target: 'advisor', detail: String(body.advisor) });
   return ok(c, { id, submitted: true });
 });
 

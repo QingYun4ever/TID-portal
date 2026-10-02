@@ -239,7 +239,7 @@ adminRoutes.route(
   crud({
     table: 'timeline',
     label: '发展历程',
-    fields: ['year', 'title', 'description', 'sortOrder'],
+    fields: ['year', 'dateLabel', 'title', 'description', 'sortOrder'],
     search: ['title'],
     order: 'sortOrder ASC',
   })
@@ -754,7 +754,7 @@ function catLabel(k: string) {
   return ({ notice: '通知公告', dept: '部门新闻', competition: '竞赛信息', policy: '政策文件' } as any)[k] ?? k;
 }
 function projLabel(k: string) {
-  const labels: Record<string, string> = { excellent: '优秀项目', approved: '立项项目', completed: '结项项目', ongoing: '在研项目', competition: '竞赛成果', frontend: '前端作品' };
+  const labels: Record<string, string> = { excellent: '优秀作品', approved: '入选作品', completed: '已完成作品', ongoing: '进行中作品', competition: '竞赛作品', frontend: '前端作品' };
   return labels[k] ?? k;
 }
 function applyLabel(k: string) {
@@ -778,12 +778,12 @@ adminRoutes.get('/export/:kind', (c) => {
        ${where} ORDER BY s.activityId, datetime(s.createdAt)`,
       activityId && activityId !== 'all' ? [Number(activityId)] : []
     );
-    headers = ['活动名称', '姓名', '学号', '学院', '专业', '手机', '邮箱', '已签到', '报名时间', '备注'];
-    rows = data.map((s) => [s.activityTitle, s.name, s.studentId, s.college, s.major ?? '', s.phone, s.email ?? '', s.checkedIn ? '是' : '否', s.createdAt, s.remark ?? '']);
+    headers = ['活动名称', '姓名', '学号', '班级', '手机', '邮箱', '已签到', '报名时间', '备注'];
+    rows = data.map((s) => [s.activityTitle, s.name, s.studentId, s.college, s.phone, s.email ?? '', s.checkedIn ? '是' : '否', s.createdAt, s.remark ?? '']);
     filename = `报名名单_${activityId || 'all'}.csv`;
   } else if (kind === 'applications') {
     const data = all<any>('SELECT * FROM project_applications ORDER BY datetime(createdAt) DESC');
-    headers = ['项目名称', '类别', '负责人', '学号', '学院', '电话', '邮箱', '指导教师', '团队人数', '状态', '审核意见', '提交时间'];
+    headers = ['项目名称', '类别', '负责人', '学号', '班级', '电话', '邮箱', '指导老师', '团队人数', '状态', '审核意见', '提交时间'];
     rows = data.map((a) => [
       a.title, a.category, a.leaderName, a.leaderStudentId, a.leaderCollege, a.leaderPhone, a.leaderEmail ?? '',
       a.advisor ?? '', String(a.teamSize), applyLabel(a.status), a.reviewNote ?? '', a.createdAt,
@@ -794,9 +794,9 @@ adminRoutes.get('/export/:kind', (c) => {
       `SELECT ja.*, jp.name AS positionName FROM join_applications ja LEFT JOIN join_positions jp ON jp.id=ja.positionId
        ORDER BY datetime(ja.createdAt) DESC`
     );
-    headers = ['姓名', '学号', '学院', '专业', '年级', '手机', '邮箱', '意向岗位', '技能', '自我介绍', '状态', '提交时间'];
+    headers = ['姓名', '学号', '班级', '年级', '手机', '邮箱', '意向岗位', '技能', '自我介绍', '状态', '提交时间'];
     rows = data.map((a) => [
-      a.name, a.studentId, a.college, a.major, a.grade, a.phone, a.email ?? '', a.positionName ?? '',
+      a.name, a.studentId, a.college, a.grade, a.phone, a.email ?? '', a.positionName ?? '',
       a.skills, a.intro, applyLabel(a.status), a.createdAt,
     ]);
     filename = '招新报名汇总.csv';

@@ -53,8 +53,8 @@ const SECTIONS = [
   { id: 'hero', label: '首页' },
   { id: 'quick', label: '快速入口' },
   { id: 'news', label: '历程与新闻' },
-  { id: 'activities', label: '活动与申报' },
-  { id: 'projects', label: '成果与竞赛' },
+  { id: 'activities', label: '活动与报名' },
+  { id: 'projects', label: '作品与竞赛' },
   { id: 'gallery', label: '活动画廊' },
   { id: 'org', label: '组织与成员' },
   { id: 'join', label: '加入我们' },
@@ -119,8 +119,8 @@ export default function Home() {
       {/* 顶部滚动进度条 —— 进度由 --scroll-p 驱动，纯合成，不经过 React */}
       <div aria-hidden className="scroll-progress" />
 
-      {/* 下滑后浮现的背景大标识 */}
-      <BrandBackdrop peakOpacity={0.42} scale={1.72} reveal={0.58} side="left" />
+      {/* 双主题轨道水印：离开首屏后浮现，始终位于正文背后。 */}
+      <BrandBackdrop />
 
       <SectionRail sections={SECTIONS} active={active} />
 
@@ -246,7 +246,7 @@ function Hero({ settings }: { settings: Record<string, string> }) {
         <div className="st-rise mt-7 flex flex-wrap items-center justify-center gap-3" style={rise(280)}>
           <LinkButton to="/projects" variant="primary" size="lg">
             <Rocket className="h-4 w-4" />
-            浏览创新项目
+            浏览科技作品
           </LinkButton>
           <LinkButton to="/activities" variant="glass" size="lg">
             <CalendarDays className="h-4 w-4" />
@@ -271,8 +271,8 @@ function Hero({ settings }: { settings: Record<string, string> }) {
  * 2. 快速入口 + 部门概况（合并一屏）
  * ========================================================================== */
 const QUICK = [
-  { icon: CalendarDays, title: '活动报名', desc: '技术沙龙 · 工作坊 · 竞赛集训', to: '/activities' },
-  { icon: FileText, title: '项目申报', desc: '大创项目在线申报与进度查询', to: '/projects/apply' },
+  { icon: CalendarDays, title: '活动报名', desc: '科普讲座 · 科技比赛 · 科技活动', to: '/activities' },
+  { icon: FileText, title: '比赛报名', desc: '科技比赛与活动在线报名', to: '/projects/apply' },
   { icon: Trophy, title: '竞赛信息', desc: '赛事动态 · 报名与截止时间', to: '/competitions' },
   { icon: Users, title: '加入我们', desc: '查看录取名单 · 联系部门', to: '/join' },
 ];
@@ -283,10 +283,10 @@ function QuickAbout({ stats, intro }: { stats: { projects?: number; members?: nu
     { label: '部门成员', value: String(stats.members ?? 0), unit: '人' },
   ];
   const duties = [
-    '统筹全校学生科技创新竞赛的组织、报名、培训与选拔',
-    '负责学生创新项目的立项与结题验收',
-    '运营门户网站、成果画廊与竞赛信息聚合平台',
-    '开展科技文化节、技术沙龙、创新工作坊等品牌活动',
+    '面向全校开展科技知识科普，普及科学常识与前沿科技',
+    '策划并组织校内科技比赛与科技活动',
+    '运营部门门户网站，发布科普内容与活动信息',
+    '配合学校开展科技教育相关活动',
   ];
 
   return (
@@ -306,14 +306,14 @@ function QuickAbout({ stats, intro }: { stats: { projects?: number; members?: nu
         <div className="grid grid-cols-2 gap-3.5">
           {QUICK.map((q, i) => (
             <Link key={q.to} to={q.to} data-reveal="scale" style={stagger(i)} className="group block">
-              <Glass tone="soft" hover sheen className="flex h-full min-h-[124px] flex-col justify-between p-4">
-                <span className="flex h-9 w-9 items-center justify-center rounded-xl border border-white/12 bg-white/[0.05] text-foreground/80 transition-all duration-400 group-hover:border-primary/40 group-hover:text-primary">
+              <Glass tone="thin" hover refract={false} className="home-float flex h-full min-h-[124px] flex-col justify-between p-4">
+                <span className="flex h-9 w-9 items-center justify-center rounded-xl border border-white/12 bg-white/[0.05] text-foreground/80 group-hover:border-primary/40 group-hover:text-primary">
                   <q.icon className="h-[17px] w-[17px]" />
                 </span>
                 <div>
                   <h3 className="flex items-center gap-1.5 text-base font-medium">
                     {q.title}
-                    <ArrowUpRight className="h-3 w-3 opacity-0 transition-all duration-300 group-hover:translate-x-0.5 group-hover:opacity-70" />
+                    <ArrowUpRight className="h-3 w-3 opacity-50 group-hover:opacity-80" />
                   </h3>
                   <p className="clamp-2 mt-1 text-sm leading-relaxed text-muted-foreground">{q.desc}</p>
                 </div>
@@ -326,7 +326,7 @@ function QuickAbout({ stats, intro }: { stats: { projects?: number; members?: nu
         <div className="flex flex-col gap-3.5">
           <div className="grid grid-cols-2 gap-3.5">
             {items.map((it, i) => (
-              <Glass key={it.label} tone="soft" hover sheen className="p-4" data-reveal="scale" style={stagger(i)}>
+              <Glass key={it.label} tone="thin" hover refract={false} className="home-float p-4" data-reveal="scale" style={stagger(i)}>
                 <p className="text-sm tracking-wide text-muted-foreground">{it.label}</p>
                 <p className="mono mt-2 text-xl font-semibold text-primary">{it.value}</p>
                 <p className="mt-0.5 text-sm text-muted-foreground">{it.unit}</p>
@@ -404,12 +404,15 @@ function HistoryNews({
               : timeline.slice(0, timelineCount).map((t, i, arr) => (
                   <div key={t.id} className="flex gap-3">
                     <div className="flex w-10 shrink-0 flex-col items-center">
-                      <span className="mono text-sm font-semibold text-primary">{t.year}</span>
+                      <span className="mono min-h-5 text-sm font-semibold text-primary">{arr.findIndex((item) => item.year === t.year) === i ? t.year : null}</span>
                       <span className="mt-1 h-2 w-2 rounded-full border-2 border-primary bg-background" />
                       {i < arr.length - 1 && <span className="mt-1 w-px flex-1 bg-gradient-to-b from-primary/40 to-transparent" />}
                     </div>
                     <div className={cn('min-w-0 flex-1', i < arr.length - 1 ? 'pb-2.5' : '')}>
-                      <p className="text-sm font-medium leading-snug">{t.title}</p>
+                      <div className="flex flex-wrap items-baseline gap-x-2 gap-y-1">
+                        {t.dateLabel && <span className="mono shrink-0 text-xs text-muted-foreground">{t.dateLabel}</span>}
+                        <p className="min-w-0 text-sm font-medium leading-snug">{t.title}</p>
+                      </div>
                     </div>
                   </div>
                 ))}
@@ -470,10 +473,10 @@ function HistoryNews({
  * ========================================================================== */
 function ActivityApply({ activities, loading, dens }: { activities: any[]; loading: boolean; dens: number }) {
   const steps = [
-    { t: '在线填写申报书', d: '项目名称、团队信息、技术路线' },
-    { t: '上传支撑材料', d: '申报书 PDF、指导教师意见' },
-    { t: '部门初审', d: '5 个工作日内反馈受理结果' },
-    { t: '专家评审与公示', d: '结果公示，可在线查询进度' },
+    { t: '在线报名', d: '比赛 / 活动名称、年级班级、联系方式' },
+    { t: '提交材料', d: '报名表与必要材料（如需）' },
+    { t: '部门初审', d: '5 个工作日内反馈结果' },
+    { t: '结果公示', d: '结果公示，可在线查询' },
   ];
   const count = pick([3, 3, 4, 4], dens);
 
@@ -481,8 +484,8 @@ function ActivityApply({ activities, loading, dens }: { activities: any[]; loadi
     <Screen
       id="activities"
       eyebrow="Events & Application"
-      title="活动预告与项目申报"
-      description="活动在线报名、名额与截止倒计时；大创项目从提交到结果公示全流程线上化。"
+      title="活动预告与比赛报名"
+      description="活动与比赛在线报名、名额与截止倒计时；从报名到结果公示全流程线上化。"
       action={
         <>
           <LinkButton to="/activities">
@@ -490,7 +493,7 @@ function ActivityApply({ activities, loading, dens }: { activities: any[]; loadi
           </LinkButton>
           <LinkButton to="/projects/apply" variant="primary">
             <FileText className="h-4 w-4" />
-            立即申报
+            立即报名
           </LinkButton>
         </>
       }
@@ -550,8 +553,8 @@ function ProjectCompetition({
     <Screen
       id="projects"
       eyebrow="Showcase & Competitions"
-      title="创新成果与竞赛信息"
-      description="展示竞赛成果、前端作品、工具服务与实体设计；竞赛日历同步提醒报名截止。"
+      title="科技作品与竞赛信息"
+      description="展示部门与同学的科技作品；竞赛日历同步提醒报名截止。"
       action={
         <>
           <LinkButton to="/projects">
@@ -847,7 +850,7 @@ function JoinBlock({ stats }: { stats: { projects?: number; activities?: number;
               { k: '竞赛信息', v: stats.competitions ?? 0, icon: Trophy },
               { k: '画廊影像', v: stats.galleryImages ?? 0, icon: Eye },
             ].map((it) => (
-              <Glass key={it.k} tone="thin" hover className="flex flex-col items-center p-5 text-center">
+              <Glass key={it.k} tone="thin" hover refract={false} className="home-float flex flex-col items-center p-5 text-center">
                 <it.icon className="h-4 w-4 text-primary/80" />
                 <span className="mono mt-3 text-2xl font-semibold text-foreground">{fnum(it.v)}</span>
                 <span className="mt-1 text-sm text-muted-foreground">{it.k}</span>

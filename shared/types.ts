@@ -248,6 +248,7 @@ export interface GalleryImage {
 export interface TimelineNode {
   id: number;
   year: string;
+  dateLabel: string;
   title: string;
   description: string;
   sortOrder: number;

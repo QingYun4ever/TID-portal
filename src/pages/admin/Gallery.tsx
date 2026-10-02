@@ -980,7 +980,7 @@ export default function AdminGallery() {
         }
       >
         <div className="flex flex-col gap-5">
-          <Field label="区域名称" required hint="例如「第四届校园科技文化节」。">
+          <Field label="区域名称" required hint="例如「科技比赛现场」。">
             <Input
               value={areaForm.name}
               onChange={(e) => setAreaForm((f) => ({ ...f, name: e.target.value }))}

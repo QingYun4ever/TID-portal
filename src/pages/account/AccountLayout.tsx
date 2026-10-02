@@ -114,7 +114,7 @@ export default function AccountLayout() {
       <div className="mt-3 flex flex-col gap-1.5 text-[11.5px] text-muted-foreground">
         <span className="flex items-center gap-2">
           <Building2 className="h-3.5 w-3.5 shrink-0" />
-          <span className="clamp-1">{user?.college || '未填写学院'}</span>
+          <span className="clamp-1">{user?.college || '未填写班级'}</span>
         </span>
         <span className="flex items-center gap-2">
           <IdCard className="h-3.5 w-3.5 shrink-0" />

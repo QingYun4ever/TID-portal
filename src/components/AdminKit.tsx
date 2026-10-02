@@ -1250,7 +1250,7 @@ export function ReviewActions({
         }
       >
         <Field label="审核意见" hint="该意见将随站内消息发送给申请人">
-          <Textarea rows={4} value={note} onChange={(e) => setNote(e.target.value)} placeholder="例如：选题重复度较高，建议调整研究角度后重新申报。" />
+          <Textarea rows={4} value={note} onChange={(e) => setNote(e.target.value)} placeholder="例如：报名信息填写不完整，建议补充联系方式后重新提交。" />
         </Field>
       </Modal>
     </>

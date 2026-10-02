@@ -26,5 +26,7 @@ tsconfig.tsbuildinfo
 # 文档与启动脚本（构建不需要）
 AGENT-BRIEF.md
 design.md
-启动.bat
-构建.bat
+dev.bat
+dev.sh
+build.bat
+build.sh

@@ -19,6 +19,7 @@ import { TimelineItem } from '@/components/cards';
 interface TimelineRow {
   id: number;
   year: string;
+  dateLabel: string;
   title: string;
   description: string;
   sortOrder: number;
@@ -30,17 +31,24 @@ const FIELDS: FieldDef[] = [
     label: '年份',
     type: 'text',
     required: true,
-    placeholder: '例如：2015 或 2026 春',
-    hint: '显示在时间线左侧，可写「2026 春」这样的表述',
+    placeholder: '例如：2026',
+    hint: '同一年只在第一条事件旁显示年份；月份或月日请填写下方日期',
   },
-  { name: 'title', label: '事件标题', type: 'text', required: true, wide: true, placeholder: '例如：科技创新部正式成立' },
+  {
+    name: 'dateLabel',
+    label: '日期（可选）',
+    type: 'text',
+    placeholder: '例如：09.28 或 01月',
+    hint: '知道具体日期写月日，只知道月份写月份；不确定可留空，不必补全日期',
+  },
+  { name: 'title', label: '事件标题', type: 'text', required: true, wide: true, placeholder: '例如：科技发展部正式成立' },
   {
     name: 'description',
     label: '事件描述',
     type: 'textarea',
     wide: true,
     rows: 4,
-    placeholder: '例如：在校团委指导下成立科技创新部，统筹全校学生科技创新工作。',
+    placeholder: '例如：科技发展部正式成立，负责校内科技知识科普与科技比赛、活动策划。',
     hint: '建议 40~100 字，说明这件事对部门发展的意义',
   },
   { name: 'sortOrder', label: '排序权重', type: 'number', default: 0, hint: '数字越小越靠前（时间线从上到下）' },
@@ -52,6 +60,12 @@ const COLUMNS: Column<TimelineRow>[] = [
     title: '年份',
     width: '110px',
     render: (t) => <span className="mono text-[12.5px] font-semibold text-primary">{t.year}</span>,
+  },
+  {
+    key: 'dateLabel',
+    title: '日期',
+    width: '100px',
+    render: (t) => <span className="mono text-xs text-muted-foreground">{t.dateLabel || '—'}</span>,
   },
   {
     key: 'title',
@@ -132,7 +146,7 @@ export default function About() {
             ) : nodes.length ? (
               <div className="max-w-3xl">
                 {nodes.map((n, i) => (
-                  <TimelineItem key={n.id} node={n} index={i} total={nodes.length} />
+                  <TimelineItem key={n.id} node={n} index={i} total={nodes.length} showYear={nodes.findIndex((item) => item.year === n.year) === i} />
                 ))}
               </div>
             ) : (
@@ -154,7 +168,7 @@ export default function About() {
       {/* ------------------------------ 发展历程管理 ------------------------------ */}
       <ResourceManager<TimelineRow>
         title="发展历程"
-        description="维护部门大事记：年份、事件标题与描述，按排序权重从上到下渲染在部门概况页。"
+        description="维护已发生的部门大事记：年份、可选日期、事件标题与描述，按排序权重从上到下渲染。"
         resource="timeline"
         fields={FIELDS}
         columns={COLUMNS}

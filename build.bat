@@ -1,5 +1,8 @@
 @echo off
+setlocal
 cd /d "%~dp0"
+title STI-Portal - build
+
 echo.
 echo   ============================================
 echo     科技创新部门户  -  构建
@@ -18,26 +21,26 @@ if not exist "node_modules" (
 )
 
 echo   [2/2] 正在构建...
+echo.
+
 call npm run build
 if errorlevel 1 goto BUILDFAIL
 
 echo.
-echo   构建成功。接下来双击「启动.bat」。
+echo   构建成功。
+echo   产物： dist\public\（前端）  dist\server.js（服务端单文件）
+echo   运行： npm start  或  node dist\server.js
 echo.
-pause
 exit /b 0
 
 :NONODE
 echo   [错误] 未检测到 Node.js，请先安装 20 以上版本：https://nodejs.org/
-pause
 exit /b 1
 
 :NPMFAIL
 echo   [错误] 依赖安装失败，请检查网络后重试。
-pause
 exit /b 1
 
 :BUILDFAIL
 echo   [错误] 构建失败，请看上面的报错信息。
-pause
 exit /b 1

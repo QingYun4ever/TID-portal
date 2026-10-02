@@ -34,9 +34,9 @@ import {
 
 /* =============================================================================
  * 项目详情（/projects/:slug）
- *  - 顶部大标题、类别徽章、年份、获奖信息、团队、指导教师、标签
+ *  - 顶部大标题、类别徽章、年份、获奖信息、团队、指导老师、标签
  *  - 正文 .prose-glass
- *  - 侧栏：项目信息表（团队 / 成员 / 指导教师 / 年份 / 浏览量）+ 相关项目推荐
+ *  - 侧栏：项目信息表（团队 / 成员 / 指导老师 / 年份 / 浏览量）+ 相关项目推荐
  * ========================================================================== */
 
 const CAT_TONE: Record<string, 'primary' | 'accent' | 'success' | 'warning' | 'default'> = {
@@ -133,7 +133,7 @@ export default function ProjectDetail() {
           {project.advisor && (
             <span className="flex items-center gap-2 text-[11.5px] text-muted-foreground">
               <Building2 className="h-3.5 w-3.5" />
-              指导教师 {project.advisor}
+              指导老师 {project.advisor}
             </span>
           )}
         </div>
@@ -234,7 +234,7 @@ export default function ProjectDetail() {
               </div>
               <p className="mt-5 flex items-center gap-2 text-[11.5px] text-muted-foreground">
                 <Building2 className="h-3.5 w-3.5" />
-                指导教师：<span className="text-foreground/85">{project.advisor || '未填写'}</span>
+                指导老师：<span className="text-foreground/85">{project.advisor || '未填写'}</span>
               </p>
             </Glass>
           </div>
@@ -264,10 +264,10 @@ export default function ProjectDetail() {
                     '未公开'
                   )}
                 </InfoRow>
-                <InfoRow icon={<Building2 className="h-3.5 w-3.5" />} label="指导教师">
+                <InfoRow icon={<Building2 className="h-3.5 w-3.5" />} label="指导老师">
                   {project.advisor || '—'}
                 </InfoRow>
-                <InfoRow icon={<CalendarDays className="h-3.5 w-3.5" />} label="立项年份">
+                <InfoRow icon={<CalendarDays className="h-3.5 w-3.5" />} label="年份">
                   <span className="mono">{project.year}</span> 年
                 </InfoRow>
                 <InfoRow icon={<Layers className="h-3.5 w-3.5" />} label="项目类别">

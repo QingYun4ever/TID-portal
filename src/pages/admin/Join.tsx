@@ -213,15 +213,9 @@ export default function AdminJoin() {
     },
     {
       key: 'college',
-      title: '学院',
+      title: '班级',
       className: 'hidden md:table-cell',
       render: (r) => <span className="block max-w-[170px] truncate text-[13px] text-foreground/80">{r.college || '—'}</span>,
-    },
-    {
-      key: 'major',
-      title: '专业',
-      className: 'hidden lg:table-cell',
-      render: (r) => <span className="block max-w-[150px] truncate text-[13px] text-foreground/75">{r.major || '—'}</span>,
     },
     {
       key: 'grade',
@@ -286,7 +280,7 @@ export default function AdminJoin() {
 
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
         <KeyValue icon={<UserRound className="h-3.5 w-3.5" />} label="姓名 / 学号" value={`${row.name} · ${row.studentId}`} />
-        <KeyValue icon={<GraduationCap className="h-3.5 w-3.5" />} label="学院 / 专业" value={`${row.college || '—'} · ${row.major || '—'}`} />
+        <KeyValue icon={<GraduationCap className="h-3.5 w-3.5" />} label="年级 / 班级" value={row.college || '—'} />
         <KeyValue icon={<GraduationCap className="h-3.5 w-3.5" />} label="年级" value={row.grade || '—'} />
         <KeyValue icon={<Phone className="h-3.5 w-3.5" />} label="手机" value={row.phone || '—'} />
         <KeyValue icon={<Mail className="h-3.5 w-3.5" />} label="邮箱" value={row.email || '—'} />
@@ -433,7 +427,7 @@ export default function AdminJoin() {
               setSearch(v);
               setPage(1);
             }}
-            placeholder="搜索姓名 / 学号 / 学院…"
+            placeholder="搜索姓名 / 学号 / 班级…"
           />
         </div>
       </Glass>

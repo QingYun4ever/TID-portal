@@ -217,8 +217,8 @@ node scripts/browser.mjs --url "http://127.0.0.1:5273/<你的路由>" --out "scr
 
 要求：`browser.mjs` 输出里必须出现 `OK : 无 JS 异常 / 控制台错误`，且 `ROOT` 的 children 数 > 0。
 
-> 开发服务器（Vite `5273`、API `8787`）已在运行。若未运行：
-> `npm run dev:api`（另一个终端）与 `npx vite --port 5273`。
+> 开发服务器（Vite `5273`、API `8787`）已在运行。若未运行：在仓库根目录执行
+> `dev.bat`（Windows）或 `./dev.sh`（macOS / Linux），两者同时拉起 Vite 与 API。
 
 **不要**修改：`server/**`、`src/index.css` 的既有类名、`src/App.tsx` 的路由表、`tailwind.config.js`、
 `src/lib/*`、`src/components/ui.tsx`、`src/components/cards.tsx`、`src/components/AdminKit.tsx`。

@@ -226,7 +226,7 @@ export default function Users() {
       },
       {
         key: 'college',
-        title: '学院',
+        title: '班级',
         width: '150px',
         render: (u) => <span className="text-xs text-muted-foreground">{u.college || '—'}</span>,
       },
@@ -418,7 +418,7 @@ export default function Users() {
             <Field label="手机">
               <Input value={editForm.phone ?? ''} onChange={(e) => setEditForm((s) => ({ ...s, phone: e.target.value }))} />
             </Field>
-            <Field label="学院">
+            <Field label="班级">
               <Input value={editForm.college ?? ''} onChange={(e) => setEditForm((s) => ({ ...s, college: e.target.value }))} />
             </Field>
             <Field label="学号">
@@ -506,7 +506,7 @@ export default function Users() {
               <Input
                 value={bc.title}
                 onChange={(e) => setBc((s) => ({ ...s, title: e.target.value }))}
-                placeholder="例如：科技创新部 2026 春季招新面试通知"
+                placeholder="例如：科技创新部 2026 年 11 月招新面试通知"
               />
             </Field>
           </div>

@@ -267,7 +267,7 @@ function clientIp(c: any): string {
   );
 }
 
-/* ----------------------- 组队申请 / 导师预约 ---------------------------- */
+/* ---------------------- 组队申请 / 指导老师预约 -------------------------- */
 authRoutes.get('/teammates', requireAuth(), (c) => {
   const user = c.get('user')!;
   // 简化实现：推荐同学段、可组队的在册用户
@@ -281,7 +281,7 @@ authRoutes.get('/teammates', requireAuth(), (c) => {
 
 authRoutes.get('/advisors', (c) => {
   const items = all(
-    `SELECT id,name,role,avatar,bio,tags FROM members WHERE role LIKE '%老师%' OR role LIKE '%教授%' OR "group"='教师' OR role LIKE '%指导%' LIMIT 12`
+    `SELECT id,name,role,avatar,bio,tags FROM members WHERE role LIKE '%老师%' OR "group"='教师' OR role LIKE '%指导%' LIMIT 12`
   ).map((m: any) => safeJson2(m));
   return ok(c, items);
 });

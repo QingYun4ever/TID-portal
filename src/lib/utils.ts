@@ -128,9 +128,9 @@ export const NEWS_CATEGORIES: Record<string, string> = {
 
 export const PROJECT_CATEGORIES: Record<string, string> = {
   excellent: '优秀项目',
-  approved: '立项项目',
-  completed: '结项项目',
-  ongoing: '在研项目',
+  approved: '入选项目',
+  completed: '已完成项目',
+  ongoing: '进行中项目',
   competition: '竞赛成果',
   frontend: '前端作品',
   service: '工具服务',
@@ -138,7 +138,7 @@ export const PROJECT_CATEGORIES: Record<string, string> = {
 };
 
 export const RESOURCE_CATEGORIES: Record<string, string> = {
-  template: '申报模板',
+  template: '活动资料',
   policy: '政策文件',
   guide: '竞赛指南',
   training: '培训资料',

@@ -242,15 +242,9 @@ export default function AdminSignups() {
     },
     {
       key: 'college',
-      title: '学院',
+      title: '班级',
       className: 'hidden md:table-cell',
       render: (r) => <span className="block max-w-[180px] truncate text-[13px] text-foreground/80">{r.college || '—'}</span>,
-    },
-    {
-      key: 'major',
-      title: '专业',
-      className: 'hidden lg:table-cell',
-      render: (r) => <span className="block max-w-[160px] truncate text-[13px] text-foreground/75">{r.major || '—'}</span>,
     },
     {
       key: 'phone',
@@ -417,7 +411,7 @@ export default function AdminSignups() {
           setSearch(v);
           setPage(1);
         }}
-        placeholder="搜索姓名 / 学号 / 学院…"
+        placeholder="搜索姓名 / 学号 / 班级…"
         extra={
           <span className="mono ml-auto text-[11px] text-muted-foreground">
             共 {fnum(total)} 条 · 每页 20 条

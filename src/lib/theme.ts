@@ -13,7 +13,7 @@ import { useCallback, useSyncExternalStore } from 'react';
 export type Theme = 'dark' | 'light';
 
 const KEY = 'sti-theme';
-const META_COLOR: Record<Theme, string> = { dark: '#000000', light: '#f4f6f9' };
+const META_COLOR: Record<Theme, string> = { dark: '#0d1117', light: '#f4f6f9' };
 
 const subs = new Set<() => void>();
 

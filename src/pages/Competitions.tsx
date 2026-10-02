@@ -32,13 +32,13 @@ import {
 
 /* =============================================================================
  * 竞赛信息 /competitions
- *  - 级别 Tabs（全部/国家级/省级/校级，带数量）+ 搜索
+ *  - 级别 Tabs（全部/国家级/市级/区级/校级，带数量）+ 搜索
  *  - 顶部突出「最近截止」竞赛（大字 + 实时倒计时）
  *  - 每张卡支持订阅截止提醒（邮箱）
  *  - 已截止竞赛灰化并归入「已结束」
  * ========================================================================== */
 
-const LEVEL_ORDER = ['国家级', '省级', '校级'];
+const LEVEL_ORDER = ['国家级', '市级', '区级', '校级'];
 
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
 
@@ -128,7 +128,7 @@ export default function Competitions() {
       <PageHero
         eyebrow="Competitions"
         title="竞赛信息"
-        description="聚合国家级、省级与校级赛事信息，按截止时间先后排列。订阅截止提醒，不错过任何一次报名窗口。"
+        description="聚合国家级、市级、区级与校级科技赛事信息，按截止时间先后排列。订阅截止提醒，不错过任何一次报名窗口。"
         breadcrumb={[{ label: '竞赛信息' }]}
       >
         <div className="flex flex-wrap items-center gap-x-5 gap-y-2.5 text-[12px] text-muted-foreground">
@@ -335,7 +335,7 @@ function FeaturedCompetition({
       <div className="relative grid gap-8 lg:grid-cols-[1.4fr_1fr] lg:gap-12">
         <div className="min-w-0">
           <div className="flex flex-wrap items-center gap-2.5">
-            <Chip tone={competition.level === '国家级' ? 'primary' : competition.level === '省级' ? 'accent' : 'success'}>
+            <Chip tone={competition.level === '国家级' ? 'primary' : competition.level === '市级' ? 'accent' : 'success'}>
               {competition.level}
             </Chip>
             {urgent && <Chip tone="danger">即将截止</Chip>}

@@ -7,7 +7,7 @@ const LINKS = [
   { to: '/', label: '首页' },
   { to: '/news', label: '新闻与通知' },
   { to: '/activities', label: '活动报名' },
-  { to: '/projects', label: '创新项目' },
+  { to: '/projects', label: '科技作品' },
   { to: '/gallery', label: '活动画廊' },
   { to: '/join', label: '加入我们' },
 ];

@@ -142,7 +142,7 @@ CREATE TABLE IF NOT EXISTS project_applications (
   leaderName TEXT NOT NULL, leaderStudentId TEXT NOT NULL,
   leaderCollege TEXT NOT NULL DEFAULT '', leaderPhone TEXT NOT NULL DEFAULT '', leaderEmail TEXT,
   advisor TEXT, teamSize INTEGER NOT NULL DEFAULT 1,
-  members TEXT NOT NULL DEFAULT '[]', category TEXT NOT NULL DEFAULT '创新训练',
+  members TEXT NOT NULL DEFAULT '[]', category TEXT NOT NULL DEFAULT '科技制作',
   intro TEXT NOT NULL DEFAULT '', materials TEXT NOT NULL DEFAULT '[]',
   status TEXT NOT NULL DEFAULT 'pending', reviewNote TEXT,
   userId INTEGER,
@@ -207,6 +207,7 @@ CREATE TABLE IF NOT EXISTS gallery_images (
 CREATE TABLE IF NOT EXISTS timeline (
   id INTEGER PRIMARY KEY AUTOINCREMENT,
   year TEXT NOT NULL, title TEXT NOT NULL, description TEXT NOT NULL DEFAULT '',
+  dateLabel TEXT NOT NULL DEFAULT '',
   sortOrder INTEGER NOT NULL DEFAULT 0
 );
 
@@ -282,6 +283,7 @@ const MIGRATIONS: [string, string, string][] = [
   ['projects', 'demoUrl', 'TEXT'],
   ['projects', 'modelUrl', 'TEXT'],
   ['project_applications', 'reviewNote', 'TEXT'],
+  ['timeline', 'dateLabel', "TEXT NOT NULL DEFAULT ''"],
 ];
 
 function migrate() {
@@ -290,6 +292,17 @@ function migrate() {
     if (!cols.some((c) => c.name === column)) {
       db.exec(`ALTER TABLE ${table} ADD COLUMN ${column} ${type}`);
       console.log(`[db] migrate: ${table}.${column} added`);
+      if (table === 'timeline' && column === 'dateLabel') {
+        const events = db.prepare('SELECT id, description FROM timeline').all() as { id: number; description: string }[];
+        const updateDate = db.prepare('UPDATE timeline SET dateLabel = ? WHERE id = ?');
+        for (const event of events) {
+          const date = event.description.match(/^\s*\d{4}\s*年\s*(\d{1,2})\s*月(?:\s*(\d{1,2})\s*日)?/);
+          if (!date) continue;
+          const month = date[1].padStart(2, '0');
+          const label = date[2] ? `${month}.${date[2].padStart(2, '0')}` : `${month}月`;
+          updateDate.run(label, event.id);
+        }
+      }
     }
   }
   db.exec('CREATE UNIQUE INDEX IF NOT EXISTS users_oidc_identity ON users (oidcIssuer, oidcSubject) WHERE oidcIssuer IS NOT NULL AND oidcSubject IS NOT NULL');
@@ -507,10 +520,10 @@ export function seed() {
 
   /* ---- 用户 ---- */
   const users: [string, string, string, string, string][] = [
-    ['admin', '系统管理员', 'superadmin', 'admin@sti.edu.cn', '13800000001'],
-    ['zhangwei', '张伟', 'admin', 'zhangwei@sti.edu.cn', '13800000002'],
-    ['liyan', '李岩', 'member', 'liyan@stu.edu.cn', '13800000003'],
-    ['chenxi', '陈曦', 'student', 'chenxi@stu.edu.cn', '13800000004'],
+    ['admin', '系统管理员', 'superadmin', 'admin@example.com', '13800000001'],
+    ['zhangwei', '张伟', 'admin', 'zhangwei@example.com', '13800000002'],
+    ['liyan', '李岩', 'member', 'liyan@example.com', '13800000003'],
+    ['chenxi', '陈曦', 'student', 'chenxi@example.com', '13800000004'],
   ];
   for (const [username, name, role, email, phone] of users) {
     insert('users', {
@@ -520,7 +533,7 @@ export function seed() {
       role,
       email,
       phone,
-      college: role === 'student' ? '计算机科学与技术学院' : '校团委',
+      college: role === 'student' ? '高一-2班' : '校团委',
       studentId: role === 'student' ? '2023010101' : null,
     });
   }
@@ -532,10 +545,10 @@ export function seed() {
     deptNameEn: 'TECHNOLOGY & INNOVATION DEPT.',
     slogan: '以技术为舟，以创新为帆',
     intro:
-      '科技创新部是校团委指导下负责全校学生科技创新工作的职能部门，统筹学生科技竞赛、创新创业项目孵化、科技文化活动与创新人才培养，为每一位有想法的同学提供从灵感到落地的完整支撑。',
+      '科技创新部是校级学生会的科技部门，由校团委领导，负责面向全校开展科技知识科普，并策划、组织科技比赛与科技活动。',
     email: 'notpaperxiang@gmail.com',
     address: '北京市陈经纶中学本部高中',
-    foundedAt: '2026-01',
+    foundedAt: '2026-09-28',
     wechatQr: '',
     icp: '',
   };
@@ -548,31 +561,23 @@ export function seed() {
     [
       'about',
       '部门简介',
-      `<p>科技创新部负责统筹学生科技创新工作，涵盖科技竞赛、创新项目孵化、科技文化活动与创新人才培养。</p>
+      `<p>科技创新部负责面向全校开展科技知识科普，并策划、组织科技比赛与科技活动。</p>
 <h2>核心职责</h2>
 <ul>
-<li>统筹全校学生科技创新竞赛的组织、报名、培训与选拔；</li>
-<li>负责学生创新项目的立项、中期检查与结题验收；</li>
-<li>运营科技创新部门户、成果展示画廊与竞赛信息聚合平台；</li>
-<li>开展科技文化节、技术沙龙、创新工作坊等品牌活动；</li>
-<li>建设与维护部门技术基础设施，为其他学生组织提供技术支持。</li>
+<li>策划并组织校内科技比赛与科技活动；</li>
+<li>面向全校开展科技知识科普；</li>
+<li>运营部门门户网站，发布科普内容与活动信息；</li>
+<li>配合学校开展科技教育相关活动。</li>
 </ul>
 <h2>工作理念</h2>
-<p>我们相信，创新不是少数人的天赋，而是可以被训练的能力。部门以「<strong>降低创新门槛</strong>」为使命，把复杂的申报流程、分散的竞赛信息、稀缺的导师资源，整合成一条清晰可走的路径。</p>`,
+<p>我们相信，对科技的兴趣不是少数人的天赋，而是在一次次动手尝试中慢慢培养起来的。部门希望通过科普内容与校内的科技比赛、科技活动，让更多同学有机会接触科技、动手实践。</p>`,
     ],
     [
       'join-notice',
-      '2026 年春季招新公告',
-      `<p>科技创新部 2026 年春季招新正式启动，本次面向全校学生招募 <strong>28 名</strong>新成员。</p>
-<h2>招新流程</h2>
-<ol>
-<li><b>在线报名</b>：填写报名表并提交个人作品集（可选）；</li>
-<li><b>简历筛选</b>：3 个工作日内反馈结果；</li>
-<li><b>面试</b>：线上/线下结合，技术岗含简单实操；</li>
-<li><b>录用公示</b>：在门户「加入我们」栏目公示。</li>
-</ol>
-<h2>时间安排</h2>
-<ul><li>报名截止：2026-03-20</li><li>面试：2026-03-23 ~ 03-27</li><li>公示：2026-03-30</li></ul>`,
+      '招新结果公告',
+      `<p>科技创新部本轮招新已结束，录取名单已在门户「加入我们」栏目公示。</p>
+<h2>下一轮招新</h2>
+<p>下一轮招新计划于 2026 年 11 月开展，届时将在门户「加入我们」栏目发布具体安排，欢迎关注。</p>`,
     ],
     [
       'contact',
@@ -585,15 +590,24 @@ export function seed() {
   /* ---- 发展历程 ---- */
   insert('timeline', {
     year: '2026',
+    dateLabel: '01月',
     title: '青云宗成立',
     description: '2026 年 1 月，青云宗成立。',
     sortOrder: 0,
   });
   insert('timeline', {
     year: '2026',
+    dateLabel: '09.28',
+    title: '科技创新部成立',
+    description: '2026 年 9 月 28 日，科技创新部成立。',
+    sortOrder: 1,
+  });
+  insert('timeline', {
+    year: '2026',
+    dateLabel: '09.28',
     title: '部门官网上线',
     description: '2026 年 9 月 28 日，科技创新部门户网站正式上线。',
-    sortOrder: 1,
+    sortOrder: 2,
   });
 
   /* ---- 组织架构 ---- */
@@ -619,6 +633,7 @@ export function seed() {
     ['郭宝泽', '高二-1班'],
     ['陈轩弘', '初三-1班'],
     ['鲜金钊', '高二-5班'],
+    ['王嘉优', '高一-2班'],
   ];
 
   /* ---- 成员风采 ---- */
@@ -658,11 +673,11 @@ export function seed() {
 
   /* ---- 申报记录 ---- */
   const apps: Array<Partial<Row>> = [
-    ['「灵眸」—— 面向视障人群的室内导航系统', 'approved', '创新训练', '林一鸣'],
-    ['基于联邦学习的校园隐私保护数据分析平台', 'reviewing', '创新训练', '许清'],
-    ['低成本水质在线监测浮标设计与实现', 'pending', '创新训练', '马骁'],
-    ['校园二手交易平台的信任机制设计研究', 'rejected', '创业训练', '何雨'],
-    ['面向老年人的智能用药提醒终端', 'approved', '创业实践', '郑好'],
+    ['智能垃圾分类提示装置', 'approved', '科技制作', '林一鸣'],
+    ['校园噪声监测与提示装置', 'reviewing', '科技探究', '许清'],
+    ['教室光照自动调节装置', 'pending', '科技制作', '马骁'],
+    ['校园二手图书交换小程序设计', 'rejected', '创意设计', '何雨'],
+    ['家庭用药提醒盒的设计与制作', 'approved', '科技制作', '郑好'],
   ];
   apps.forEach(([title, status, category, leader], i) =>
     insert('project_applications', {
@@ -670,56 +685,36 @@ export function seed() {
       competitionId: null,
       leaderName: leader,
       leaderStudentId: `2023${String(100200 + i)}`,
-      leaderCollege: '计算机科学与技术学院',
+      leaderCollege: ['高一-2班', '高二-1班', '高一-5班', '初三-1班', '高二-3班'][i],
       leaderPhone: `139${String(20000000 + i * 321).slice(0, 8)}`,
-      leaderEmail: `lead${i}@university.edu.cn`,
-      advisor: '王建国 教授',
+      leaderEmail: `lead${i}@example.com`,
+      advisor: '王老师',
       teamSize: 3 + (i % 3),
       members: JSON.stringify(['成员A', '成员B', '成员C'].slice(0, 3 + (i % 3))),
       category,
-      intro: '本项目拟围绕实际场景中的痛点问题，构建一套可落地的技术方案，并完成原型验证与用户测试。',
-      materials: JSON.stringify([{ name: '项目申报书.pdf', url: '#', size: 512000 }]),
+      intro: '本项目围绕校园与生活中的实际问题，设计并制作一件可演示的科技作品，并完成基本功能验证。',
+      materials: JSON.stringify([{ name: '报名表.pdf', url: '#', size: 512000 }]),
       status,
-      reviewNote: status === 'rejected' ? '选题重复度较高，建议调整研究角度后重新申报。' : null,
+      reviewNote: status === 'rejected' ? '选题重复度较高，建议调整方向后重新申报。' : null,
     })
   );
 
   /* ---- 资源 ---- */
   /* 样例文件已清空：资源由后台「资源中心」上传，此处不再播种 */
 
-  /* ---- 招新岗位 ---- */
-  const positions: [string, number, string, string[]][] = [
-    ['竞赛管理专员', 6, '负责竞赛信息收集、队伍组织、培训安排与赛事对接。', ['责任心强，有学生工作经验优先', '较强的沟通协调能力', '对科技竞赛有一定了解']],
-    ['项目孵化专员', 6, '负责大创项目全流程管理，包括立项审核、中期检查与结题验收。', ['做事细致，有文档管理经验', '了解科研项目基本流程', '每周可投入 6 小时以上']],
-    ['视觉设计师', 4, '负责活动物料、海报、门户视觉与品牌延展设计。', ['熟练使用 Figma / PS / AI 任一', '有完整作品集', '对深色系科技风格有审美判断']],
-    ['内容运营', 4, '负责公众号推文、活动报道与门户内容维护。', ['文字功底扎实', '有新媒体运营经验优先', '能独立完成图文排版']],
-    ['前端开发工程师', 4, '参与门户网站与内部工具的前端开发与迭代。', ['熟悉 React + TypeScript', '了解 Tailwind 等原子化 CSS', '有个人项目或开源贡献']],
-    ['后端 / 运维工程师', 3, '负责门户后端、数据库与部门服务器运维。', ['熟悉 Node.js 或 Python 后端', '了解 Linux 与 Docker', '有服务器运维经验优先']],
-    ['活动策划', 3, '负责技术沙龙、工作坊、科技文化节等活动的策划与执行。', ['有活动组织经验', '执行力强，能承担现场统筹', '创意丰富']],
-  ];
-  positions.forEach(([name, headcount, description, requirements], i) =>
-    insert('join_positions', {
-      name,
-      headcount,
-      description,
-      requirements: JSON.stringify(requirements),
-      sortOrder: i,
-      active: 1,
-    })
-  );
+  /* ---- 招新录取名单 ---- */
   admitted.forEach(([name, className], i) => insert('join_admissions', { name, className, sortOrder: i + 1 }));
 
   const joinNames = ['林一鸣', '吴桐', '郑好', '何雨', '马骁', '许清', '钱途', '周雯'];
   joinNames.forEach((name, i) =>
     insert('join_applications', {
-      positionId: (i % 7) + 1,
       name,
       studentId: `2024${String(100300 + i)}`,
-      college: '计算机科学与技术学院',
-      major: ['计算机科学与技术', '软件工程', '人工智能', '电子信息工程'][i % 4],
-      grade: ['大一', '大二', '大三'][i % 3],
+      college: ['高一-2班', '高一-5班', '高二-1班', '高二-3班', '初三-1班', '高一-8班', '高二-6班', '高一-13班'][i % 8],
+      major: '',
+      grade: ['高一', '高二', '初三'][i % 3],
       phone: `137${String(30000000 + i * 217).slice(0, 8)}`,
-      email: `join${i}@university.edu.cn`,
+      email: `join${i}@example.com`,
       skills: ['React / TypeScript', 'Figma 设计', '视频剪辑', 'Python 数据分析'][i % 4],
       intro: '希望加入科技创新部，把自己的技术能力用在真实项目里，也认识更多志同道合的同学。',
       status: ['pending', 'reviewing', 'approved', 'pending'][i % 4],
@@ -775,11 +770,9 @@ export function seed() {
 
   /* ---- Status ---- */
   const targets: [string, string, string, string, string][] = [
-    ['科技创新部门户', 'website', 'https://sti.university.edu.cn', '', '部门门户主站'],
-    ['成果展示画廊', 'website', 'https://gallery.sti.university.edu.cn', '', '创新成果图片库'],
-    ['竞赛信息聚合平台', 'website', 'https://comp.sti.university.edu.cn', '', '竞赛信息与截止提醒'],
-    ['大创项目管理系统', 'website', 'https://dachuang.university.edu.cn', '', '项目申报与进度查询'],
-    ['创客空间预约系统', 'website', 'https://maker.university.edu.cn', '', '设备预约与准入管理'],
+    ['科技创新部门户', 'website', '', '', '部门门户主站'],
+    ['活动画廊', 'website', '', '', '活动影像图片库'],
+    ['竞赛信息聚合平台', 'website', '', '', '竞赛信息与截止提醒'],
     ['门户应用服务器', 'server', '', '10.20.30.11', '4C8G · Ubuntu 24.04'],
     ['数据库服务器', 'server', '', '10.20.30.12', '8C16G · MySQL 8.4'],
     ['对象存储节点', 'server', '', '10.20.30.13', '2TB · MinIO'],
@@ -810,8 +803,8 @@ export function seed() {
 
   /* ---- 消息 ---- */
   const msgs: [number, string, string, boolean][] = [
-    [4, '你的项目申报已通过初审', '「灵眸」室内导航系统已通过部门初审，请于 5 个工作日内提交补充材料。', false],
-    [3, '你有 1 条待回复的留言', '有同学在留言板中询问大创跨学院组队问题，请及时回复。', false],
+    [4, '你的作品报名已通过初审', '「智能垃圾分类提示装置」已通过部门初审，请于 5 个工作日内提交补充材料。', false],
+    [3, '你有 1 条待回复的留言', '有同学在留言板中询问科技比赛组队问题，请及时回复。', false],
   ];
   msgs.forEach(([userId, title, content, read], i) =>
     insert('user_messages', { userId, title, content, read: read ? 1 : 0, link: null, createdAt: daysAgo(i) })
@@ -819,8 +812,8 @@ export function seed() {
 
   /* ---- 操作日志 ---- */
   const oplogs: [string, string, string][] = [
-    ['审核通过', 'project', '审核通过项目申报「灵眸——面向视障人群的室内导航系统」'],
-    ['上传图片', 'gallery', '批量上传 8 张科技文化节现场照片'],
+    ['审核通过', 'project', '审核通过作品报名「智能垃圾分类提示装置」'],
+    ['上传图片', 'gallery', '批量上传 8 张活动现场照片'],
     ['修改配置', 'settings', '更新门户公告栏与联系方式'],
   ];
   oplogs.forEach(([action, target, detail], i) =>

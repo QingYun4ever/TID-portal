@@ -13,7 +13,7 @@ import { ResourceManager, type Column, type FieldDef } from '@/components/AdminK
 
 /* =============================================================================
  * 资源中心 —— /admin/resources
- * 维护申报模板 / 政策文件 / 竞赛指南 / 培训资料 / 常见问题，并支持直接上传文件
+ * 维护报名模板 / 活动资料 / 科普材料 / 竞赛指南 / 常见问题，并支持直接上传文件
  * ========================================================================== */
 
 interface ResourceRow {
@@ -47,7 +47,7 @@ const FIELDS: FieldDef[] = [
     type: 'text',
     required: true,
     wide: true,
-    placeholder: '例如：学生创新项目申报书模板',
+    placeholder: '例如：科技比赛报名表模板',
   },
   {
     name: 'category',
@@ -105,7 +105,7 @@ const FIELDS: FieldDef[] = [
     wide: true,
     rows: 3,
     hint: '说明适用对象与使用方式，建议 40~80 字',
-    placeholder: '例如：适用于创新训练项目立项申报，含填写示例与常见问题说明。',
+    placeholder: '例如：适用于科技比赛报名，含填写示例与常见问题说明。',
   },
 ];
 
@@ -277,7 +277,7 @@ export default function Resources() {
 
       <ResourceManager<ResourceRow>
         title="资源中心"
-        description="维护申报模板、政策文件、竞赛指南、培训资料与常见问题；支持上传文件、外部链接与排序权重。"
+        description="维护活动资料、科普材料、竞赛指南、培训资料与常见问题；支持上传文件、外部链接与排序权重。"
         resource="resources"
         fields={FIELDS}
         columns={COLUMNS}

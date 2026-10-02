@@ -34,14 +34,15 @@ interface CompetitionRow {
   status: string;
 }
 
-/** 级别色调：国家级=极光紫 / 省级=青蓝 / 校级=翠绿 */
-const LEVEL_TONE: Record<string, 'accent' | 'primary' | 'success'> = {
+/** 级别色调：国家级=极光紫 / 市级=青蓝 / 区级=暖橙 / 校级=翠绿 */
+const LEVEL_TONE: Record<string, 'accent' | 'primary' | 'success' | 'warning'> = {
   国家级: 'accent',
-  省级: 'primary',
+  市级: 'primary',
+  区级: 'warning',
   校级: 'success',
 };
 
-const LEVELS = ['国家级', '省级', '校级'] as const;
+const LEVELS = ['国家级', '市级', '区级', '校级'] as const;
 
 const FIELDS: FieldDef[] = [
   {
@@ -76,7 +77,7 @@ const FIELDS: FieldDef[] = [
     label: '主办单位',
     type: 'text',
     required: true,
-    placeholder: '例如：教育部高等教育司',
+    placeholder: '例如：北京市陈经纶中学',
   },
   {
     name: 'signupDeadline',

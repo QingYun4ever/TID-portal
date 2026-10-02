@@ -2,31 +2,33 @@ import { useEffect, useRef } from 'react';
 import { cn } from '@/lib/utils';
 
 /* =============================================================================
- * 液态玻璃背景层
+ * 主题背景层：浅色透光，暗色只留极淡的蓝色纵深。
  *
  * 配色纪律：只有「黑、白、一点蓝」。不再使用紫 / 青绿等多色光雾 ——
  * 背景的职责是提供纵深与质感，不是抢内容。
  *
- *   · 冷白光雾   两团低饱和冷白光，缓慢漂移（唯一带色相的层次）
+ *   · 蓝色光雾   两团低饱和蓝光，缓慢漂移；深色主题显著降低浓度
  *   · 点线网格   76px 网格，随指针轻微视差
- *   · 指针聚光   跟随指针的柔光，制造「玻璃被照亮」的错觉
- *   · 上下渐暗   做出水下纵深
+ *   · 指针聚光   浅色保留柔光，暗色仅留极弱照明
+ *   · 上下渐暗   不遮盖主题底色的轻微纵深
  *
  * 性能纪律（背景是全屏层，任何一帧的浪费都会直接体现在滚动手感上）：
  *   · 光雾用多段径向渐变做出柔边，不再叠 filter: blur() ——
  *     大半径模糊会让这一层每次重绘都走一遍滤镜通道，代价远高于渐变本身；
- *   · 指针跟随的 rAF 只在指针真的移动时运行，追到位就自动停；
+ *   · 指针和网格只更新各自的 transform，rAF 追到位就自动停；
  *   · 全部 pointer-events: none。
  * ========================================================================== */
 
 export function LiquidBackdrop({ className, intensity = 1 }: { className?: string; intensity?: number }) {
-  const ref = useRef<HTMLDivElement>(null);
+  const gridRef = useRef<HTMLDivElement>(null);
+  const pointerRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
     if (!window.matchMedia('(hover: hover) and (pointer: fine)').matches) return;
-    const el = ref.current;
-    if (!el) return;
+    const grid = gridRef.current;
+    const pointer = pointerRef.current;
+    if (!grid || !pointer) return;
 
     let raf = 0;
     let tx = window.innerWidth / 2;
@@ -37,11 +39,9 @@ export function LiquidBackdrop({ className, intensity = 1 }: { className?: strin
     const loop = () => {
       cx += (tx - cx) * 0.055;
       cy += (ty - cy) * 0.055;
-      el.style.setProperty('--px', `${Math.round(cx)}px`);
-      el.style.setProperty('--py', `${Math.round(cy)}px`);
-      el.style.setProperty('--gx', `${((cx - window.innerWidth / 2) / 52).toFixed(2)}px`);
-      el.style.setProperty('--gy', `${((cy - window.innerHeight / 2) / 52).toFixed(2)}px`);
-      // 追到位就停：静止的页面不应该有任何一帧开销
+      pointer.style.transform = `translate3d(${Math.round(cx) - 440}px, ${Math.round(cy) - 440}px, 0)`;
+      grid.style.transform = `translate3d(${((cx - window.innerWidth / 2) / 52).toFixed(2)}px, ${((cy - window.innerHeight / 2) / 52).toFixed(2)}px, 0)`;
+      // 指针追到位就停；常驻光雾继续由 CSS 合成线程驱动。
       raf = Math.abs(tx - cx) + Math.abs(ty - cy) > 0.4 ? requestAnimationFrame(loop) : 0;
     };
     const onMove = (e: PointerEvent) => {
@@ -59,13 +59,12 @@ export function LiquidBackdrop({ className, intensity = 1 }: { className?: strin
 
   return (
     <div
-      ref={ref}
       aria-hidden
       className={cn('pointer-events-none fixed inset-0 -z-10 overflow-hidden', className)}
       style={{ opacity: intensity }}
     >
-      {/* 冷白光雾 —— 仅两团，低饱和，柔边由渐变段本身给出
-          （.liquid-orb：浅色主题下略提浓度，给毛玻璃留一点可透的底色） */}
+      {/* 蓝色光雾 —— 柔边由渐变段本身给出；主题 CSS 调节浓度。
+          浅色保留透光层次，深色只留微弱蓝光，避免灰雾盖住底色。 */}
       <div
         className="liquid-orb animate-drift absolute left-1/2 top-[-16%] h-[74vmax] w-[74vmax] -translate-x-1/2 rounded-full"
         style={{
@@ -84,29 +83,31 @@ export function LiquidBackdrop({ className, intensity = 1 }: { className?: strin
 
       {/* 点线网格（随指针轻微视差） */}
       <div
+        ref={gridRef}
         className="absolute inset-[-6%] opacity-[0.42]"
         style={{
           backgroundImage:
             'linear-gradient(to right, rgb(var(--tw-white) / .05) 1px, transparent 1px), linear-gradient(to bottom, rgb(var(--tw-white) / .05) 1px, transparent 1px)',
           backgroundSize: '76px 76px',
-          transform: 'translate3d(var(--gx,0), var(--gy,0), 0)',
+          transform: 'translate3d(0, 0, 0)',
           maskImage: 'radial-gradient(76% 60% at 50% 34%, #000 6%, transparent 72%)',
           WebkitMaskImage: 'radial-gradient(76% 60% at 50% 34%, #000 6%, transparent 72%)',
         }}
       />
 
-      {/* 顶部一道冷光，底部沉暗 */}
-      <div className="absolute inset-x-0 top-0 h-[38vh] bg-gradient-to-b from-white/[0.035] to-transparent" />
+      {/* 顶部光感按主题收敛，底部沉暗保持主题底色。 */}
+      <div className="liquid-top-light absolute inset-x-0 top-0 h-[38vh] bg-gradient-to-b from-white/[0.035] to-transparent" />
       <div className="absolute inset-x-0 bottom-0 h-[38vh] bg-gradient-to-t from-black to-transparent" />
 
-      {/* 指针聚光 —— 必须画在底部渐暗层之后，否则视口下半部分会被那层黑压掉。
-          --orb：深色主题是白光，浅色主题是淡天蓝（浅底上白加白等于没加）；
-          强度单独走 --pointer-glow-opacity，浅底需要更高的不透明度才看得见。 */}
+      {/* 聚光的渐变固定不重绘，只平移整层；强度由主题 token 决定。
+          深色极弱冷白，浅色淡天蓝。保留在底部渐暗层之后。 */}
       <div
-        className="liquid-pointer-glow absolute inset-0 hidden lg:block"
+        ref={pointerRef}
+        className="liquid-pointer-glow absolute left-0 top-0 hidden h-[880px] w-[880px] lg:block"
         style={{
           background:
-            'radial-gradient(440px circle at var(--px, 50%) var(--py, 30%), rgb(var(--orb) / var(--pointer-glow-opacity)) 0%, rgb(var(--orb) / calc(var(--pointer-glow-opacity) * 0.55)) 25%, rgb(var(--orb) / calc(var(--pointer-glow-opacity) * 0.18)) 55%, rgb(var(--orb) / 0) 100%)',
+            'radial-gradient(440px circle at center, rgb(var(--orb) / var(--pointer-glow-opacity)) 0%, rgb(var(--orb) / calc(var(--pointer-glow-opacity) * 0.55)) 25%, rgb(var(--orb) / calc(var(--pointer-glow-opacity) * 0.18)) 55%, rgb(var(--orb) / 0) 100%)',
+          transform: 'translate3d(calc(50vw - 440px), calc(30vh - 440px), 0)',
         }}
       />
     </div>

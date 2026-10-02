@@ -88,9 +88,9 @@ export default function Projects() {
     <>
       <PageHero
         eyebrow="Innovation Showcase"
-        title="创新项目展示库"
-        description="收录竞赛成果、前端作品、工具服务与实体设计，也记录从立项到结项的创新实践。点击卡片查看作品。"
-        breadcrumb={[{ label: '创新项目' }]}
+        title="科技作品展示库"
+        description="展示部门与同学的科技作品：竞赛作品、前端作品、工具服务与实体设计。"
+        breadcrumb={[{ label: '科技作品' }]}
       >
         <div className="flex flex-wrap items-center gap-2.5">
           <Chip tone="accent">

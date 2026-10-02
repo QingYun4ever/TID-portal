@@ -45,21 +45,21 @@ import {
 /* =============================================================================
  * 项目在线申报（/projects/apply）—— 门户最重要的办事入口
  *  步骤 1：项目基本信息（名称 / 类别 / 参赛竞赛）
- *  步骤 2：团队信息（负责人 / 指导教师 / 人数 / 成员列表）
+ *  步骤 2：团队信息（负责人 / 指导老师 / 人数 / 成员列表）
  *  步骤 3：项目简介（≥20 字，带字数统计）+ 承诺勾选
  *  提交：SubmitApi.applyProject → 成功页（申报编号 + 后续流程 + 进度查询）
  * ========================================================================== */
 
 const STEPS = [
   { n: 1, title: '项目基本信息', desc: '项目名称、类别与参赛意向' },
-  { n: 2, title: '团队信息', desc: '负责人、指导教师与成员' },
+  { n: 2, title: '团队信息', desc: '负责人、指导老师与成员' },
   { n: 3, title: '项目简介与承诺', desc: '简介不少于 20 字' },
 ] as const;
 
 const PROJECT_CATEGORY_OPTIONS = [
-  { value: '创新训练', desc: '以技术创新与原型验证为主，适合技术探索类项目' },
-  { value: '创业训练', desc: '围绕商业计划与市场验证，适合产品化探索' },
-  { value: '创业实践', desc: '已具备落地条件的创业项目，可申请孵化支持' },
+  { value: '科技制作', desc: '以动手制作与作品实现为主，适合技术探索类作品' },
+  { value: '科技探究', desc: '围绕身边的科学问题开展观察与实验，适合探究类作品' },
+  { value: '创意设计', desc: '侧重创意方案与设计表达，适合展示类作品' },
 ];
 
 type FormState = {
@@ -121,7 +121,7 @@ function validateStep2(f: FormState): Errors {
   if (!sid) e.leaderStudentId = '请填写负责人学号';
   else if (!/^[A-Za-z0-9]{4,20}$/.test(sid)) e.leaderStudentId = '学号应为 4–20 位字母或数字';
 
-  if (!f.leaderCollege.trim()) e.leaderCollege = '请填写负责人所在学院';
+  if (!f.leaderCollege.trim()) e.leaderCollege = '请填写负责人所在班级';
 
   const phone = f.leaderPhone.trim();
   if (!phone) e.leaderPhone = '请填写联系电话';
@@ -279,7 +279,7 @@ export default function ProjectApply() {
       <PageHero
         eyebrow="Project Application"
         title="项目在线申报"
-        description="学生创新项目全年受理在线申报。填写项目基本信息、团队信息与项目简介，5 个工作日内反馈初审结果。"
+        description="面向全校同学征集科技比赛与科普活动作品。填写项目基本信息、团队信息与项目简介，由部门统一组织评审。"
         breadcrumb={[{ label: '创新项目', to: '/projects' }, { label: '在线申报' }]}
       >
         <div className="flex flex-wrap items-center gap-2.5">
@@ -355,7 +355,7 @@ export default function ProjectApply() {
                         />
                       </Field>
 
-                      <Field label="项目类别" required error={errors.category} hint="类别将决定评审侧重点与后续孵化路径">
+                      <Field label="项目类别" required error={errors.category} hint="类别将决定比赛分组与展示方式">
                         <div className="grid gap-2.5 sm:grid-cols-3">
                           {PROJECT_CATEGORY_OPTIONS.map((o) => {
                             const active = form.category === o.value;
@@ -448,14 +448,14 @@ export default function ProjectApply() {
                             inputMode="numeric"
                           />
                         </Field>
-                        <Field label="所在学院" required error={errors.leaderCollege}>
+                        <Field label="所在班级" required error={errors.leaderCollege}>
                           <Input
                             value={form.leaderCollege}
                             onChange={(e) => set('leaderCollege', e.target.value)}
-                            placeholder="如 计算机科学与技术学院"
+                            placeholder="如 高一-2班"
                           />
                         </Field>
-                        <Field label="手机号" required error={errors.leaderPhone} hint="接收审核结果与答辩安排通知">
+                        <Field label="手机号" required error={errors.leaderPhone} hint="接收比赛结果与活动安排通知">
                           <Input
                             value={form.leaderPhone}
                             onChange={(e) => set('leaderPhone', e.target.value)}
@@ -464,20 +464,20 @@ export default function ProjectApply() {
                             autoComplete="tel"
                           />
                         </Field>
-                        <Field label="邮箱" error={errors.leaderEmail} hint="选填，用于接收评审意见与公示通知">
+                        <Field label="邮箱" error={errors.leaderEmail} hint="选填，用于接收作品反馈与公示通知">
                           <Input
                             value={form.leaderEmail}
                             onChange={(e) => set('leaderEmail', e.target.value)}
-                            placeholder="name@university.edu.cn"
+                            placeholder="name@example.com"
                             inputMode="email"
                             autoComplete="email"
                           />
                         </Field>
-                        <Field label="指导教师" hint="选填，可先填写意向导师，立项后可在后台补充">
+                        <Field label="指导老师" hint="选填，可先填写意向指导老师，活动开始后可在后台补充">
                           <Input
                             value={form.advisor}
                             onChange={(e) => set('advisor', e.target.value)}
-                            placeholder="如 王建国 教授"
+                            placeholder="如 王老师"
                           />
                         </Field>
                       </div>
@@ -530,9 +530,9 @@ export default function ProjectApply() {
                           <ReviewRow label="项目类别" value={form.category} />
                           <ReviewRow label="参赛竞赛" value={selectedComp?.title ?? '未关联'} />
                           <ReviewRow label="负责人" value={`${form.leaderName}（${form.leaderStudentId}）`} />
-                          <ReviewRow label="学院" value={form.leaderCollege} />
+                          <ReviewRow label="班级" value={form.leaderCollege} />
                           <ReviewRow label="联系电话" value={form.leaderPhone} />
-                          <ReviewRow label="指导教师" value={form.advisor || '未填写'} />
+                          <ReviewRow label="指导老师" value={form.advisor || '未填写'} />
                           <ReviewRow label="团队人数" value={`${form.teamSize} 人`} />
                           <ReviewRow label="团队成员" value={form.members.filter(Boolean).join('、') || '未填写'} />
                         </dl>
@@ -549,14 +549,14 @@ export default function ProjectApply() {
                         label="项目简介"
                         required
                         error={errors.intro}
-                        hint={`不少于 20 字，建议包含研究背景、技术方案与预期成果（${form.intro.trim().length}/1000）`}
+                        hint={`不少于 20 字，建议包含作品背景、制作思路与预期成果（${form.intro.trim().length}/1000）`}
                       >
                         <Textarea
                           rows={8}
                           value={form.intro}
                           maxLength={1200}
                           onChange={(e) => set('intro', e.target.value)}
-                          placeholder="请简要说明项目要解决的问题、拟采用的技术路线与预期的成果形式……"
+                          placeholder="请简要说明作品要解决的问题、制作思路与预期的成果形式……"
                         />
                       </Field>
 
@@ -625,10 +625,10 @@ export default function ProjectApply() {
                   <p className="eyebrow mb-3">材料清单</p>
                   <ul className="flex flex-col gap-2.5">
                     {[
-                      '项目申报书（PDF，需负责人签字）',
-                      '团队全部成员学生证扫描件',
-                      '指导教师意见书（可后续补充）',
-                      '已有成果证明：专利 / 论文 / 竞赛证书',
+                      '报名表 / 作品说明（PDF，需负责人签字）',
+                      '团队成员名单（含年级 / 班级）',
+                      '指导老师意见（可后续补充）',
+                      '已有成果证明：比赛获奖证书 / 作品照片',
                     ].map((t) => (
                       <li key={t} className="flex items-start gap-2.5 text-[12px] leading-relaxed text-foreground/75">
                         <Check className="mt-[3px] h-3.5 w-3.5 shrink-0 text-primary" />
@@ -645,9 +645,9 @@ export default function ProjectApply() {
                   <p className="eyebrow mb-3">时间节点</p>
                   <div className="flex flex-col gap-3">
                     {[
-                      { t: '在线申报', d: '全年受理，按季度批次集中评审' },
+                      { t: '在线报名', d: '按活动批次受理' },
                       { t: '初审反馈', d: '提交后 5 个工作日内' },
-                      { t: '专家评审', d: '每季度末组织一次答辩评审' },
+                      { t: '作品评审', d: '由指导老师与部门成员评审' },
                       { t: '结果公示', d: '评审结束后 3 个工作日内门户公示' },
                     ].map((s) => (
                       <div key={s.t} className="flex items-start gap-3">
@@ -695,7 +695,7 @@ export default function ProjectApply() {
               <Glass tone="thin" className="flex items-start gap-3 p-5">
                 <Building2 className="mt-0.5 h-4 w-4 shrink-0 text-accent" />
                 <p className="text-[11.5px] leading-relaxed text-muted-foreground">
-                  立项项目可申请实验场地、设备与专项孵化基金支持，优秀项目将推荐参加省级及以上竞赛。
+                  优秀作品将在校内展示，并由部门推荐参加市级及以上科技比赛。
                 </p>
               </Glass>
             </aside>
@@ -833,9 +833,9 @@ function SuccessView({
               <ReviewRow label="项目类别" value={form.category} />
               <ReviewRow label="参赛竞赛" value={competitionTitle ?? '未关联'} />
               <ReviewRow label="负责人" value={`${form.leaderName}（${form.leaderStudentId}）`} />
-              <ReviewRow label="学院" value={form.leaderCollege} />
+              <ReviewRow label="班级" value={form.leaderCollege} />
               <ReviewRow label="联系电话" value={form.leaderPhone} />
-              <ReviewRow label="指导教师" value={form.advisor || '未填写'} />
+              <ReviewRow label="指导老师" value={form.advisor || '未填写'} />
               <ReviewRow label="团队人数" value={`${form.teamSize} 人`} />
             </dl>
           </div>
@@ -846,10 +846,10 @@ function SuccessView({
             <div className="flex flex-col">
               {[
                 { t: '形式审查', d: '核对填报信息完整性与资格，1 个工作日内完成' },
-                { t: '专家初审', d: '技术与可行性评审，5 个工作日内反馈受理结果' },
-                { t: '答辩评审', d: '通过初审的项目参加季度答辩，确定立项等级' },
-                { t: '立项公示', d: '结果在门户公示 3 个工作日，无异议后正式立项' },
-                { t: '孵化支持', d: '匹配指导教师与实验资源，纳入项目孵化计划' },
+                { t: '作品初审', d: '核对报名信息与作品材料，5 个工作日内反馈受理结果' },
+                { t: '作品评审', d: '通过初审的作品参加评审，确定获奖等级' },
+                { t: '结果公示', d: '结果在门户公示 3 个工作日，无异议后正式入选' },
+                { t: '活动支持', d: '匹配指导老师与制作资源，纳入后续科技活动' },
               ].map((s, i, arr) => (
                 <div key={s.t} className="relative flex gap-4">
                   <div className="flex flex-col items-center">
@@ -891,7 +891,7 @@ function SuccessView({
           {!loggedIn && (
             <p className="mt-4 flex items-start gap-2 text-[11.5px] leading-relaxed text-muted-foreground">
               <Info className="mt-0.5 h-3.5 w-3.5 shrink-0" />
-              本次为匿名提交，申报记录未绑定账号。建议使用同一学号注册并登录后，即可在「用户中心 → 我的项目」查看进度与评审意见。
+              本次为匿名提交，申报记录未绑定账号。建议使用同一学号注册并登录后，即可在「用户中心 → 我的项目」查看进度与作品反馈。
             </p>
           )}
         </div>
@@ -907,7 +907,7 @@ function SuccessView({
             {[
               '保持手机号与邮箱畅通，初审结果将通过短信与邮件通知。',
               '如需修改信息，可在初审前联系部门并提供申报编号。',
-              '申报书、学生证等材料在初审通过后按通知补充上传。',
+              '报名表、作品照片等材料在初审通过后按通知补充上传。',
               '同一项目请勿重复提交，重复申报将影响评审优先级。',
             ].map((t) => (
               <li key={t} className="flex items-start gap-3 text-[12.5px] leading-relaxed text-foreground/75">
@@ -921,7 +921,7 @@ function SuccessView({
         <Glass tone="thin" className="flex items-start gap-3 p-5">
           <Sparkles className="mt-0.5 h-4 w-4 shrink-0 text-accent" />
           <p className="text-[11.5px] leading-relaxed text-muted-foreground">
-            项目立项后可申请实验场地、设备与专项孵化基金，优秀项目将由部门推荐参加省级及以上竞赛。
+            优秀作品将在校内展示，并由部门推荐参加市级及以上科技比赛。
           </p>
         </Glass>
       </aside>

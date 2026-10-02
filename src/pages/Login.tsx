@@ -55,14 +55,14 @@ export default function Login() {
                   {settings.slogan || '以技术为舟，以创新为帆'}
                 </p>
                 <div className="mt-7 flex flex-wrap items-center justify-center gap-2.5 lg:justify-start">
-                  <Chip tone="primary"><Sparkles className="h-3 w-3" />在线报名与申报</Chip>
-                  <Chip tone="accent">项目进度查询</Chip>
+                  <Chip tone="primary"><Sparkles className="h-3 w-3" />活动与比赛报名</Chip>
+                  <Chip tone="accent">报名进度查询</Chip>
                   <Chip tone="success">消息通知</Chip>
                 </div>
 
                 <ul className="mt-9 flex flex-col gap-3.5 text-left">
                   {[
-                    '一个账号打通活动报名、项目申报与招新报名',
+                    '一个账号打通活动报名、比赛报名与招新报名',
                     '实时查看审核进度与结果公示，不再错过通知',
                     '部门成员与管理员另附内容发布、报名管理权限',
                   ].map((text) => (

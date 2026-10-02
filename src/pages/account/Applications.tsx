@@ -137,8 +137,8 @@ export default function Applications() {
             title="暂无项目申报记录"
             description={
               user?.studentId
-                ? '你可以为学生创新项目提交申报，审核进度会实时同步到这里。'
-                : '建议先在「个人资料」补全学号与手机号，便于申报记录与账号自动关联。'
+                ? '提交科技比赛 / 科技活动报名，审核进度会实时同步到这里。'
+                : '建议先在「个人资料」补全学号与手机号，便于报名记录与账号自动关联。'
             }
             action={
               <div className="flex flex-wrap justify-center gap-3">
@@ -162,7 +162,7 @@ export default function Applications() {
                     <Th>类别</Th>
                     <Th>负责人</Th>
                     <Th>团队</Th>
-                    <Th>指导教师</Th>
+                    <Th>指导老师</Th>
                     <Th>状态</Th>
                     <Th>提交时间</Th>
                     <Th className="text-right">操作</Th>
@@ -255,7 +255,7 @@ export default function Applications() {
                     <Users className="h-3.5 w-3.5" />
                     <span className="mono">{r.teamSize}</span> 人团队
                   </div>
-                  <div className="clamp-1 col-span-2">指导教师：{r.advisor || '—'}</div>
+                  <div className="clamp-1 col-span-2">指导老师：{r.advisor || '—'}</div>
                   <div className="mono col-span-2">提交 {fdatetime(r.createdAt)}</div>
                 </dl>
                 {r.reviewNote && (
@@ -309,10 +309,10 @@ export default function Applications() {
               <dl className="grid grid-cols-2 gap-x-4 gap-y-3 text-[12.5px]">
                 <Info label="负责人" value={active.leaderName} />
                 <Info label="学号" value={active.leaderStudentId} mono />
-                <Info label="学院" value={active.leaderCollege} span />
+                <Info label="班级" value={active.leaderCollege} span />
                 <Info label="联系电话" value={active.leaderPhone} mono />
                 <Info label="联系邮箱" value={active.leaderEmail || '—'} span />
-                <Info label="指导教师" value={active.advisor || '—'} span />
+                <Info label="指导老师" value={active.advisor || '—'} span />
                 <Info label="团队人数" value={`${active.teamSize} 人`} mono />
                 <Info label="提交时间" value={fdatetime(active.createdAt)} mono />
               </dl>

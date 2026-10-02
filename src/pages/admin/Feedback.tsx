@@ -519,7 +519,7 @@ export default function AdminFeedback() {
                 rows={6}
                 value={replyText}
                 onChange={(e) => setReplyText(e.target.value)}
-                placeholder="例如：可以跨学院组队，申报时由队长所在学院盖章即可，具体流程见《大创申报指南》第 3 章。"
+                placeholder="例如：可以跨班级组队，报名时由队长统一提交即可，具体流程见《科技比赛报名指南》第 3 章。"
               />
             </Field>
           </div>

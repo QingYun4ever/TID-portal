@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link } from 'react-router';
-import type { Project } from '../../shared/types';
+import type { Project, TimelineNode } from '../../shared/types';
 import {
   Box,
   ArrowRight,
@@ -33,7 +33,7 @@ import { Chip, Countdown, ProgressBar } from './ui';
 const ProjectModelViewer = React.lazy(() => import('./ProjectModelViewer'));
 
 /* =============================================================================
- * 内容卡片 —— 「刻面玻璃 / Etched Glass」
+ * 内容卡片 —— Credit 信息层级 + 高不透明度轻玻璃
  * -----------------------------------------------------------------------------
  * 卡片外壳统一用 index.css 的 .card：5px 内衬 + 板中板，
  * 封面与内容板各自带圆角，外壳不裁剪任何子元素 —— 因此不会出现
@@ -41,7 +41,7 @@ const ProjectModelViewer = React.lazy(() => import('./ProjectModelViewer'));
  *
  * 结构约定（六种卡片共用）：
  *   .card  →  [.card-media]  →  .card-body  →  [.card-rule + 页脚行]
- * 颜色仍然只有三种角色：白（靠不透明度分层）/ 蓝 primary / 警示色。
+ * 材质：92% 不透明底色、细分隔线、轻阴影；文字与图片保持原有透明度。
  * ========================================================================== */
 
 /* 分类标记一律走中性白，只有「通知公告」用蓝色做引导；
@@ -67,7 +67,7 @@ function CoverFallback({ label = 'STI', icon }: { label?: string; icon?: React.R
   );
 }
 
-/** 卡片页脚：一条左端亮的细线 + 一行元信息 */
+/** 卡片页脚：中性细分隔线与元信息 */
 function CardFoot({ children, className }: { children: React.ReactNode; className?: string }) {
   return (
     <div className={cn('mt-4', className)}>
@@ -504,16 +504,17 @@ export function ApplyStatusChip({ status }: { status: string }) {
 /* =============================================================================
  * 时间线条目
  * ========================================================================== */
-export function TimelineItem({ node, index, total }: { node: any; index: number; total: number }) {
+export function TimelineItem({ node, index, total, showYear }: { node: TimelineNode; index: number; total: number; showYear: boolean }) {
   const last = index === total - 1;
   return (
     <div className="relative flex gap-5" data-reveal="left">
       <div className="relative flex w-16 shrink-0 flex-col items-center">
-        <span className="mono text-sm font-semibold text-primary">{node.year}</span>
+        <span className="mono min-h-5 text-sm font-semibold text-primary">{showYear ? node.year : null}</span>
         <span className="mt-2 h-2.5 w-2.5 rounded-full border-2 border-primary bg-background shadow-[0_0_14px_-1px_hsl(var(--primary)/.8)]" />
         {!last && <span className="mt-1 w-px flex-1 bg-gradient-to-b from-primary/45 to-transparent" />}
       </div>
       <div className={cn('min-w-0 flex-1', last ? 'pb-0' : 'pb-9')}>
+        {node.dateLabel && <p className="mono mb-1.5 text-xs text-muted-foreground">{node.dateLabel}</p>}
         <h4 className="text-[15px] font-semibold">{node.title}</h4>
         <p className="mt-1.5 text-[13px] leading-relaxed text-muted-foreground">{node.description}</p>
       </div>

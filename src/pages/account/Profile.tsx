@@ -102,7 +102,7 @@ export default function Profile() {
       <div>
         <h1 className="text-2xl font-semibold tracking-tight">个人资料</h1>
         <p className="mt-2 max-w-2xl text-sm leading-relaxed text-muted-foreground">
-          学号与手机号用于把活动报名、项目申报记录与当前账号关联，请务必填写准确。
+          学号与手机号用于把活动报名、报名记录与当前账号关联，请务必填写准确。
         </p>
       </div>
 
@@ -143,7 +143,7 @@ export default function Profile() {
             </Field>
 
             <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-              <Field label="学号" error={errors.studentId} hint="用于关联报名与申报记录">
+              <Field label="学号" error={errors.studentId} hint="用于关联报名记录">
                 <Input
                   value={form.studentId}
                   onChange={(e) => set('studentId')(e.target.value)}
@@ -152,8 +152,8 @@ export default function Profile() {
                   inputMode="numeric"
                 />
               </Field>
-              <Field label="学院" hint="如 计算机科学与技术学院">
-                <Input value={form.college} onChange={(e) => set('college')(e.target.value)} placeholder="请输入所在学院" />
+              <Field label="班级" hint="如 高一-2班">
+                <Input value={form.college} onChange={(e) => set('college')(e.target.value)} placeholder="请输入所在班级" />
               </Field>
             </div>
 
@@ -163,7 +163,7 @@ export default function Profile() {
                   type="email"
                   value={form.email}
                   onChange={(e) => set('email')(e.target.value)}
-                  placeholder="name@stu.edu.cn"
+                  placeholder="name@example.com"
                   autoComplete="email"
                 />
               </Field>
@@ -222,7 +222,7 @@ export default function Profile() {
               <Row icon={<AtSign className="h-3.5 w-3.5" />} label="站内标识" value={user?.username ?? '—'} mono />
               <Row icon={<User className="h-3.5 w-3.5" />} label="角色" value={roleLabel} />
               <Row icon={<Hash className="h-3.5 w-3.5" />} label="学号" value={form.studentId || '—'} mono />
-              <Row icon={<Building2 className="h-3.5 w-3.5" />} label="学院" value={form.college || '—'} />
+              <Row icon={<Building2 className="h-3.5 w-3.5" />} label="班级" value={form.college || '—'} />
               <Row icon={<GraduationCap className="h-3.5 w-3.5" />} label="邮箱" value={form.email || '—'} />
               <Row icon={<Phone className="h-3.5 w-3.5" />} label="手机" value={form.phone || '—'} mono />
               <Row icon={<ImageIcon className="h-3.5 w-3.5" />} label="头像" value={form.avatar ? '已设置' : '未设置'} />

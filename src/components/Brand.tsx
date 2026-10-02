@@ -200,6 +200,60 @@ export function LogoMark({
   );
 }
 
+/** 背景品牌轨道：核心与射线固定，完整星环图层由 CSS 持续旋转，无 SVG 滤镜。 */
+export function LogoWatermark({ className }: { className?: string }) {
+  const uid = React.useId();
+  const g = (name: string) => `${uid}-${name}`;
+
+  return (
+    <div className={cn('brand-watermark', className)} aria-hidden="true">
+      <svg viewBox="-46 -46 1092 1092" width="100%" height="100%" className="brand-watermark-static" aria-hidden="true">
+        <defs>
+          <linearGradient id={g('beam')} x1="0" y1="0" x2="1" y2="0">
+            <stop offset="0" stopColor="hsl(var(--watermark-ink))" stopOpacity="0" />
+            <stop offset="0.22" stopColor="hsl(var(--watermark-ink))" stopOpacity="0.22" />
+            <stop offset="0.5" stopColor="hsl(var(--watermark-highlight))" stopOpacity="0.9" />
+            <stop offset="0.78" stopColor="hsl(var(--watermark-ink))" stopOpacity="0.22" />
+            <stop offset="1" stopColor="hsl(var(--watermark-ink))" stopOpacity="0" />
+          </linearGradient>
+          <radialGradient id={g('core-glow')}>
+            <stop offset="0" stopColor="hsl(var(--watermark-highlight))" stopOpacity="0.2" />
+            <stop offset="0.45" stopColor="hsl(var(--watermark-ink))" stopOpacity="0.08" />
+            <stop offset="1" stopColor="hsl(var(--watermark-ink))" stopOpacity="0" />
+          </radialGradient>
+        </defs>
+        <circle cx={CORE.cx} cy={CORE.cy} r="480" fill="none" stroke="hsl(var(--watermark-ink))" strokeWidth="1" strokeDasharray="2 14" opacity="0.16" />
+        <circle cx={CORE.cx} cy={CORE.cy} r={CORE.r * 1.45} fill="none" stroke="hsl(var(--watermark-ink))" strokeWidth="1" strokeDasharray="3 12" opacity="0.2" />
+        <g transform={`translate(${CORE.cx} ${CORE.cy}) rotate(45)`}>
+          <rect x="-486" y="-12" width="972" height="24" fill={`url(#${g('beam')})`} opacity="0.48" />
+          <rect x="-486" y="-2.5" width="972" height="5" fill={`url(#${g('beam')})`} opacity="0.8" />
+        </g>
+        <circle cx={CORE.cx} cy={CORE.cy} r={CORE.r * 2.5} fill={`url(#${g('core-glow')})`} />
+        <circle cx={CORE.cx} cy={CORE.cy} r={CORE.r} fill="hsl(var(--watermark-highlight))" fillOpacity="0.045" stroke="hsl(var(--watermark-highlight))" strokeOpacity="0.6" strokeWidth="2" />
+        <circle cx={CORE.cx} cy={CORE.cy} r="6" fill="hsl(var(--watermark-highlight))" fillOpacity="0.9" />
+      </svg>
+      <svg viewBox="-46 -46 1092 1092" width="100%" height="100%" className="brand-watermark-orbit" aria-hidden="true">
+        <defs>
+          <linearGradient id={g('ring')} x1="0.05" y1="0" x2="0.95" y2="1">
+            <stop offset="0" stopColor="hsl(var(--watermark-ink))" stopOpacity="0.65" />
+            <stop offset="0.38" stopColor="hsl(var(--watermark-highlight))" stopOpacity="0.95" />
+            <stop offset="0.7" stopColor="hsl(var(--watermark-ink))" stopOpacity="0.8" />
+            <stop offset="1" stopColor="hsl(var(--watermark-ink))" stopOpacity="0.5" />
+          </linearGradient>
+          <radialGradient id={g('satellite-glow')}>
+            <stop offset="0" stopColor="hsl(var(--watermark-highlight))" stopOpacity="0.38" />
+            <stop offset="0.35" stopColor="hsl(var(--watermark-highlight))" stopOpacity="0.16" />
+            <stop offset="1" stopColor="hsl(var(--watermark-ink))" stopOpacity="0" />
+          </radialGradient>
+        </defs>
+        <path d={RING_PATH} fill={`url(#${g('ring')})`} fillRule="evenodd" />
+        <circle cx={SATELLITE.cx} cy={SATELLITE.cy} r={SATELLITE.r * 3.5} fill={`url(#${g('satellite-glow')})`} />
+        <circle cx={SATELLITE.cx} cy={SATELLITE.cy} r={SATELLITE.r} fill="hsl(var(--watermark-highlight))" fillOpacity="0.95" />
+      </svg>
+    </div>
+  );
+}
+
 /* =============================================================================
  * 完整字标（图标 + 中文名 + 分割线 + 英文名），比例取自 pptx 母版
  * ========================================================================== */

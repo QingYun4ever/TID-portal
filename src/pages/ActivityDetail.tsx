@@ -46,7 +46,7 @@ import {
  * 活动详情 + 在线报名（/activities/:slug）
  *  - 顶部：面包屑、分类徽章、标题、时间（含星期）、地点、报名截止倒计时
  *  - 报名进度条 + 报名表单（未登录亦可报名，后端支持匿名报名）
- *  - 报名成功后展示已报名名单（仅姓氏 + 学院，隐私友好）
+ *  - 报名成功后展示已报名名单（仅姓氏 + 班级，隐私友好）
  * ========================================================================== */
 
 type SignupForm = {
@@ -82,8 +82,7 @@ function validateSignup(f: SignupForm): FormErrors {
   if (!sid) e.studentId = '请填写学号';
   else if (!/^[A-Za-z0-9]{4,20}$/.test(sid)) e.studentId = '学号应为 4–20 位字母或数字';
 
-  if (!f.college.trim()) e.college = '请填写所在学院';
-  if (!f.major.trim()) e.major = '请填写专业';
+  if (!f.college.trim()) e.college = '请填写所在班级';
 
   const phone = f.phone.trim();
   if (!phone) e.phone = '请填写手机号';
@@ -484,18 +483,11 @@ export default function ActivityDetail() {
                         inputMode="numeric"
                       />
                     </Field>
-                    <Field label="学院" required error={errors.college}>
+                    <Field label="班级" required error={errors.college}>
                       <Input
                         value={form.college}
                         onChange={(e) => set('college', e.target.value)}
-                        placeholder="如 计算机科学与技术学院"
-                      />
-                    </Field>
-                    <Field label="专业" required error={errors.major}>
-                      <Input
-                        value={form.major}
-                        onChange={(e) => set('major', e.target.value)}
-                        placeholder="如 计算机科学与技术"
+                        placeholder="如 高一-2班"
                       />
                     </Field>
                     <Field label="手机号" required error={errors.phone} hint="用于接收活动变更与提醒通知">
@@ -511,7 +503,7 @@ export default function ActivityDetail() {
                       <Input
                         value={form.email}
                         onChange={(e) => set('email', e.target.value)}
-                        placeholder="name@university.edu.cn"
+                        placeholder="name@example.com"
                         inputMode="email"
                         autoComplete="email"
                       />
@@ -568,7 +560,7 @@ export default function ActivityDetail() {
                 </h2>
                 <span className="flex items-center gap-2 text-[11px] text-muted-foreground">
                   <Info className="h-3.5 w-3.5" />
-                  为保护隐私，仅展示姓氏与学院
+                  为保护隐私，仅展示姓氏与班级
                 </span>
               </div>
 
@@ -586,7 +578,7 @@ export default function ActivityDetail() {
                         <span className="min-w-0">
                           <span className="block text-[12.5px] font-medium">{maskName(s.name)}</span>
                           <span className="clamp-1 block text-[10.5px] text-muted-foreground">
-                            {s.college || '学院未填写'}
+                            {s.college || '班级未填写'}
                           </span>
                         </span>
                       </div>

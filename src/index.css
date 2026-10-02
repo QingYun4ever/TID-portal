@@ -3,9 +3,9 @@
 @tailwind utilities;
 
 /* ==========================================================================
-   科技创新部 · 液态玻璃设计系统 (Liquid Glass Design System)
-   参考：Apple Liquid Glass · DeepSeek Harness 官网深海流体 / 点线网格 / 磨砂玻璃
-   基底：纯黑 #000
+   科技创新部 · 双主题设计系统 (Matte Dark / Daylight Glass)
+   暗色：GitHub Dark 哑光层次；浅色：透光毛玻璃 / 点线网格
+   暗色基底：GitHub Dark #0d1117，哑光面板 #161b22
 
    ── 配色纪律（重要）──────────────────────────────────────────────────
    全站只有三种颜色角色：
@@ -16,7 +16,7 @@
                          warning      琥珀 —— 待审核 / 即将截止 / 置顶
                          destructive  红   —— 驳回 / 名额已满 / 删除 / 故障
 
-   success 已归入主色族（不再用绿色）；accent 收敛为冷白（不再用紫色）。
+   success 已归入主色族（不再用绿色）；accent 使用冷调中性墨色（不再用紫色）。
    禁止再引入 emerald / violet / fuchsia / teal / cyan / orange / pink 等调色板色。
    ========================================================================== */
 
@@ -29,40 +29,40 @@
     --ease-in-out: cubic-bezier(0.77, 0, 0.175, 1);
     --ease-drawer: cubic-bezier(0.32, 0.72, 0, 1);
 
-    /* ---- 色彩：黑底 + 白 + 蓝 ---- */
-    --background: 0 0% 0%;
-    --foreground: 210 12% 98%;
-    --card: 210 8% 7%;
-    --card-foreground: 210 12% 98%;
-    --popover: 210 8% 6%;
-    --popover-foreground: 210 12% 98%;
+    /* ---- GitHub Dark：深蓝黑底 + 哑光面板 + 蓝色强调 ---- */
+    --background: 216 27.778% 7.059%; /* #0d1117 */
+    --foreground: 207.692 35.135% 92.745%; /* #e6edf3 */
+    --card: 215 21.429% 10.980%; /* #161b22 */
+    --card-foreground: 207.692 35.135% 92.745%;
+    --popover: 215 17.647% 13.333%; /* #1c2128 */
+    --popover-foreground: 207.692 35.135% 92.745%;
 
     /* 主色：全站唯一的功能性彩色 */
-    --primary: 205 96% 62%;
-    --primary-foreground: 210 40% 6%;
+    --primary: 211.976 100% 67.255%; /* #58a6ff */
+    --primary-foreground: 216 27.778% 7.059%;
 
-    /* accent 收敛为「冷白」—— 不再是紫色强调 */
-    --accent: 208 18% 78%;
-    --accent-foreground: 210 40% 6%;
+    /* accent 收敛为冷调中性色，与次级正文保持一致 */
+    --accent: 211.579 8.920% 58.235%;
+    --accent-foreground: 216 27.778% 7.059%;
 
-    --secondary: 210 8% 14%;
-    --secondary-foreground: 210 12% 96%;
-    --muted: 210 8% 13%;
-    --muted-foreground: 210 8% 74%;
+    --secondary: 215 17.647% 13.333%;
+    --secondary-foreground: 207.692 35.135% 92.745%;
+    --muted: 215 21.429% 10.980%;
+    --muted-foreground: 211.579 8.920% 58.235%; /* #8b949e */
 
     /* 高等级提示专用 */
-    --destructive: 0 78% 62%;
+    --destructive: 3.83 86.503% 68.039%; /* #f47067 */
     --destructive-foreground: 0 0% 100%;
-    --warning: 38 92% 58%;
+    --warning: 44.029 76.796% 64.51%; /* #eac55f */
     --warning-foreground: 24 20% 8%;
 
     /* success 归入主色族 —— 不再使用绿色 */
-    --success: 205 90% 62%;
-    --success-foreground: 210 40% 6%;
+    --success: 211.976 100% 67.255%;
+    --success-foreground: 216 27.778% 7.059%;
 
-    --border: 210 8% 16%;
-    --input: 210 8% 14%;
-    --ring: 205 96% 62%;
+    --border: 212.308 11.927% 21.373%; /* #30363d */
+    --input: 216 27.778% 7.059%;
+    --ring: 211.976 100% 67.255%;
 
     /* ---- 液态玻璃参数 ---- */
     --glass-bg: 255 255 255;
@@ -78,19 +78,19 @@
 
     /* ---- 主题翻转通道（RGB 三元组，供 rgb(var(--x) / a) 使用）----
        --tw-white  Tailwind 的 white：深色主题=白，浅色主题=墨色
-       --tw-black  Tailwind 的 black：深色主题=黑，浅色主题=白
-       --shade     投影色：深色主题用纯黑，浅色主题用带蓝的石板灰（纯黑投影在浅底上发脏）
+       --tw-black  Tailwind 的 black：深色主题=深蓝黑基底，浅色主题=白
+       --shade     投影色：深色主题用近黑蓝，浅色主题用带蓝的石板灰
        --drawer    抽屉 / 侧栏底色
        --orb       光雾 / 指针聚光的色相：深色主题用白（提亮），
                    浅色主题不能用白（白加白等于没加）也不能用墨（会变成脏影），
                    改用一团淡天蓝 —— 和页面顶部那层天光是同一种光
        --pointer-glow-opacity  指针聚光的强度：浅底需要更高的不透明度才看得见 */
     --tw-white: 255 255 255;
-    --tw-black: 0 0 0;
-    --shade: 0 0 0;
-    --drawer: 7 9 14;
+    --tw-black: 13 17 23;
+    --shade: 1 4 9;
+    --drawer: 22 27 34;
     --orb: 255 255 255;
-    --pointer-glow-opacity: 0.18;
+    --pointer-glow-opacity: 0.025;
     color-scheme: dark;
   }
 
@@ -176,10 +176,10 @@
      —— 3% 不透明度的 160px 噪点随滚动移动在视觉上不可察觉。
      -------------------------------------------------------------------- */
   html {
-    background-color: #000;
+    background-color: hsl(var(--background));
     background-image:
       url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.030'/%3E%3C/svg%3E"),
-      radial-gradient(120% 78% at 50% -10%, #0a0f18 0%, #05070c 46%, #000 100%);
+      radial-gradient(120% 78% at 50% -10%, hsl(var(--primary) / 0.025) 0%, transparent 72%);
     background-repeat: repeat, no-repeat;
     background-size: 160px 160px, 100% 118vh;
     background-position: 0 0, 50% 0;
@@ -261,7 +261,7 @@
 @layer components {
   /* ------------------------------------------------------------------
      1. 液态玻璃基元 —— .lg / .lg-strong / .lg-thin / .lg-soft
-     真玻璃：模糊 + 饱和提升 + 折射描边 + 顶部镜面高光
+     浅色保留透光与折射；暗色由文末组件覆盖收敛为哑光实面。
 
      注意：外壳上**不写** backdrop-filter，模糊由内衬的 .lg-blur 承担，
      原因见下面 .lg-blur 的说明（这是卡片边缘锯齿的第二个来源）。
@@ -273,12 +273,12 @@
     position: relative;
     isolation: isolate;
     border-radius: var(--glass-radius);
-    border: 1px solid rgba(255, 255, 255, 0.11);
+    border: 1px solid hsl(var(--border) / 0.85);
     box-shadow:
-      inset 0 1px 0 0 rgba(255, 255, 255, 0.16),
-      inset 0 -1px 0 0 rgba(0, 0, 0, 0.5),
-      inset 1px 0 0 0 rgba(255, 255, 255, 0.05),
-      0 24px 60px -28px rgba(0, 0, 0, 0.95);
+      inset 0 1px 0 0 rgba(255, 255, 255, 0.1),
+      inset 0 -1px 0 0 rgb(var(--shade) / 0.25),
+      inset 1px 0 0 0 rgba(255, 255, 255, 0.035),
+      0 24px 60px -28px rgb(var(--shade) / 0.5);
   }
 
   /* 毛玻璃内衬层
@@ -306,18 +306,20 @@
 
   .lg {
     background:
-      linear-gradient(150deg, rgba(255, 255, 255, 0.105) 0%, rgba(255, 255, 255, 0.028) 46%, rgba(255, 255, 255, 0.055) 100%);
+      linear-gradient(150deg, rgba(255, 255, 255, 0.05) 0%, rgba(255, 255, 255, 0.012) 46%, rgba(255, 255, 255, 0.025) 100%),
+      hsl(var(--card) / 0.78);
   }
 
   .lg-strong {
     --glass-blur: 40px;
     background:
-      linear-gradient(150deg, rgba(255, 255, 255, 0.17) 0%, rgba(255, 255, 255, 0.05) 48%, rgba(255, 255, 255, 0.085) 100%);
-    border-color: rgba(255, 255, 255, 0.17);
+      linear-gradient(150deg, rgba(255, 255, 255, 0.05) 0%, rgba(255, 255, 255, 0.012) 48%, rgba(255, 255, 255, 0.025) 100%),
+      hsl(var(--popover) / 0.96);
+    border-color: hsl(var(--border));
     box-shadow:
-      inset 0 1px 0 0 rgba(255, 255, 255, 0.3),
-      inset 0 -1.5px 0 0 rgba(0, 0, 0, 0.55),
-      0 40px 90px -34px rgba(0, 0, 0, 1);
+      inset 0 1px 0 0 rgba(255, 255, 255, 0.16),
+      inset 0 -1.5px 0 0 rgb(var(--shade) / 0.3),
+      0 40px 90px -34px rgb(var(--shade) / 0.6);
   }
 
   .lg-thin {
@@ -337,8 +339,8 @@
     -webkit-backdrop-filter: none;
     background:
       linear-gradient(168deg, rgba(255, 255, 255, 0.062) 0%, rgba(255, 255, 255, 0.015) 55%, rgba(255, 255, 255, 0.032) 100%),
-      linear-gradient(180deg, #0a0d13 0%, #06080c 100%);
-    border-color: rgba(255, 255, 255, 0.085);
+      hsl(var(--card));
+    border-color: hsl(var(--border) / 0.85);
   }
 
   /* ------------------------------------------------------------------
@@ -407,94 +409,38 @@
   }
 
   /* ==================================================================
-     1.b 内容卡片 —— 「刻面玻璃 / Etched Glass」
-     ------------------------------------------------------------------
-     卡片是全站出现频率最高的元素，因此单独成一套，目标有三个：
-
-     1) 零锯齿。外壳只做 5px 内衬，**不裁剪任何子元素**；
-        封面图与内容板各自带圆角，因此永远不会出现「图片被卡片圆角裁切」
-        产生的阶梯边。所有描边用 inset box-shadow（参与圆角抗锯齿）
-        而不是 border + 遮罩。
-     2) 层次靠「板中板」，不靠更多 blur。外壳深、内板浅，
-        中间留 5px 的暗缝 —— 这条缝就是玻璃的厚度。
-     3) 收紧几何。圆角 20/15px（原 22~26px 在小卡上过于圆润发胖），
-        悬浮位移从 4px 降到 2px，把注意力交给内容而不是位移。
-
-     v2 优化：
-       · 外观全部收进 --card-* 变量，浅色主题只换变量、不重写结构；
-       · 外壳改为 ~88% 不透明：背后的光雾能极轻地透上来（「透光」），
-         但不加 backdrop-filter —— 一屏十几张卡，每张一层模糊代价太高；
-       · 描边拆成「外圈 1px + 上沿 1px 内倒角」两道，边缘更像玻璃的厚度；
-       · 按下有 1px 回落（:active），点击反馈更实在；
-       · 媒体板多一圈内描边，照片边缘不再和卡底糊在一起。
+     1.b Credit 信息层级 + 高不透明度轻玻璃：细描边、轻阴影。
+     外壳保留 5px 内衬，不裁剪子元素；媒体板单独裁剪，圆角 14/10px。
+     两种主题共用 --card-* 变量；不使用镜面、内倒角或逐卡模糊。
+     悬浮上移 2px，按下回落 1px，键盘焦点保留外圈强调。
      ================================================================== */
   .card {
-    --card-bg:
-      linear-gradient(180deg, rgba(255, 255, 255, 0.05) 0%, rgba(255, 255, 255, 0.012) 42%, rgba(255, 255, 255, 0.028) 100%),
-      linear-gradient(180deg, rgba(10, 13, 20, 0.9) 0%, rgba(5, 7, 11, 0.92) 100%);
-    --card-ring: rgba(255, 255, 255, 0.075);
-    --card-ring-hover: rgba(255, 255, 255, 0.15);
-    --card-bevel: rgba(255, 255, 255, 0.045);
-    --card-spec: rgba(255, 255, 255, 0.32);
-    --card-drop: 0 1px 2px -1px rgba(0, 0, 0, 0.9), 0 20px 44px -30px rgba(0, 0, 0, 0.95);
-    --card-drop-hover: 0 1px 2px -1px rgba(0, 0, 0, 0.9), 0 28px 56px -30px rgba(0, 0, 0, 1),
-      0 0 30px -22px hsl(var(--primary) / 0.5);
-    --card-lift: hsl(var(--primary) / 0.1);
+    --card-bg: hsl(var(--card) / 0.92);
+    --card-ring: hsl(var(--border));
+    --card-ring-hover: hsl(var(--primary) / 0.55);
+    --card-drop: 0 1px 3px rgb(var(--shade) / 0.1), 0 1px 2px -1px rgb(var(--shade) / 0.1);
+    --card-drop-hover: 0 4px 12px -6px rgb(var(--shade) / 0.2);
 
     position: relative;
     isolation: isolate;
     display: flex;
     flex-direction: column;
-    border-radius: 20px;
+    border-radius: 14px;
     padding: 5px;
     background: var(--card-bg);
     box-shadow:
       inset 0 0 0 1px var(--card-ring),
-      inset 0 1px 0 0 var(--card-bevel),
       var(--card-drop);
     transition: translate 160ms var(--ease-out);
   }
 
-  /* 上沿镜面流光 —— 偏左 30% 最亮，即设计语言里的「左上受光」 */
-  .card::before {
-    content: '';
-    position: absolute;
-    inset: 0 13px auto;
-    height: 1px;
-    background: linear-gradient(90deg, transparent, var(--card-spec) 30%, transparent 74%);
-    opacity: 0.8;
-    transition: opacity 160ms ease;
-    pointer-events: none;
-    z-index: 3;
-  }
-
-  /* hover 时从底沿升起的冷光（代替大幅位移） */
-  .card::after {
-    content: '';
-    position: absolute;
-    inset: auto 0 0;
-    height: 62%;
-    border-radius: inherit;
-    background: linear-gradient(0deg, var(--card-lift), transparent 72%);
-    opacity: 0;
-    transition: opacity 160ms ease;
-    pointer-events: none;
-    z-index: 0;
-  }
 
   @media (hover: hover) and (pointer: fine) {
   .card:hover {
     translate: 0 -2px;
     box-shadow:
       inset 0 0 0 1px var(--card-ring-hover),
-      inset 0 1px 0 0 var(--card-bevel),
       var(--card-drop-hover);
-  }
-  .card:hover::before {
-    opacity: 1;
-  }
-  .card:hover::after {
-    opacity: 1;
   }
   }
   /* 按下回落 1px：比 hover 快得多的过渡，手感更「实」 */
@@ -518,8 +464,8 @@
   .card-media {
     position: relative;
     overflow: hidden;
-    border-radius: 15px;
-    background: linear-gradient(160deg, rgb(var(--tw-white) / 0.055), rgb(var(--tw-white) / 0.012));
+    border-radius: 10px;
+    background: hsl(var(--muted));
     z-index: 1;
   }
   /* 内描边画在最上层的伪元素上：压住照片边缘，四角不会露出底色毛边 */
@@ -564,20 +510,18 @@
     padding: 16px 15px 14px;
   }
 
-  /* 卡内分隔线 —— 左端亮、右端隐没，比通栏 border 更安静 */
+  /* 卡内分隔线：实色细线，不用镜面或发光渐变。 */
   .card-rule {
     height: 1px;
-    background: linear-gradient(90deg, rgb(var(--tw-white) / 0.13), rgb(var(--tw-white) / 0.02) 62%, transparent);
+    background: hsl(var(--border));
   }
 
   /* 卡内图标砖 / 日期砖 */
   .card-tile {
     position: relative;
-    border-radius: 13px;
-    background: linear-gradient(165deg, rgb(var(--tw-white) / 0.075), rgb(var(--tw-white) / 0.02));
-    box-shadow:
-      inset 0 0 0 1px rgb(var(--tw-white) / 0.08),
-      inset 0 1px 0 0 var(--card-bevel, rgba(255, 255, 255, 0.1));
+    border-radius: 10px;
+    background: hsl(var(--secondary));
+    box-shadow: inset 0 0 0 1px hsl(var(--border));
   }
 
   /* 卡内次级动作（下载 / 前往） */
@@ -696,16 +640,16 @@
     @apply w-full rounded-2xl px-4 text-sm;
     height: 44px;
     color: hsl(var(--foreground));
-    background: rgba(255, 255, 255, 0.045);
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    box-shadow: inset 0 1px 0 0 rgba(255, 255, 255, 0.06), inset 0 2px 8px rgba(0, 0, 0, 0.35);
+    background-color: hsl(var(--input) / 0.9);
+    border: 1px solid hsl(var(--border));
+    box-shadow: inset 0 1px 0 0 rgba(255, 255, 255, 0.035), inset 0 2px 8px rgb(var(--shade) / 0.16);
     backdrop-filter: blur(10px);
     -webkit-backdrop-filter: blur(10px);
   }
   .field:focus {
     outline: none;
     border-color: hsl(var(--primary) / 0.55);
-    background: rgba(255, 255, 255, 0.07);
+    background-color: hsl(var(--input));
     box-shadow:
       inset 0 1px 0 0 rgba(255, 255, 255, 0.09),
       0 0 0 3px hsl(var(--primary) / 0.16);
@@ -722,8 +666,8 @@
     padding-right: 38px;
   }
   select.field option {
-    background: #0a0d13;
-    color: #fff;
+    background: hsl(var(--card));
+    color: hsl(var(--foreground));
   }
   .field-label {
     @apply mb-2 block text-sm font-medium tracking-wide text-muted-foreground;
@@ -957,7 +901,7 @@
      不需要压到那么黑）。scrim-deep 用于灯箱：照片永远需要一个暗房。
      ------------------------------------------------------------------ */
   .scrim {
-    background-color: rgba(0, 0, 0, 0.72);
+    background-color: rgb(var(--shade) / 0.58);
   }
   .scrim-deep {
     background-color: rgba(0, 0, 0, 0.92);
@@ -1336,6 +1280,164 @@ html[data-motion-input='keyboard'] :is(.st-rise, .st-fade, .st-draw) { animation
   .scroll-smooth { scroll-behavior: auto !important; }
 }
 
+/* 轨道水印：入口独立于常驻旋转；只合成 opacity / transform。 */
+.brand-backdrop {
+  --watermark-ink: var(--primary);
+  --watermark-highlight: var(--primary);
+  --watermark-opacity: 0.6;
+  --watermark-halo: 0.04;
+  opacity: 0;
+  mask-image: linear-gradient(90deg, transparent 12%, #000 64%);
+  transition: opacity 280ms var(--ease-out);
+}
+.brand-backdrop[data-visible='true'] { opacity: 1; }
+.brand-backdrop-art {
+  position: absolute;
+  top: 50%;
+  right: -20vmin;
+  width: min(118vh, 100vw);
+  aspect-ratio: 1;
+  transform: translate3d(2%, -48%, 0) rotate(-8deg) scale(0.97);
+  transition: transform 280ms var(--ease-out);
+}
+.brand-backdrop[data-visible='true'] .brand-backdrop-art { transform: translate3d(0, -50%, 0); }
+.brand-backdrop-material { position: relative; width: 100%; height: 100%; opacity: var(--watermark-opacity); }
+.brand-watermark { position: relative; display: block; width: 100%; height: 100%; color: hsl(var(--watermark-ink)); }
+.brand-watermark-static,
+.brand-watermark-orbit { position: absolute; inset: 0; display: block; width: 100%; height: 100%; }
+.brand-watermark-orbit { transform-origin: 50% 50%; transform-box: view-box; animation: sti-orbit 28s linear infinite; }
+.brand-backdrop[data-visible='false'] .brand-watermark-orbit,
+.brand-backdrop[data-paused='true'] .brand-watermark-orbit { animation-play-state: paused; }
+.brand-backdrop-halo {
+  position: absolute;
+  inset: 12%;
+  border-radius: 50%;
+  background: radial-gradient(circle, hsl(var(--watermark-highlight) / var(--watermark-halo)), transparent 68%);
+}
+html.light .brand-backdrop {
+  --watermark-ink: var(--accent);
+  --watermark-opacity: 0.3;
+  --watermark-halo: 0.045;
+}
+@media (max-width: 767px) {
+  .brand-backdrop { --watermark-opacity: 0.4; mask-image: linear-gradient(90deg, transparent, #000 48%); }
+  html.light .brand-backdrop { --watermark-opacity: 0.25; }
+  .brand-backdrop-art { width: 112vw; right: -42vw; }
+}
+@media (hover: none), (pointer: coarse) {
+  .brand-backdrop-art { transform: translate3d(0, -50%, 0); transition: none; }
+}
+html[data-motion-input='keyboard'] .brand-backdrop { transition: none !important; }
+html[data-motion-input='keyboard'] .brand-backdrop-art { transform: translate3d(0, -50%, 0); transition: none !important; }
+@media (prefers-reduced-motion: reduce) {
+  .brand-backdrop { transition: opacity 160ms ease !important; }
+  .brand-backdrop-art { transform: translate3d(0, -50%, 0) !important; transition: none !important; }
+  .brand-watermark-orbit { animation: none !important; }
+}
+
+
+/* ==========================================================================
+   GitHub Dark —— 哑光组件覆盖，与浅色材质规则并列。
+   用不透明底色、细边与克制落影建立层次，不用白色高光或内倒角。
+   ========================================================================== */
+html.dark .lg,
+html.dark .lg-strong,
+html.dark .lg-thin,
+html.dark .lg-soft {
+  --glass-radius: 16px;
+  background: hsl(var(--card));
+  border-color: hsl(var(--border));
+  box-shadow: 0 8px 24px -16px rgb(var(--shade) / 0.6);
+}
+html.dark .lg-soft {
+  background: hsl(var(--card) / 0.92);
+}
+html.dark .lg-strong {
+  background: hsl(var(--popover));
+}
+html.dark .lg-blur {
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+}
+html.dark .lg-refract::after,
+html.dark .lg-sheen::before {
+  content: none;
+}
+@media (hover: hover) and (pointer: fine) {
+  html.dark .lg-hover:hover {
+    border-color: hsl(var(--primary) / 0.55);
+    box-shadow: 0 12px 28px -18px rgb(var(--shade) / 0.7);
+  }
+}
+
+html.dark .card-media {
+  border-radius: 10px;
+  background: hsl(var(--background));
+}
+html.dark .card-media::after {
+  box-shadow: inset 0 0 0 1px hsl(var(--border));
+}
+html.dark .card-tile {
+  background: hsl(var(--secondary));
+  box-shadow: inset 0 0 0 1px hsl(var(--border));
+}
+html.dark .card-rule {
+  background: hsl(var(--border));
+}
+
+html.dark .btn-primary {
+  background: hsl(var(--primary));
+  border-color: hsl(var(--primary));
+  box-shadow: 0 2px 6px -3px rgb(var(--shade) / 0.55);
+}
+html.dark .btn-primary:hover {
+  filter: none;
+  box-shadow: 0 3px 8px -4px rgb(var(--shade) / 0.65);
+}
+html.dark .btn-glass {
+  background: hsl(var(--secondary));
+  border-color: hsl(var(--border));
+  box-shadow: 0 2px 6px -3px rgb(var(--shade) / 0.5);
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+}
+html.dark .btn-glass:hover {
+  background: hsl(var(--card));
+  border-color: hsl(var(--muted-foreground) / 0.6);
+}
+
+html.dark .field {
+  background-color: hsl(var(--input));
+  border-color: hsl(var(--border));
+  box-shadow: none;
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+}
+html.dark .field:focus {
+  background-color: hsl(var(--input));
+  border-color: hsl(var(--primary));
+  box-shadow: 0 0 0 3px hsl(var(--primary) / 0.16);
+}
+html.dark .nav-glass {
+  background: hsl(var(--background) / 0.92);
+  backdrop-filter: blur(16px) saturate(100%);
+  -webkit-backdrop-filter: blur(16px) saturate(100%);
+  border-bottom-color: hsl(var(--border));
+  box-shadow: 0 4px 16px -12px rgb(var(--shade) / 0.65);
+}
+html.dark .surface-drawer {
+  background-color: rgb(var(--drawer));
+}
+html.dark .liquid-orb {
+  opacity: 0.12;
+}
+html.dark .liquid-top-light {
+  opacity: 0.15;
+}
+html.dark .orbital-canvas {
+  opacity: 0.5;
+}
+
 /* ==========================================================================
    浅色主题 —— 组件层覆盖
    ==========================================================================
@@ -1347,8 +1449,8 @@ html[data-motion-input='keyboard'] :is(.st-rise, .st-fade, .st-draw) { animation
 
    下面处理的是**翻转救不了的那部分** —— 组件层里写死的 rgba(255,255,255,…)
    与 rgba(0,0,0,…)。它们表达的是「光从上面来」的物理关系，而不是前景色：
-   玻璃的顶沿高光在深浅两个主题里都应该是白的，投影在浅色底上必须从纯黑
-   换成带蓝的石板灰（纯黑投影压在浅灰上会发脏、显得像脏手印）。
+   浅色玻璃的顶沿仍保留白色高光，暗色哑光则完全去掉镜面层；
+   浅色投影用带蓝的石板灰，避免纯黑投影在浅灰底上显得像脏手印。
 
    为什么整块写在 @layer 之外：
    未分层的规则在层叠里永远胜过 @layer components / utilities，
@@ -1409,12 +1511,20 @@ html.light .lg-thin {
     0 12px 28px -22px rgb(var(--shade) / 0.45);
 }
 
-/* 平底玻璃：背后没内容可透，用「白纸 + 棱台」而不是半透明 */
+/* 正文面板保留 92% 不透明度，背景仅微透，不追加镜面或重模糊。 */
 html.light .lg-soft {
-  background:
-    linear-gradient(168deg, rgba(255, 255, 255, 0.9) 0%, rgba(255, 255, 255, 0.4) 55%, rgba(255, 255, 255, 0.75) 100%),
-    linear-gradient(180deg, hsl(216 32% 99.5%) 0%, hsl(214 26% 97%) 100%);
-  border-color: rgba(15, 23, 38, 0.08);
+  background: hsl(var(--card) / 0.92);
+  border-color: hsl(var(--border) / 0.65);
+  box-shadow: 0 1px 3px rgb(var(--shade) / 0.1), 0 1px 2px -1px rgb(var(--shade) / 0.1);
+  --glass-radius: 14px;
+}
+html.light .lg-soft::before,
+html.light .lg-soft::after { content: none; }
+@media (hover: hover) and (pointer: fine) {
+  html.light .lg-soft.lg-hover:hover {
+    border-color: hsl(var(--primary) / 0.45);
+    box-shadow: 0 4px 12px -6px rgb(var(--shade) / 0.2);
+  }
 }
 
 /* 折射描边：受光方向不变（光始终来自左上），只是上沿由白变得更白、
@@ -1449,30 +1559,10 @@ html.light .lg-hover:hover {
   }
 }
 
-/* ---- 2. 卡片 ---------------------------------------------------------
-   只换变量：.card:hover / :active / :focus-visible 与 ::before / ::after
-   全都读这些变量，规则本身不用重写。
-   卡片保持半透明（约 .8 白），底下的冷白光雾会透上来一点点 ——
-   这是「玻璃拟态」里最值钱的一点透光感，而且不用再为每张卡付一次
-   backdrop-filter 的合成开销。
-   ---------------------------------------------------------------------- */
+/* ---- 2. Credit 正文卡片：实底、细边、轻阴影，无内倒角或泛光。 ---- */
 html.light .card {
-  --card-bg: linear-gradient(
-    180deg,
-    rgba(255, 255, 255, 0.88) 0%,
-    rgba(255, 255, 255, 0.7) 45%,
-    rgba(255, 255, 255, 0.82) 100%
-  );
-  --card-ring: rgba(15, 23, 38, 0.085);
-  --card-ring-hover: rgba(15, 23, 38, 0.16);
-  --card-bevel: rgba(255, 255, 255, 0.95);
-  /* 「刻面」在浅色主题里是反过来的：黑卡上的那道刻痕是亮的，
-     白卡上就该是暗的 —— 纯白的镜面流光压在 88% 白的卡上等于没画 */
-  --card-spec: rgba(15, 23, 38, 0.1);
-  --card-drop: 0 1px 2px -1px rgb(var(--shade) / 0.3), 0 14px 30px -22px rgb(var(--shade) / 0.5);
-  --card-drop-hover: 0 1px 2px -1px rgb(var(--shade) / 0.32), 0 22px 46px -24px rgb(var(--shade) / 0.6),
-    0 0 26px -18px hsl(var(--primary) / 0.45);
-  --card-lift: hsl(var(--primary) / 0.06);
+  --card-ring: hsl(var(--border) / 0.65);
+  --card-ring-hover: hsl(var(--primary) / 0.45);
 }
 
 /* 有封面图时压暗层保持深色（照片永远是照片）；
@@ -1601,3 +1691,40 @@ html.light .scrim {
   background-color: rgba(15, 23, 38, 0.46);
 }
 
+
+/* 青柠局部透光：只用于首页快捷入口和统计小卡，正文不承担模糊开销。 */
+html .lg-thin.home-float {
+  --glass-radius: 20px;
+  --glass-blur: 30px;
+  --glass-sat: 125%;
+  background: hsl(var(--card));
+  border-color: hsl(var(--border) / 0.75);
+  box-shadow: 0 4px 16px -10px rgb(var(--shade) / 0.3);
+}
+html .home-float > .lg-blur {
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+}
+@supports (backdrop-filter: blur(30px)) or (-webkit-backdrop-filter: blur(30px)) {
+  html .lg-thin.home-float { background: hsl(var(--card) / 0.74); }
+  html .home-float > .lg-blur {
+    backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-sat));
+    -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-sat));
+  }
+}
+@media (hover: hover) and (pointer: fine) {
+  html .lg-thin.home-float.lg-hover:hover {
+    border-color: hsl(var(--primary) / 0.45);
+    box-shadow: 0 6px 20px -12px rgb(var(--shade) / 0.35);
+  }
+}
+@media (prefers-reduced-transparency: reduce), (prefers-contrast: more) {
+  html .card { --card-bg: hsl(var(--card)); }
+  html.dark .lg-soft,
+  html.light .lg-soft { background: hsl(var(--card)); }
+  html .lg-thin.home-float { background: hsl(var(--card)); }
+  html .home-float > .lg-blur {
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+  }
+}

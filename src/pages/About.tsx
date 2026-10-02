@@ -34,14 +34,14 @@ import {
 /* =============================================================================
  * 部门概况 — /about
  * 顺序：PageHero → 部门简介 → 数据统计 → 发展历程
- *       → 指导教师(#advisors) → 成员风采(#members)
+ *       → 指导老师(#advisors) → 成员风采(#members)
  * ========================================================================== */
 
 const ANCHORS = [
   { id: 'intro', label: '部门简介' },
   { id: 'stats', label: '数据统计' },
   { id: 'timeline', label: '发展历程' },
-  { id: 'advisors', label: '指导教师' },
+  { id: 'advisors', label: '指导老师' },
   { id: 'members', label: '成员风采' },
 ];
 
@@ -66,7 +66,7 @@ export default function About() {
       >
         <p className="max-w-3xl text-pretty text-[14.5px] leading-[1.9] text-muted-foreground">
           {settings.intro ||
-            '统筹全校学生科技创新工作，为每一个有想法的同学提供从灵感到落地的完整支撑。'}
+            '科技创新部是校级学生会的科技部门，由校团委领导，负责面向全校开展科技知识科普，并策划、组织科技比赛与科技活动。'}
         </p>
 
         {/* 锚点导航 */}
@@ -96,7 +96,7 @@ export default function About() {
             id="intro"
             eyebrow="Profile"
             title="部门简介"
-            description="从竞赛组织到项目孵化，我们搭建的是一条可以被走通的路径。"
+            description="从科技知识科普到科技比赛策划，我们让每一步都清晰可参与。"
           >
             {loading ? (
               <div className="grid gap-8 lg:grid-cols-[1.5fr_1fr]">
@@ -127,7 +127,7 @@ export default function About() {
                     <div className="relative">
                       <Quote className="h-4 w-4 text-accent" />
                       <p className="mt-4 text-[14px] leading-[1.9] text-foreground/85">
-                        「创新不是少数人的天赋，而是可以被训练的能力。」
+                        「科学不只属于少数人，它可以从一次好奇开始。」
                       </p>
                       <p className="mono mt-4 text-[11px] text-muted-foreground">— 部门工作理念</p>
                     </div>
@@ -136,18 +136,18 @@ export default function About() {
                   {[
                     {
                       icon: Target,
-                      title: '降低创新门槛',
-                      desc: '把复杂的申报流程、分散的竞赛信息、稀缺的导师资源，整合成清晰可走的路径。',
+                      title: '降低参与门槛',
+                      desc: '把分散的科技知识、零散的比赛信息整理成清晰可参与的科普与活动路径。',
                     },
                     {
                       icon: Users,
                       title: '服务全体同学',
-                      desc: '无论你来自哪个学院、哪个专业，只要有想法，都能在这里找到支撑与同行的人。',
+                      desc: '无论你来自哪个年级、哪个班级，只要对科技感兴趣，都能在这里找到伙伴。',
                     },
                     {
                       icon: Award,
-                      title: '成果导向',
-                      desc: '以真实项目与真实竞赛为抓手，用可交付的成果衡量每一次投入。',
+                      title: '兴趣为先',
+                      desc: '以科普活动与科技比赛为抓手，让每次参与都有实实在在的收获。',
                     },
                   ].map((c, i) => (
                     <Glass
@@ -202,7 +202,7 @@ export default function About() {
                   label="在展项目"
                   value={Number(stats.projects ?? 0)}
                   unit="项"
-                  hint="优秀 / 立项 / 结项 / 在研"
+                  hint="展示中的部门与同学作品"
                   delay={70}
                 />
                 <CountCard
@@ -210,15 +210,15 @@ export default function About() {
                   label="年度活动"
                   value={Number(stats.activities ?? 0)}
                   unit="场"
-                  hint="沙龙 · 工坊 · 路演 · 集训"
+                  hint="科普讲座 · 科技比赛 · 科技活动"
                   delay={140}
                 />
                 <CountCard
                   icon={<Compass className="h-4 w-4" />}
-                  label="服务年数"
-                  value={Number(stats.years ?? 0)}
+                  label="成立时间"
+                  value={2026}
                   unit="年"
-                  hint="持续运营学生科创工作"
+                  hint="2026 年 9 月成立"
                   delay={210}
                 />
               </div>
@@ -241,7 +241,7 @@ export default function About() {
             ) : timeline.length ? (
               <div className="relative max-w-3xl">
                 {timeline.map((t, i) => (
-                  <TimelineItem key={t.id} node={t} index={i} total={timeline.length} />
+                  <TimelineItem key={t.id} node={t} index={i} total={timeline.length} showYear={timeline.findIndex((item) => item.year === t.year) === i} />
                 ))}
               </div>
             ) : (
@@ -255,8 +255,8 @@ export default function About() {
             )}
           </Section>
 
-          {/* ========================= 指导教师 ========================= */}
-          <Section id="advisors" eyebrow="Faculty Advisors" title="指导教师">
+          {/* ========================= 指导老师 ========================= */}
+          <Section id="advisors" eyebrow="Our Advisors" title="指导老师">
             <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
               {['郭松梅', '杨秋静', '孙博轩', '王非凡'].map((name) => (
                 <Glass key={name} tone="soft" hover sheen className="flex items-center gap-4 p-5" data-reveal="scale">
@@ -264,7 +264,7 @@ export default function About() {
                   <Avatar name={name} size={46} />
                   <div className="min-w-0">
                     <p className="truncate text-base font-medium text-foreground">{name}</p>
-                    <p className="mt-0.5 text-xs text-muted-foreground">指导教师</p>
+                    <p className="mt-0.5 text-xs text-muted-foreground">指导老师</p>
                   </div>
                 </Glass>
               ))}

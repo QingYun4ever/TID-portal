@@ -27,7 +27,7 @@ const COLUMNS: { title: string; links: { label: string; to: string }[] }[] = [
     title: '办事',
     links: [
       { label: '活动报名', to: '/activities' },
-      { label: '项目申报', to: '/projects/apply' },
+      { label: '比赛报名', to: '/projects/apply' },
       { label: '加入我们', to: '/join' },
       { label: '互动与反馈', to: '/feedback' },
     ],
@@ -66,7 +66,7 @@ export function Footer() {
           <div className="col-span-2">
             <LogoLockup uid="foot" size={44} stacked={false} />
             <p className="mt-6 max-w-xs text-[13px] leading-relaxed text-muted-foreground">
-              {settings.slogan || '以技术为舟，以创新为帆'}。统筹全校学生科技创新工作，为每一个想法提供从灵感到落地的支撑。
+              {settings.slogan || '以技术为舟，以创新为帆'}。面向全校开展科技知识科普，策划组织科技比赛与科技活动。
             </p>
 
             <div className="mt-6 flex flex-col gap-2.5 text-[12px] text-muted-foreground">

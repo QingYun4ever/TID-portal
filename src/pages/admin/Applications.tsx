@@ -180,7 +180,7 @@ export default function AdminApplications() {
     },
     {
       key: 'college',
-      title: '学院',
+      title: '班级',
       className: 'hidden lg:table-cell',
       render: (r) => <span className="block max-w-[170px] truncate text-[13px] text-foreground/80">{r.leaderCollege || '—'}</span>,
     },
@@ -199,7 +199,7 @@ export default function AdminApplications() {
     },
     {
       key: 'advisor',
-      title: '指导教师',
+      title: '指导老师',
       width: '126px',
       className: 'hidden xl:table-cell',
       render: (r) => <span className="block max-w-[120px] truncate text-[13px] text-foreground/80">{r.advisor || '—'}</span>,
@@ -357,7 +357,7 @@ export default function AdminApplications() {
         <StatTile
           label="已通过"
           value={fnum(counts.approved ?? 0)}
-          hint="立项成功"
+          hint="已通过审核"
           tone="success"
           icon={<BadgeCheck className="h-4 w-4" />}
           onClick={() => {

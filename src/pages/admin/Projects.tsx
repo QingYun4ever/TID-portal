@@ -17,7 +17,7 @@ import {
 
 /* =============================================================================
  * 项目展示库 —— /admin/projects
- * 维护优秀 / 立项 / 结项 / 在研项目、竞赛成果、前端作品与工具服务
+ * 维护优秀 / 入选 / 已完成 / 进行中项目、竞赛成果、前端作品与工具服务
  * ========================================================================== */
 
 interface ProjectRow {
@@ -61,7 +61,7 @@ const FIELDS: FieldDef[] = [
     type: 'text',
     required: true,
     wide: true,
-    placeholder: '例如：面向校园场景的实验室数字化管理平台',
+    placeholder: '例如：面向校园场景的智能计时装置',
   },
   {
     name: 'category',
@@ -94,19 +94,19 @@ const FIELDS: FieldDef[] = [
     name: 'team',
     label: '团队名称',
     type: 'text',
-    placeholder: '例如：实验室数字化小组',
+    placeholder: '例如：科技制作小组',
   },
   {
     name: 'advisor',
-    label: '指导教师',
+    label: '指导老师',
     type: 'text',
-    placeholder: '例如：张伟 教授',
+    placeholder: '例如：张伟 老师',
   },
   {
     name: 'awards',
     label: '获奖信息',
     type: 'text',
-    placeholder: '例如：2025 年省级创新大赛一等奖',
+    placeholder: '例如：2025 年市级科技比赛一等奖',
   },
   {
     name: 'cover',
@@ -145,7 +145,7 @@ const FIELDS: FieldDef[] = [
     label: '项目详情',
     type: 'richtext',
     wide: true,
-    placeholder: '研究背景、技术方案、成果与展望…',
+    placeholder: '作品背景、制作方案、成果与展望…',
   },
   {
     name: 'members',
@@ -211,7 +211,7 @@ const COLUMNS: Column<ProjectRow>[] = [
   },
   {
     key: 'advisor',
-    title: '指导教师',
+    title: '指导老师',
     width: '110px',
     render: (r) => <span className="clamp-1 block text-xs text-muted-foreground">{r.advisor || '—'}</span>,
   },
@@ -268,16 +268,16 @@ export default function Projects() {
       icon: <Award className="h-4 w-4" />,
     },
     {
-      label: '在研项目',
+      label: '进行中项目',
       value: byCategory('ongoing'),
       hint: '仍在推进',
       tone: 'warning' as const,
       icon: <Users className="h-4 w-4" />,
     },
     {
-      label: '结项项目',
+      label: '已完成项目',
       value: byCategory('completed'),
-      hint: '已通过结项',
+      hint: '已完成',
       tone: 'success' as const,
       icon: <Award className="h-4 w-4" />,
     },
@@ -305,7 +305,7 @@ export default function Projects() {
         fields={FIELDS}
         columns={COLUMNS}
         pageSize={10}
-        searchPlaceholder="搜索项目名称、团队或指导教师…"
+        searchPlaceholder="搜索项目名称、团队或指导老师…"
         emptyText="暂无项目"
         createLabel="新建项目"
         catalog={(r) => <StatusChip status={r.status} labels={{ rejected: '已驳回' }} />}

@@ -47,13 +47,13 @@ const MAIN_NAV = [
 /** 顶栏「快速入口」下拉 */
 const QUICK_LINKS = [
   { icon: CalendarDays, label: '活动报名', desc: '查看活动并在线报名', to: '/activities' },
-  { icon: FileText, label: '项目申报', desc: '提交大创项目申报材料', to: '/projects/apply' },
+  { icon: FileText, label: '比赛报名', desc: '提交科技比赛报名材料', to: '/projects/apply' },
   { icon: Users, label: '加入我们', desc: '查看录取名单', to: '/join' },
 ];
 
 const OTHER_LINKS = [
   { icon: MessageSquare, label: '互动与反馈', desc: '留言板 · 在线咨询', to: '/feedback' },
-  { icon: BookOpen, label: '创新成果库', desc: '优秀项目与获奖成果', to: '/projects?category=excellent' },
+  { icon: BookOpen, label: '科技作品库', desc: '部门与同学的科技作品', to: '/projects?category=excellent' },
   { icon: Trophy, label: '竞赛日历', desc: '竞赛截止时间一览', to: '/competitions' },
 ];
 

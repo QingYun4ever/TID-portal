@@ -400,7 +400,7 @@ export default function Feedback() {
                   <Input
                     value={form.title}
                     onChange={(e) => set('title')(e.target.value)}
-                    placeholder="如：大创项目可以跨学院组队吗？"
+                    placeholder="如：科技比赛什么时候开始报名？"
                     maxLength={80}
                     data-invalid={errors.title ? 'true' : undefined}
                   />
@@ -451,7 +451,7 @@ export default function Feedback() {
                       <Input
                         value={form.contact}
                         onChange={(e) => set('contact')(e.target.value)}
-                        placeholder="name@university.edu.cn"
+                        placeholder="name@example.com"
                         data-invalid={errors.contact ? 'true' : undefined}
                       />
                     </Field>

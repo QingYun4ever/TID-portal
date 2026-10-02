@@ -19,7 +19,7 @@ import {
 
 /* =============================================================================
  * 活动管理 —— /admin/activities
- * 发布讲座 / 沙龙 / 工作坊等线下活动，维护时间、地点、名额与报名窗口
+ * 发布讲座 / 科技比赛 / 科技活动等线下活动，维护时间、地点、名额与报名窗口
  * ========================================================================== */
 
 interface ActivityRow {
@@ -50,22 +50,22 @@ interface ActivitySignupStat {
 /** 活动分类沿用数据库中的中文取值，便于与既有数据保持一致 */
 const ACTIVITY_CATEGORIES = [
   '讲座',
-  '技术沙龙',
-  '工作坊',
+  '科技比赛',
+  '科技活动',
   '宣讲会',
   '分享会',
-  '文化节',
-  '竞赛集训',
+  '科普展示',
+  '赛前培训',
 ];
 
 const CAT_TONE: Record<string, 'primary' | 'accent' | 'success' | 'warning' | 'danger'> = {
   讲座: 'primary',
-  技术沙龙: 'accent',
-  工作坊: 'success',
+  科技比赛: 'accent',
+  科技活动: 'success',
   宣讲会: 'warning',
   分享会: 'primary',
-  文化节: 'accent',
-  竞赛集训: 'danger',
+  科普展示: 'accent',
+  赛前培训: 'danger',
 };
 
 const FIELDS: FieldDef[] = [
@@ -75,7 +75,7 @@ const FIELDS: FieldDef[] = [
     type: 'text',
     required: true,
     wide: true,
-    placeholder: '例如：AI Agent 时代的技术栈选择 —— 技术沙龙第 12 期',
+    placeholder: '例如：科技比赛赛前科普讲座',
   },
   {
     name: 'category',
@@ -100,7 +100,7 @@ const FIELDS: FieldDef[] = [
     label: '活动地点',
     type: 'text',
     required: true,
-    placeholder: '例如：学校报告厅 301',
+    placeholder: '例如：教学楼 A 座 201 教室',
   },
   {
     name: 'capacity',
@@ -296,7 +296,7 @@ export default function Activities() {
 
       <ResourceManager<ActivityRow>
         title="活动管理"
-        description="发布讲座、沙龙、工作坊等线下活动；维护活动时间、地点、名额与报名窗口，并导出报名名单。"
+        description="发布科普讲座、科技比赛、科技活动等线下活动；维护活动时间、地点、名额与报名窗口，并导出报名名单。"
         resource="activities"
         fields={FIELDS}
         columns={columns}

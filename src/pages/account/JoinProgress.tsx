@@ -41,7 +41,7 @@ interface JoinRow {
   createdAt: string;
 }
 
-const STEPS = ['已提交', '简历筛选', '面试', '录用公示'];
+const STEPS = ['已提交', '报名审核', '面试', '结果公示'];
 
 /** 状态 → 当前已完成到第几步（0 基） */
 function stageOf(status: string) {
@@ -93,7 +93,7 @@ export default function JoinProgress() {
         <div>
           <h1 className="text-2xl font-semibold tracking-tight">招新进度</h1>
           <p className="mt-2 max-w-2xl text-sm leading-relaxed text-muted-foreground">
-            招新流程为「提交报名 → 简历筛选 → 面试 → 录用公示」，下面是你提交的报名记录与当前所处阶段。
+            招新流程为「提交报名 → 报名审核 → 面试 → 结果公示」，下面是你提交的报名记录与当前所处阶段。
           </p>
         </div>
         <LinkButton to="/join" variant="glass" size="sm">
@@ -126,7 +126,7 @@ export default function JoinProgress() {
             title="还没有招新报名记录"
             description={
               user?.studentId
-                ? '科技创新部每年春季与秋季各开展一次招新，提交报名后可以在这里跟踪筛选与面试进度。'
+                ? '本轮招新已结束，下一轮招新计划于 2026 年 11 月开展；提交报名后可以在这里跟踪审核与面试进度。'
                 : '建议先在「个人资料」补全学号，报名记录才能与当前账号自动关联。'
             }
             action={
@@ -254,8 +254,8 @@ function JoinCard({ row, index }: { row: JoinRow; index: number }) {
       <dl className="mt-6 grid grid-cols-2 gap-x-4 gap-y-3 border-t border-white/8 pt-5 text-[12.5px] lg:grid-cols-4">
         <Field label="姓名" value={row.name} />
         <Field label="学号" value={row.studentId} mono icon={<Hash className="h-3 w-3" />} />
-        <Field label="学院" value={row.college || '—'} icon={<GraduationCap className="h-3 w-3" />} span />
-        <Field label="专业 / 年级" value={[row.major, row.grade].filter(Boolean).join(' · ') || '—'} />
+        <Field label="班级" value={row.college || '—'} icon={<GraduationCap className="h-3 w-3" />} span />
+        <Field label="年级 / 班级" value={[row.grade, row.college].filter(Boolean).join(' · ') || '—'} />
         <Field label="联系电话" value={row.phone || '—'} mono icon={<Phone className="h-3 w-3" />} />
         <Field label="邮箱" value={row.email || '—'} icon={<Mail className="h-3 w-3" />} span />
       </dl>

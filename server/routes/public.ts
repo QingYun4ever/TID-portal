@@ -7,7 +7,7 @@ import { ok, fail, paging } from '../util.ts';
 
 export const publicRoutes = new Hono();
 
-/** 服务年数：由「成立时间」设置推导，未配置时按 2026 年起算 */
+/** 成立时间：由「成立时间」设置推导 */
 function serviceYears(): number {
   const value = get<{ value: string }>('SELECT value FROM settings WHERE key=?', ['foundedAt'])?.value ?? '';
   const year = Number(String(value).slice(0, 4));
