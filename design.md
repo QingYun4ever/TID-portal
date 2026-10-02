@@ -212,7 +212,7 @@
 
 | 名称 | 用途 |
 |------|------|
-| `sti-rise` | 首页分级入场，仅上浮与淡入，600ms |
+| `sti-rise` | 首页分级入场，上浮与模糊渐清，900ms |
 | `sti-fade` | 淡入与画廊图片切换 |
 | `.motion-modal / .motion-drawer / .motion-popover` | CSS transition 进出场；分别 240 / 240 / 200ms，快速反向操作从当前状态接续 |
 | `sti-pulse` | 状态点、Logo 核心呼吸环 |
@@ -224,8 +224,8 @@
 
 ### 滚动揭示 `[data-reveal]`
 
-`IntersectionObserver` 扫描静态与异步内容。变体：默认上浮 / `left` / `right` / `scale`；不再使用模糊滤镜。
-进入视口加 `.is-in`，`rootMargin: 0 0 -8% 0`，`threshold: 0.06`。12px / 280ms，沿用各页面的错位级联。
+`IntersectionObserver` 扫描静态与异步内容。变体：默认上浮 / `left` / `right` / `scale` / `blur`。
+进入视口加 `.is-in`，`rootMargin: 0 0 -8% 0`，`threshold: 0.06`。默认 16px / 550ms，沿用各页面的错位级联。
 
 ### 下滑式首页
 
