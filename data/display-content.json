@@ -1,0 +1,647 @@
+{
+  "version": 1,
+  "tables": {
+    "articles": [],
+    "activities": [
+      {
+        "id": 7,
+        "title": "四驱车竞速比赛（筹备中）",
+        "slug": "mini-4wd-race-2026",
+        "cover": null,
+        "summary": "预计于2026年11月中旬开展四驱车竞速比赛，目前处于筹备阶段。具体时间、地点、比赛规则及报名安排待定，请留意后续通知。",
+        "content": "<p>科技创新部计划于2026年11月中旬开展四驱车竞速比赛，欢迎对四驱车和动手实践感兴趣的同学关注。</p><p>本活动目前处于筹备阶段，仅作活动预告，暂未开放报名。具体举办日期、地点、参赛方式及比赛规则将在确定后另行公布。</p><p>页面日期暂以11月15日作为占位，不代表最终比赛时间，请以后续正式通知为准。</p>",
+        "location": "待定",
+        "category": "比赛",
+        "startAt": "2026-11-15 12:00:00",
+        "endAt": null,
+        "signupStart": "2026-11-15 12:00:00",
+        "signupEnd": "2026-11-15 12:00:00",
+        "capacity": 0,
+        "status": "published"
+      }
+    ],
+    "projects": [
+      {
+        "id": 7,
+        "title": "ToDoList 二开（支持上传）",
+        "slug": "todolist-upload",
+        "cover": "https://img.paperchan.cn/file/1790604926786_image.png",
+        "demoUrl": "https://todo.paperchan.cn/",
+        "modelUrl": null,
+        "summary": "支持上传与待办事项管理的 ToDoList 二开作品。",
+        "content": "",
+        "category": "frontend",
+        "year": 2026,
+        "team": "",
+        "members": "[]",
+        "advisor": null,
+        "tags": "[]",
+        "awards": null,
+        "status": "published"
+      },
+      {
+        "id": 8,
+        "title": "CJLRouter 中转站",
+        "slug": "cjlrouter",
+        "cover": "https://img.paperchan.cn/file/1790604969304_image.png",
+        "demoUrl": "https://ai.qingyun.best/",
+        "modelUrl": null,
+        "summary": "CJLRouter 中转站，提供在线模型服务入口。",
+        "content": "",
+        "category": "service",
+        "year": 2026,
+        "team": "",
+        "members": "[]",
+        "advisor": null,
+        "tags": "[]",
+        "awards": null,
+        "status": "published"
+      },
+      {
+        "id": 9,
+        "title": "科技创新部 NFC 卡片",
+        "slug": "department-nfc-card",
+        "cover": "/models/nfc-card-cover.svg",
+        "demoUrl": null,
+        "modelUrl": "/models/nfc-card.obj",
+        "summary": "部门 NFC 卡片 PCB 三维设计，可拖拽旋转、滚轮放大查看。",
+        "content": "",
+        "category": "hardware",
+        "year": 2026,
+        "team": "",
+        "members": "[]",
+        "advisor": null,
+        "tags": "[]",
+        "awards": null,
+        "status": "published"
+      },
+      {
+        "id": 10,
+        "title": "OIDC 服务",
+        "slug": "oidc-service",
+        "cover": "https://img.paperchan.cn/file/1790605473010_image.png",
+        "demoUrl": "https://auth.cjlwall.cc/",
+        "modelUrl": null,
+        "summary": "统一身份认证（OIDC）服务入口。",
+        "content": "",
+        "category": "service",
+        "year": 2026,
+        "team": "",
+        "members": "[]",
+        "advisor": null,
+        "tags": "[]",
+        "awards": null,
+        "status": "published"
+      },
+      {
+        "id": 11,
+        "title": "部门博客",
+        "slug": "department-blog",
+        "cover": "https://img.paperchan.cn/file/1790605507314_image.png",
+        "demoUrl": "https://blog.cjlwall.cc/",
+        "modelUrl": null,
+        "summary": "部门博客站点入口。",
+        "content": "",
+        "category": "service",
+        "year": 2026,
+        "team": "",
+        "members": "[]",
+        "advisor": null,
+        "tags": "[]",
+        "awards": null,
+        "status": "published"
+      },
+      {
+        "id": 12,
+        "title": "意见箱",
+        "slug": "feedback-box",
+        "cover": "https://img.paperchan.cn/file/1790605550132_image.png",
+        "demoUrl": "https://yjx.qingyun.best/",
+        "modelUrl": null,
+        "summary": "意见与建议收集入口。",
+        "content": "",
+        "category": "service",
+        "year": 2026,
+        "team": "",
+        "members": "[]",
+        "advisor": null,
+        "tags": "[]",
+        "awards": null,
+        "status": "published"
+      },
+      {
+        "id": 13,
+        "title": "点名器",
+        "slug": "roll-caller",
+        "cover": "https://img.paperchan.cn/file/1790605584294_image.png",
+        "demoUrl": "https://roll.paperchan.cn/",
+        "modelUrl": null,
+        "summary": "随机点名工具。",
+        "content": "",
+        "category": "service",
+        "year": 2026,
+        "team": "",
+        "members": "[]",
+        "advisor": null,
+        "tags": "[]",
+        "awards": null,
+        "status": "published"
+      },
+      {
+        "id": 14,
+        "title": "3D GS 高斯泼溅重建校园项目",
+        "slug": "campus-3dgs",
+        "cover": null,
+        "demoUrl": null,
+        "modelUrl": null,
+        "summary": "使用 3D Gaussian Splatting（3D GS）技术进行校园三维重建，项目正在推进中。",
+        "content": "",
+        "category": "ongoing",
+        "year": 2026,
+        "team": "",
+        "members": "[]",
+        "advisor": null,
+        "tags": "[]",
+        "awards": null,
+        "status": "published"
+      },
+      {
+        "id": 15,
+        "title": "国庆主题作品征集网页",
+        "slug": "national-day-submissions",
+        "cover": "https://img.paperchan.cn/file/1790929285320_image.png",
+        "demoUrl": "https://gqj.cjlwall.cc/",
+        "modelUrl": null,
+        "summary": "用于国庆主题作品征集的网页，项目正在推进中。",
+        "content": "",
+        "category": "ongoing",
+        "year": 2026,
+        "team": "",
+        "members": "[]",
+        "advisor": null,
+        "tags": "[]",
+        "awards": null,
+        "status": "published"
+      },
+      {
+        "id": 16,
+        "title": "空间几何智能助手",
+        "slug": "geomind",
+        "cover": "https://img.paperchan.cn/file/1790929406991_image.png",
+        "demoUrl": "https://geomind.paperchan.cn/",
+        "modelUrl": null,
+        "summary": "上传单道立体几何题，使用 Three.js 将题目中的空间几何在三维坐标系中呈现。",
+        "content": "",
+        "category": "frontend",
+        "year": 2026,
+        "team": "",
+        "members": "[]",
+        "advisor": null,
+        "tags": "[]",
+        "awards": null,
+        "status": "published"
+      },
+      {
+        "id": 17,
+        "title": "数学错题管家",
+        "slug": "math-mistake-manager",
+        "cover": "https://img.paperchan.cn/file/1790929483863_image.png",
+        "demoUrl": null,
+        "modelUrl": null,
+        "summary": "数学错题管理作品。",
+        "content": "",
+        "category": "frontend",
+        "year": 2026,
+        "team": "",
+        "members": "[]",
+        "advisor": null,
+        "tags": "[]",
+        "awards": null,
+        "status": "published"
+      }
+    ],
+    "competitions": [],
+    "resources": [],
+    "join_positions": [],
+    "members": [
+      {
+        "id": 9,
+        "name": "庄梓翔",
+        "role": "部长",
+        "group": "部长团",
+        "avatar": null,
+        "bio": "",
+        "tags": "[]",
+        "sortOrder": 0,
+        "featured": 1
+      },
+      {
+        "id": 10,
+        "name": "毕天宇",
+        "role": "副部长",
+        "group": "部长团",
+        "avatar": null,
+        "bio": "",
+        "tags": "[]",
+        "sortOrder": 1,
+        "featured": 1
+      },
+      {
+        "id": 11,
+        "name": "张森",
+        "role": "副部长",
+        "group": "部长团",
+        "avatar": null,
+        "bio": "",
+        "tags": "[]",
+        "sortOrder": 2,
+        "featured": 1
+      },
+      {
+        "id": 12,
+        "name": "刘航麟",
+        "role": "高一-2班",
+        "group": "学生成员",
+        "avatar": null,
+        "bio": "",
+        "tags": "[]",
+        "sortOrder": 3,
+        "featured": 1
+      },
+      {
+        "id": 13,
+        "name": "徐千惠",
+        "role": "高一-13班",
+        "group": "学生成员",
+        "avatar": null,
+        "bio": "",
+        "tags": "[]",
+        "sortOrder": 4,
+        "featured": 1
+      },
+      {
+        "id": 14,
+        "name": "林书羽",
+        "role": "高一-8班",
+        "group": "学生成员",
+        "avatar": null,
+        "bio": "",
+        "tags": "[]",
+        "sortOrder": 5,
+        "featured": 1
+      },
+      {
+        "id": 15,
+        "name": "甘佳霖",
+        "role": "高一-10班",
+        "group": "学生成员",
+        "avatar": null,
+        "bio": "",
+        "tags": "[]",
+        "sortOrder": 6,
+        "featured": 1
+      },
+      {
+        "id": 16,
+        "name": "王子欣",
+        "role": "高一-3班",
+        "group": "学生成员",
+        "avatar": null,
+        "bio": "",
+        "tags": "[]",
+        "sortOrder": 7,
+        "featured": 1
+      },
+      {
+        "id": 17,
+        "name": "王梓曦",
+        "role": "高一-3班",
+        "group": "学生成员",
+        "avatar": null,
+        "bio": "",
+        "tags": "[]",
+        "sortOrder": 8,
+        "featured": 0
+      },
+      {
+        "id": 18,
+        "name": "王绍翰",
+        "role": "高二-1班",
+        "group": "学生成员",
+        "avatar": null,
+        "bio": "",
+        "tags": "[]",
+        "sortOrder": 9,
+        "featured": 0
+      },
+      {
+        "id": 19,
+        "name": "翟炳勋",
+        "role": "高二-6班",
+        "group": "学生成员",
+        "avatar": null,
+        "bio": "",
+        "tags": "[]",
+        "sortOrder": 10,
+        "featured": 0
+      },
+      {
+        "id": 20,
+        "name": "耿万形",
+        "role": "高二-3班",
+        "group": "学生成员",
+        "avatar": null,
+        "bio": "",
+        "tags": "[]",
+        "sortOrder": 11,
+        "featured": 0
+      },
+      {
+        "id": 21,
+        "name": "赵宥晨",
+        "role": "高二-1班",
+        "group": "学生成员",
+        "avatar": null,
+        "bio": "",
+        "tags": "[]",
+        "sortOrder": 12,
+        "featured": 0
+      },
+      {
+        "id": 22,
+        "name": "郭宝泽",
+        "role": "高二-1班",
+        "group": "学生成员",
+        "avatar": null,
+        "bio": "",
+        "tags": "[]",
+        "sortOrder": 13,
+        "featured": 0
+      },
+      {
+        "id": 23,
+        "name": "陈轩弘",
+        "role": "初三-1班",
+        "group": "学生成员",
+        "avatar": null,
+        "bio": "",
+        "tags": "[]",
+        "sortOrder": 14,
+        "featured": 0
+      },
+      {
+        "id": 24,
+        "name": "鲜金钊",
+        "role": "高二-5班",
+        "group": "学生成员",
+        "avatar": null,
+        "bio": "",
+        "tags": "[]",
+        "sortOrder": 15,
+        "featured": 0
+      },
+      {
+        "id": 25,
+        "name": "U-235",
+        "role": "清朝顾问",
+        "group": "顾问",
+        "avatar": null,
+        "bio": "",
+        "tags": "[]",
+        "sortOrder": 16,
+        "featured": 0
+      },
+      {
+        "id": 26,
+        "name": "王嘉优",
+        "role": "高一-2班",
+        "group": "学生成员",
+        "avatar": null,
+        "bio": "",
+        "tags": "[]",
+        "sortOrder": 17,
+        "featured": 0
+      }
+    ],
+    "timeline": [
+      {
+        "id": 8,
+        "year": "2026",
+        "title": "部门官网上线",
+        "description": "2026 年 9 月 28 日，科技创新部门户网站正式上线。",
+        "dateLabel": "09.28",
+        "sortOrder": 2
+      },
+      {
+        "id": 9,
+        "year": "2026",
+        "title": "青云宗成立",
+        "description": "2026 年 1 月，青云宗成立。",
+        "dateLabel": "01月",
+        "sortOrder": 0
+      },
+      {
+        "id": 10,
+        "year": "2026",
+        "title": "科技创新部成立",
+        "description": "2026 年 9 月 28 日，科技创新部成立。",
+        "dateLabel": "09.28",
+        "sortOrder": 1
+      }
+    ],
+    "org_nodes": [
+      {
+        "id": 1,
+        "name": "科技创新部",
+        "parentId": null,
+        "leader": "部长 庄梓翔",
+        "description": "统筹部门整体工作",
+        "sortOrder": 0
+      }
+    ],
+    "gallery_areas": [
+      {
+        "id": 12,
+        "name": "活动影像",
+        "slug": "p-9fc0987a",
+        "parentId": null,
+        "description": "活动影像",
+        "sortOrder": 0
+      },
+      {
+        "id": 13,
+        "name": "人形机器人",
+        "slug": "p-2650a0a5",
+        "parentId": null,
+        "description": "人形机器人",
+        "sortOrder": 1
+      },
+      {
+        "id": 14,
+        "name": "全国人工智能创新挑战赛",
+        "slug": "p-84e2bfb2",
+        "parentId": null,
+        "description": "全国人工智能创新挑战赛",
+        "sortOrder": 2
+      }
+    ],
+    "gallery_images": [
+      {
+        "id": 25,
+        "areaId": 14,
+        "url": "https://img.paperchan.cn/file/1790516050075_mmexport1790515697554.jpg",
+        "title": "活动影像 01",
+        "description": null,
+        "width": 0,
+        "height": 0,
+        "sortOrder": 2
+      },
+      {
+        "id": 26,
+        "areaId": 12,
+        "url": "https://img.paperchan.cn/file/1790516050727_mmexport1790515714530.jpg",
+        "title": "活动影像 02",
+        "description": null,
+        "width": 0,
+        "height": 0,
+        "sortOrder": 0
+      },
+      {
+        "id": 27,
+        "areaId": 13,
+        "url": "https://img.paperchan.cn/file/1790516054418_mmexport1780060287028.jpg",
+        "title": "活动影像 03",
+        "description": null,
+        "width": 0,
+        "height": 0,
+        "sortOrder": 0
+      },
+      {
+        "id": 28,
+        "areaId": 13,
+        "url": "https://img.paperchan.cn/file/1790516049861_mmexport1780942762321.jpg",
+        "title": "活动影像 04",
+        "description": null,
+        "width": 0,
+        "height": 0,
+        "sortOrder": 1
+      },
+      {
+        "id": 29,
+        "areaId": 13,
+        "url": "https://img.paperchan.cn/file/1790516053634_mmexport1780942777500.jpg",
+        "title": "活动影像 05",
+        "description": null,
+        "width": 0,
+        "height": 0,
+        "sortOrder": 2
+      },
+      {
+        "id": 30,
+        "areaId": 12,
+        "url": "https://img.paperchan.cn/file/1790516061586_mmexport1786772298690.jpg",
+        "title": "活动影像 06",
+        "description": null,
+        "width": 0,
+        "height": 0,
+        "sortOrder": 1
+      },
+      {
+        "id": 31,
+        "areaId": 13,
+        "url": "https://img.paperchan.cn/file/1790516054133_mmexport1787490907083.jpg",
+        "title": "活动影像 07",
+        "description": null,
+        "width": 0,
+        "height": 0,
+        "sortOrder": 3
+      },
+      {
+        "id": 32,
+        "areaId": 13,
+        "url": "https://img.paperchan.cn/file/1790516057018_mmexport1790515668613.jpg",
+        "title": "活动影像 08",
+        "description": null,
+        "width": 0,
+        "height": 0,
+        "sortOrder": 4
+      },
+      {
+        "id": 33,
+        "areaId": 14,
+        "url": "https://img.paperchan.cn/file/1790516056935_mmexport1790515673147.jpg",
+        "title": "活动影像 09",
+        "description": null,
+        "width": 0,
+        "height": 0,
+        "sortOrder": 0
+      },
+      {
+        "id": 34,
+        "areaId": 14,
+        "url": "https://img.paperchan.cn/file/1790516061279_mmexport1790515693630.jpg",
+        "title": "活动影像 10",
+        "description": null,
+        "width": 0,
+        "height": 0,
+        "sortOrder": 1
+      }
+    ],
+    "attachments": [],
+    "pages": [
+      {
+        "key": "about",
+        "title": "部门简介",
+        "content": "<p>科技创新部是校级学生会的科技部门，由校团委领导，负责面向全校开展科技知识科普，并策划、组织科技比赛与科技活动。</p>\n<h2>核心职责</h2>\n<ul>\n<li>面向全校开展科技知识科普，普及科学常识与前沿科技；</li>\n<li>策划并组织校内科技比赛与科技活动；</li>\n<li>运营部门门户网站，发布科普内容与活动信息；</li>\n<li>配合学校开展科技教育相关工作。</li>\n</ul>\n<h2>工作理念</h2>\n<p>我们相信，科学不只属于少数人，它可以从一次好奇开始。部门以「<strong>让每个同学都能参与</strong>」为出发点，把分散的科技知识与零散的比赛信息整理成一条清晰可参与的路径。</p>"
+      },
+      {
+        "key": "contact",
+        "title": "联系方式",
+        "content": "<p>地址：北京市陈经纶中学本部高中<br/>邮箱：notpaperxiang@gmail.com</p>"
+      },
+      {
+        "key": "join-notice",
+        "title": "招新结果公告",
+        "content": "<p>科技创新部本轮招新已结束，录取名单已在门户「加入我们」栏目公示。</p>\n<h2>下一轮招新</h2>\n<p>下一轮招新计划于 <strong>2026 年 11 月</strong>开展，具体时间与流程将通过门户「通知公告」发布，敬请关注。</p>"
+      }
+    ]
+  },
+  "settings": [
+    {
+      "key": "address",
+      "value": "北京市陈经纶中学本部高中"
+    },
+    {
+      "key": "deptName",
+      "value": "科技创新部"
+    },
+    {
+      "key": "deptNameEn",
+      "value": "TECHNOLOGY & INNOVATION DEPT."
+    },
+    {
+      "key": "email",
+      "value": "notpaperxiang@gmail.com"
+    },
+    {
+      "key": "foundedAt",
+      "value": "2026-09-28"
+    },
+    {
+      "key": "icp",
+      "value": ""
+    },
+    {
+      "key": "intro",
+      "value": "科技创新部是校级学生会的科技部门，由校团委领导，负责面向全校开展科技知识科普，并策划、组织科技比赛与科技活动。"
+    },
+    {
+      "key": "slogan",
+      "value": "以技术为舟，以创新为帆"
+    },
+    {
+      "key": "wechatQr",
+      "value": ""
+    }
+  ]
+}

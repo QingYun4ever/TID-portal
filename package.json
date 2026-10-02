@@ -8,6 +8,8 @@
     "dev": "concurrently -n web,api -c cyan,magenta \"vite\" \"tsx watch server/index.ts\"",
     "dev:web": "vite",
     "dev:api": "tsx watch server/index.ts",
+    "content:export": "tsx server/export-content.ts",
+    "prebuild": "tsx server/export-content.ts --if-present",
     "build": "vite build && esbuild server/index.ts --platform=node --bundle --format=esm --outfile=dist/server.js --external:node:* --banner:js=\"import { createRequire } from 'module';const require = createRequire(import.meta.url);\"",
     "start": "cross-env NODE_ENV=production node dist/server.js",
     "typecheck": "tsc -p tsconfig.json --noEmit",

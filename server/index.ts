@@ -17,6 +17,9 @@ import { authRoutes } from './routes/auth.ts';
 import { submitRoutes } from './routes/submit.ts';
 import { adminRoutes } from './routes/admin.ts';
 import { fail } from './util.ts';
+import { syncContent } from './content-sync.ts';
+import type { ContentSnapshot } from './content-sync.ts';
+import contentSnapshot from '../data/display-content.json';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const ROOT = path.resolve(__dirname, '..');
@@ -24,6 +27,9 @@ const PUBLIC_DIR = path.join(ROOT, 'dist', 'public');
 const DEV = process.env.NODE_ENV !== 'production';
 
 seedIfEmpty();
+if (!DEV && syncContent(db, contentSnapshot as ContentSnapshot)) {
+  console.log('[content] Applied deployment content snapshot; user data and existing record IDs preserved.');
+}
 
 const app = new Hono();
 

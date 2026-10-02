@@ -2,11 +2,14 @@
 node_modules
 dist
 
-# 运行时数据：数据库与上传文件，绝不进镜像
-data
+# 构建只携带公开内容快照，不携带本地账号、报名、留言与上传数据
+data/*
+!data/display-content.json
 *.db
+uploads
 *.db-wal
 *.db-shm
+*.db-journal
 
 # 机密：OIDC client secret、JWT_SECRET 等只通过环境变量注入
 .env
