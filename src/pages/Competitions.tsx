@@ -151,8 +151,8 @@ export default function Competitions() {
         ) : (
           <>
             {/* ---------------- 筛选栏 ---------------- */}
-            <div className="mb-10 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between" data-reveal>
-              <Tabs items={tabs} value={level} onChange={setLevel} />
+            <div className="mb-10 flex flex-col gap-4 sm:flex-row sm:flex-wrap sm:items-center sm:justify-between" data-reveal>
+              <Tabs items={tabs} value={level} onChange={setLevel} className="min-w-0 max-w-full" />
               <SearchInput
                 value={qInput}
                 onChange={setQInput}
@@ -193,7 +193,7 @@ export default function Competitions() {
                 {/* ---------------- 最近截止 ---------------- */}
                 {featured && (
                   <section data-reveal>
-                    <div className="mb-5 flex items-center gap-2.5">
+                    <div className="mb-5 flex flex-wrap items-center gap-2.5">
                       <CalendarClock className="h-4 w-4 text-[hsl(var(--warning))]" />
                       <h2 className="text-[15px] font-semibold">最近截止</h2>
                       <span className="mono text-[11px] text-muted-foreground">按截止时间取最近一项</span>
@@ -239,7 +239,7 @@ export default function Competitions() {
                 {expired.length > 0 && (
                   <section>
                     <div className="mb-5 flex flex-wrap items-end justify-between gap-3" data-reveal>
-                      <div className="flex items-center gap-2.5">
+                      <div className="flex flex-wrap items-center gap-2.5">
                         <CircleSlash className="h-4 w-4 text-muted-foreground" />
                         <h2 className="text-[15px] font-semibold text-muted-foreground">已结束</h2>
                         <span className="mono text-[11px] text-muted-foreground/70">仅供回顾，无法再订阅提醒</span>
@@ -326,7 +326,7 @@ function FeaturedCompetition({
   const urgent = cd && !cd.expired && cd.days <= 7;
 
   return (
-    <Glass tone="strong" className="relative overflow-hidden p-7 sm:p-9">
+    <Glass tone="strong" className="relative overflow-hidden p-4 sm:p-9">
       <div
         aria-hidden
         className="pointer-events-none absolute -right-24 -top-24 h-72 w-72 rounded-full opacity-70 blur-3xl"
@@ -356,7 +356,7 @@ function FeaturedCompetition({
           </p>
 
           <div className="mt-6 flex flex-wrap items-center gap-3">
-            <Button variant={urgent ? 'primary' : 'glass'} onClick={() => onSubscribe(competition)}>
+            <Button variant={urgent ? 'primary' : 'glass'} onClick={() => onSubscribe(competition)} className="w-full sm:w-auto">
               <BellRing className="h-4 w-4" />
               订阅截止提醒
             </Button>
@@ -365,7 +365,7 @@ function FeaturedCompetition({
                 href={competition.link}
                 target="_blank"
                 rel="noreferrer noopener"
-                className="btn btn-glass"
+                className="btn btn-glass w-full sm:w-auto"
               >
                 前往赛事官网 <ArrowUpRight className="h-4 w-4" />
               </a>
@@ -374,9 +374,9 @@ function FeaturedCompetition({
         </div>
 
         {/* 倒计时面板 */}
-        <div className="flex flex-col justify-center rounded-3xl border border-white/10 bg-white/[0.035] p-6">
+        <div className="flex min-w-0 flex-col justify-center rounded-3xl border border-white/10 bg-white/[0.035] p-4 sm:p-6">
           <p className="text-[11px] uppercase tracking-[0.28em] text-muted-foreground">报名截止倒计时</p>
-          <p className="mono mt-4 text-3xl font-semibold leading-none sm:text-4xl">
+          <p className="mono mt-4 break-words text-2xl font-semibold leading-none sm:text-4xl">
             <Countdown target={competition.signupDeadline} />
           </p>
           <div className="mt-5 flex flex-wrap items-center gap-x-5 gap-y-2 border-t border-white/8 pt-4 text-[11.5px] text-muted-foreground">

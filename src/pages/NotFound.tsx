@@ -15,8 +15,8 @@ const LINKS = [
 export default function NotFound() {
   const location = useLocation();
   return (
-    <div className="relative flex min-h-dvh items-center justify-center px-5 py-32">
-      <Glass tone="strong" className="relative w-full max-w-lg overflow-hidden p-10 text-center">
+    <div className="relative flex min-h-svh items-center justify-center pb-16 pl-[max(1.25rem,env(safe-area-inset-left,0px))] pr-[max(1.25rem,env(safe-area-inset-right,0px))] pt-[calc(var(--nav-h)+2rem)] sm:py-32 lg:min-h-dvh">
+      <Glass tone="strong" className="relative w-full max-w-lg overflow-hidden p-5 text-center sm:p-10">
         <div
           aria-hidden
           className="pointer-events-none absolute -top-24 left-1/2 h-64 w-64 -translate-x-1/2 rounded-full blur-[80px]"

@@ -194,11 +194,11 @@ export default function Gallery() {
           <div className="min-w-0">
             {/* 移动端：横向滚动 chips + 抽屉 */}
             <div className="mb-5 lg:hidden">
-              <div className="no-scrollbar -mx-5 flex items-center gap-2 overflow-x-auto px-5 pb-1">
+              <div className="no-scrollbar flex items-center gap-2 overflow-x-auto pb-1">
                 <button
                   onClick={() => select(null)}
                   className={cn(
-                    'shrink-0 rounded-full border px-3.5 py-1.5 text-[12px] font-medium transition-all duration-300',
+                    'min-h-11 shrink-0 rounded-full border px-3.5 py-1.5 text-[12px] font-medium transition-all duration-300',
                     areaId === null
                       ? 'border-primary/40 bg-primary/14 text-primary'
                       : 'border-white/10 bg-white/[0.045] text-muted-foreground'
@@ -211,7 +211,7 @@ export default function Gallery() {
                     key={a.id}
                     onClick={() => select(a.id)}
                     className={cn(
-                      'shrink-0 rounded-full border px-3.5 py-1.5 text-[12px] font-medium transition-all duration-300',
+                      'min-h-11 shrink-0 rounded-full border px-3.5 py-1.5 text-[12px] font-medium transition-all duration-300',
                       areaId === a.id
                         ? 'border-primary/40 bg-primary/14 text-primary'
                         : 'border-white/10 bg-white/[0.045] text-muted-foreground'
@@ -223,7 +223,7 @@ export default function Gallery() {
                 ))}
                 <button
                   onClick={() => setTreeOpen(true)}
-                  className="chip shrink-0 !px-3.5 !py-1.5 !text-[12px] !text-foreground/85"
+                  className="chip min-h-11 shrink-0 !px-3.5 !py-1.5 !text-[12px] !text-foreground/85"
                 >
                   <FolderTree className="h-3 w-3" />
                   全部分类
@@ -235,7 +235,7 @@ export default function Gallery() {
             <div className="mb-7 flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between" data-reveal>
               <div className="min-w-0">
                 <nav className="flex flex-wrap items-center gap-1.5 text-[11px] text-muted-foreground">
-                  <button onClick={() => select(null)} className="transition hover:text-foreground">
+                  <button onClick={() => select(null)} className="min-h-11 transition hover:text-foreground lg:min-h-0">
                     全部分类
                   </button>
                   {path.map((p) => (
@@ -243,7 +243,7 @@ export default function Gallery() {
                       <span className="text-white/20">/</span>
                       <button
                         onClick={() => select(p.id)}
-                        className={cn('transition hover:text-foreground', p.id === areaId && 'text-foreground/90')}
+                        className={cn('min-h-11 max-w-full break-words transition hover:text-foreground lg:min-h-0', p.id === areaId && 'text-foreground/90')}
                       >
                         {p.name}
                       </button>
@@ -262,9 +262,9 @@ export default function Gallery() {
 
               <div className="flex flex-wrap items-center gap-2.5">
                 {parent && (
-                  <Button variant="glass" size="sm" onClick={() => select(parent.id)}>
-                    <ArrowLeft className="h-3.5 w-3.5" />
-                    返回上级：{parent.name}
+                  <Button variant="glass" size="sm" onClick={() => select(parent.id)} className="w-full min-w-0 sm:w-auto">
+                    <ArrowLeft className="h-3.5 w-3.5 shrink-0" />
+                    <span className="truncate">返回上级：{parent.name}</span>
                   </Button>
                 )}
                 {areaId !== null && (
@@ -387,7 +387,7 @@ function AreaTree({
           <button
             onClick={() => onSelect(null)}
             className={cn(
-              'flex w-full items-center gap-2 rounded-xl px-2.5 py-[7px] text-left text-[12.5px] transition-all duration-300',
+              'flex min-h-11 w-full items-center gap-2 rounded-xl px-2.5 py-[7px] text-left text-[12.5px] transition-all duration-300 lg:min-h-0',
               selectedId === null ? 'bg-primary/12 text-primary' : 'text-muted-foreground hover:bg-white/[0.05] hover:text-foreground'
             )}
           >
@@ -408,7 +408,7 @@ function AreaTree({
               <button
                 onClick={() => onSelect(node.id)}
                 className={cn(
-                  'flex min-w-0 flex-1 items-center gap-2 rounded-xl py-[7px] pr-2.5 text-left text-[12.5px] transition-all duration-300',
+                  'flex min-h-11 min-w-0 flex-1 items-center gap-2 rounded-xl py-[7px] pr-2.5 text-left text-[12.5px] transition-all duration-300 lg:min-h-0',
                   depth > 0 ? 'pl-2' : 'pl-2.5',
                   active
                     ? 'bg-primary/12 font-medium text-primary'
@@ -425,7 +425,7 @@ function AreaTree({
                   onClick={() => onToggle(node.id)}
                   aria-label={isOpen ? `收起 ${node.name}` : `展开 ${node.name}`}
                   aria-expanded={isOpen}
-                  className="ml-0.5 shrink-0 rounded-full p-1 text-muted-foreground transition hover:bg-white/10 hover:text-foreground"
+                  className="ml-0.5 flex h-11 w-11 shrink-0 items-center justify-center rounded-full p-1 text-muted-foreground transition hover:bg-white/10 hover:text-foreground lg:h-auto lg:w-auto"
                 >
                   <ChevronDown className={cn('h-3.5 w-3.5 transition-transform duration-300', isOpen && 'rotate-180')} />
                 </button>
@@ -671,7 +671,7 @@ function Lightbox({
   };
 
   return createPortal(
-    <div className="fixed inset-0 z-[100] flex flex-col" role="dialog" aria-modal="true" aria-label="图片查看器">
+    <div className="fixed inset-0 z-[100] flex h-dvh flex-col" role="dialog" aria-modal="true" aria-label="图片查看器">
       <div
         className="scrim-deep absolute inset-0 backdrop-blur-xl"
         style={{ animation: 'sti-fade .25s ease both' }}
@@ -679,15 +679,15 @@ function Lightbox({
       />
 
       {/* 顶部工具条 */}
-      <div className="relative z-20 flex items-center justify-between gap-3 px-4 py-3.5 sm:px-6">
-        <Glass tone="thin" className="flex items-center gap-3 px-3.5 py-2">
-          <span className="mono text-[11px] text-muted-foreground">
+      <div className="relative z-20 flex shrink-0 flex-wrap items-center justify-between gap-3 pb-3.5 pl-[max(1rem,env(safe-area-inset-left,0px))] pr-[max(1rem,env(safe-area-inset-right,0px))] pt-[calc(.875rem+env(safe-area-inset-top,0px))] sm:pl-[max(1.5rem,env(safe-area-inset-left,0px))] sm:pr-[max(1.5rem,env(safe-area-inset-right,0px))]">
+        <Glass tone="thin" className="flex min-w-0 max-w-full flex-wrap items-center gap-3 px-3.5 py-2">
+          <span className="mono shrink-0 text-[11px] text-muted-foreground">
             {index + 1} / {count}
           </span>
-          {item.areaName && <span className="chip !px-2 !py-0.5 !text-[10.5px]">{item.areaName}</span>}
+          {item.areaName && <span className="chip max-w-full !block truncate !px-2 !py-0.5 !text-[10.5px]">{item.areaName}</span>}
         </Glass>
 
-        <div className="flex items-center gap-2">
+        <div className="ml-auto flex shrink-0 items-center gap-2">
           <Button size="icon-sm" variant="glass" onClick={zoomOut} disabled={scale <= 1} aria-label="缩小">
             <Minus className="h-3.5 w-3.5" />
           </Button>
@@ -713,18 +713,18 @@ function Lightbox({
             <button
               onClick={() => go(-1)}
               aria-label="上一张"
-              className="group absolute left-0 top-0 z-20 flex h-full w-[18%] cursor-w-resize items-center justify-start pl-3"
+              className="group absolute left-0 top-0 z-20 flex h-full w-[18%] cursor-w-resize items-center justify-start pl-[max(.75rem,env(safe-area-inset-left,0px))]"
             >
-              <span className="lg-thin backdrop-blur-md flex h-9 w-9 items-center justify-center rounded-full text-foreground/80 opacity-0 transition-opacity duration-300 group-hover:opacity-100">
+              <span className="lg-thin backdrop-blur-md flex h-11 w-11 items-center justify-center rounded-full text-foreground/80 opacity-100 transition-opacity duration-300 group-hover:opacity-100 group-focus-visible:opacity-100 sm:h-9 sm:w-9 [@media(hover:hover)_and_(pointer:fine)]:opacity-0">
                 <ChevronLeft className="h-4 w-4" />
               </span>
             </button>
             <button
               onClick={() => go(1)}
               aria-label="下一张"
-              className="group absolute right-0 top-0 z-20 flex h-full w-[18%] cursor-e-resize items-center justify-end pr-3"
+              className="group absolute right-0 top-0 z-20 flex h-full w-[18%] cursor-e-resize items-center justify-end pr-[max(.75rem,env(safe-area-inset-right,0px))]"
             >
-              <span className="lg-thin backdrop-blur-md flex h-9 w-9 items-center justify-center rounded-full text-foreground/80 opacity-0 transition-opacity duration-300 group-hover:opacity-100">
+              <span className="lg-thin backdrop-blur-md flex h-11 w-11 items-center justify-center rounded-full text-foreground/80 opacity-100 transition-opacity duration-300 group-hover:opacity-100 group-focus-visible:opacity-100 sm:h-9 sm:w-9 [@media(hover:hover)_and_(pointer:fine)]:opacity-0">
                 <ChevronRight className="h-4 w-4" />
               </span>
             </button>
@@ -763,16 +763,16 @@ function Lightbox({
       </div>
 
       {/* 底部信息 */}
-      <div className="relative z-20 px-4 pb-5 pt-3 sm:px-6">
-        <Glass tone="strong" className="mx-auto flex max-w-3xl flex-col gap-3 p-5">
+      <div className="relative z-20 shrink-0 pb-[calc(1.25rem+env(safe-area-inset-bottom,0px))] pl-[max(1rem,env(safe-area-inset-left,0px))] pr-[max(1rem,env(safe-area-inset-right,0px))] pt-3 sm:pl-[max(1.5rem,env(safe-area-inset-left,0px))] sm:pr-[max(1.5rem,env(safe-area-inset-right,0px))]">
+        <Glass tone="strong" className="mx-auto flex max-h-[32svh] max-w-3xl flex-col gap-3 overflow-y-auto overscroll-contain p-4 sm:p-5 lg:max-h-none [@media(pointer:coarse)]:max-h-[32svh]">
           <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
             <div className="min-w-0">
-              <h3 className="text-[15px] font-semibold">{item.title}</h3>
-              <p className="mt-1.5 text-[13px] leading-relaxed text-muted-foreground">
+              <h3 className="break-words text-[15px] font-semibold">{item.title}</h3>
+              <p className="mt-1.5 break-words text-[13px] leading-relaxed text-muted-foreground">
                 {item.description || '暂无图片描述。'}
               </p>
             </div>
-            <div className="flex shrink-0 items-center gap-2.5">
+            <div className="flex shrink-0 flex-wrap items-center gap-2.5">
               <Button size="icon-sm" variant="glass" onClick={() => go(-1)} disabled={count < 2} aria-label="上一张">
                 <ChevronLeft className="h-3.5 w-3.5" />
               </Button>
@@ -784,7 +784,7 @@ function Lightbox({
               </Button>
             </div>
           </div>
-          <p className="mono border-t border-white/8 pt-3 text-[10.5px] text-muted-foreground/70">
+          <p className="mono break-words border-t border-white/8 pt-3 text-[10.5px] text-muted-foreground/70">
             区域：{item.areaName ?? '未分类'} · ← / → 切换 · Esc 关闭 · 点击图片放大或还原 · 放大后可拖拽平移
           </p>
         </Glass>

@@ -80,11 +80,11 @@ export function Nav() {
 
   /* 点击外部关闭 */
   useEffect(() => {
-    const onDown = (e: MouseEvent) => {
+    const onDown = (e: PointerEvent) => {
       if (!navRef.current?.contains(e.target as Node)) setOpenMenu(null);
     };
-    document.addEventListener('mousedown', onDown);
-    return () => document.removeEventListener('mousedown', onDown);
+    document.addEventListener('pointerdown', onDown);
+    return () => document.removeEventListener('pointerdown', onDown);
   }, []);
 
   /* 路由切换时收起 */
@@ -92,6 +92,15 @@ export function Nav() {
     setMobileOpen(false);
     setOpenMenu(null);
   }, [location.pathname, location.search]);
+
+  useEffect(() => {
+    const desktop = window.matchMedia('(min-width: 1280px)');
+    const onChange = () => {
+      if (desktop.matches) setMobileOpen(false);
+    };
+    desktop.addEventListener('change', onChange);
+    return () => desktop.removeEventListener('change', onChange);
+  }, []);
 
   /* 未读消息 */
   useEffect(() => {
@@ -117,17 +126,17 @@ export function Nav() {
       >
         <div
           className={cn(
-            'border-b',
+            'border-b pt-[env(safe-area-inset-top,0px)]',
             scrolled || !isHome
               ? 'nav-glass border-white/8 shadow-[0_10px_40px_-24px_rgba(0,0,0,1)]'
               : 'border-transparent bg-transparent'
           )}
         >
-          <div className="shell-wide flex h-[68px] items-center gap-4">
+          <div className="shell-wide flex h-[68px] items-center gap-2 sm:gap-4">
             {/* 品牌 */}
             <Link to="/" className="group flex shrink-0 items-center transition-opacity duration-150 hover:opacity-90" aria-label="返回首页">
               <span className={cn('origin-left transition-transform duration-200 [transition-timing-function:var(--ease-out)]', scrolled ? 'scale-90' : 'scale-100')}>
-                <BrandWordmark size={36} />
+                <BrandWordmark size={36} className="gap-2 sm:gap-3.5" />
               </span>
             </Link>
 
@@ -160,12 +169,12 @@ export function Nav() {
               ))}
             </nav>
 
-            <div className="ml-auto flex items-center gap-1.5">
+            <div className="ml-auto flex shrink-0 items-center gap-1 sm:gap-1.5">
               {/* 深浅主题切换 */}
               <ThemeToggle />
 
               {/* 快速入口（文档要求的下拉菜单） */}
-              <div className="relative hidden sm:block">
+              <div className="hidden sm:block xl:relative">
                 <DropdownTrigger
                   open={openMenu === 'quick'}
                   active={openMenu === 'quick'}
@@ -178,11 +187,11 @@ export function Nav() {
 
               {/* 用户 */}
               {user ? (
-                <div className="relative">
+                <div className="xl:relative">
                   <button
                     onClick={() => setOpenMenu(openMenu === 'user' ? null : 'user')}
                     className={cn(
-                      'relative flex items-center gap-2 rounded-full border border-white/10 bg-white/[0.06] py-1 pl-1 pr-2.5 transition-colors duration-150 hover:border-white/20 hover:bg-white/[0.1]',
+                      'relative flex min-h-11 min-w-11 items-center justify-center gap-2 rounded-full border border-white/10 bg-white/[0.06] py-1 pl-1 pr-2.5 transition-colors duration-150 hover:border-white/20 hover:bg-white/[0.1] xl:min-h-0 xl:min-w-0',
                       openMenu === 'user' && 'border-white/22 bg-white/[0.11]'
                     )}
                   >
@@ -211,7 +220,7 @@ export function Nav() {
               {/* 移动端菜单 */}
               <button
                 onClick={() => setMobileOpen(true)}
-                className="rounded-full p-2.5 text-muted-foreground transition-colors duration-150 hover:bg-white/8 hover:text-foreground xl:hidden"
+                className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full text-muted-foreground transition-colors duration-150 hover:bg-white/8 hover:text-foreground xl:hidden"
                 aria-label="打开菜单"
               >
                 <Menu className="h-5 w-5" />
@@ -237,7 +246,7 @@ function ThemeToggle() {
       onClick={toggle}
       aria-label={light ? '切换到深色主题' : '切换到浅色主题'}
       title={light ? '深色主题' : '浅色主题'}
-      className="relative flex h-9 w-9 items-center justify-center rounded-full border border-white/10 bg-white/[0.05] text-muted-foreground transition-colors duration-150 hover:border-white/20 hover:bg-white/[0.09] hover:text-foreground"
+      className="relative flex h-11 w-11 shrink-0 items-center justify-center rounded-full border border-white/10 bg-white/[0.05] text-muted-foreground transition-colors duration-150 hover:border-white/20 hover:bg-white/[0.09] hover:text-foreground xl:h-9 xl:w-9"
     >
       {/* data-keep-transition：切换主题那一帧全站过渡被关掉，这两个图标例外 */}
       <Sun
@@ -277,7 +286,7 @@ function DropdownTrigger({
       onClick={onClick}
       aria-expanded={open}
       className={cn(
-        'flex items-center gap-1.5 rounded-full border px-3.5 py-2 text-[13px] font-medium transition-colors duration-150',
+        'flex min-h-11 items-center gap-1.5 rounded-full border px-3.5 py-2 text-[13px] font-medium transition-colors duration-150 xl:min-h-0',
         active
           ? 'border-primary/35 bg-primary/12 text-primary'
           : 'border-white/10 bg-white/[0.05] text-muted-foreground hover:border-white/20 hover:bg-white/[0.09] hover:text-foreground'
@@ -294,10 +303,10 @@ function DropdownTrigger({
 function QuickMenu({ active, onClose }: { active: boolean; onClose: () => void }) {
   return (
     <div
-      className="motion-popover absolute right-0 top-[calc(100%+12px)] w-[560px] origin-top-right"
+      className="motion-popover absolute right-[calc(1rem+env(safe-area-inset-right,0px))] top-[calc(100%+12px)] w-[560px] max-w-[calc(100vw-2rem-env(safe-area-inset-left,0px)-env(safe-area-inset-right,0px))] origin-top-right xl:right-0"
       data-motion-open={active}
     >
-      <Glass tone="strong" className="p-2.5 shadow-2xl">
+      <Glass tone="strong" className="max-h-[calc(100dvh-var(--nav-h)-34px-env(safe-area-inset-bottom,0px))] overflow-y-auto overscroll-contain p-2.5 shadow-2xl">
         <div className="grid grid-cols-2 gap-1.5">
           {[...QUICK_LINKS, ...OTHER_LINKS].map((item) => (
             <Link
@@ -337,10 +346,10 @@ function UserMenu({ active, onClose, onLogout }: { active: boolean; onClose: () 
   ];
   return (
     <div
-      className="motion-popover absolute right-0 top-[calc(100%+12px)] w-[268px] origin-top-right"
+      className="motion-popover absolute right-[calc(1rem+env(safe-area-inset-right,0px))] top-[calc(100%+12px)] w-[268px] max-w-[calc(100vw-2rem-env(safe-area-inset-left,0px)-env(safe-area-inset-right,0px))] origin-top-right xl:right-0"
       data-motion-open={active}
     >
-      <Glass tone="strong" className="p-2 shadow-2xl">
+      <Glass tone="strong" className="max-h-[calc(100dvh-var(--nav-h)-34px-env(safe-area-inset-bottom,0px))] overflow-y-auto overscroll-contain p-2 shadow-2xl">
         <div className="flex items-center gap-3 px-3.5 py-3">
           <Avatar name={user.name} src={user.avatar} size={40} />
           <div className="min-w-0">
@@ -360,7 +369,7 @@ function UserMenu({ active, onClose, onLogout }: { active: boolean; onClose: () 
             <Link
               to="/admin"
               onClick={onClose}
-              className="flex items-center gap-3 rounded-xl px-3.5 py-2.5 text-[13px] font-medium text-primary transition-colors duration-150 hover:bg-primary/10"
+              className="flex min-h-11 items-center gap-3 rounded-xl px-3.5 py-2.5 text-[13px] font-medium text-primary transition-colors duration-150 hover:bg-primary/10 xl:min-h-0"
             >
               <LayoutDashboard className="h-4 w-4" />
               后台管理
@@ -374,7 +383,7 @@ function UserMenu({ active, onClose, onLogout }: { active: boolean; onClose: () 
             onLogout();
             onClose();
           }}
-          className="flex w-full items-center gap-3 rounded-xl px-3.5 py-2.5 text-[13px] text-muted-foreground transition-colors duration-150 hover:bg-white/[0.07] hover:text-[hsl(var(--destructive))]"
+          className="flex min-h-11 w-full items-center gap-3 rounded-xl px-3.5 py-2.5 text-[13px] text-muted-foreground transition-colors duration-150 hover:bg-white/[0.07] hover:text-[hsl(var(--destructive))] xl:min-h-0"
         >
           <LogOut className="h-4 w-4" />
           退出登录
@@ -401,7 +410,7 @@ function NavItem({
     <Link
       to={to}
       onClick={onClick}
-      className="flex items-center gap-3 rounded-xl px-3.5 py-2.5 text-[13px] text-foreground/80 transition-colors duration-150 hover:bg-white/[0.07] hover:text-foreground"
+      className="flex min-h-11 items-center gap-3 rounded-xl px-3.5 py-2.5 text-[13px] text-foreground/80 transition-colors duration-150 hover:bg-white/[0.07] hover:text-foreground xl:min-h-0"
     >
       <Icon className="h-4 w-4 text-muted-foreground" />
       {label}
@@ -432,18 +441,20 @@ function MobileMenu({
     <div className="fixed inset-0 z-[85] xl:hidden">
       <div className="motion-backdrop scrim absolute inset-0 backdrop-blur-md" data-motion-open={active} onClick={onClose} />
       <div
-        className="motion-drawer surface-drawer absolute inset-y-0 right-0 flex w-[min(90vw,380px)] flex-col border-l border-white/10 backdrop-blur-2xl"
+        className="motion-drawer surface-drawer absolute right-0 top-0 flex h-dvh w-[min(90vw,380px)] flex-col border-l border-white/10 backdrop-blur-2xl"
         data-side="right"
         data-motion-open={active}
       >
-        <div className="flex items-center justify-between border-b border-white/8 px-5 py-4">
+        <div className="flex shrink-0 items-center justify-between gap-2 border-b border-white/8 pb-4 pl-[calc(1.25rem+env(safe-area-inset-left,0px))] pr-[calc(1.25rem+env(safe-area-inset-right,0px))] pt-[calc(1rem+env(safe-area-inset-top,0px))]">
           <BrandWordmark size={30} />
-          <button onClick={onClose} className="rounded-full p-2 text-muted-foreground transition-colors duration-150 hover:bg-white/10" aria-label="关闭">
+          <button onClick={onClose} className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full text-muted-foreground transition-colors duration-150 hover:bg-white/10" aria-label="关闭">
             <X className="h-4 w-4" />
           </button>
         </div>
 
-        <div className="min-h-0 flex-1 overflow-y-auto px-4 py-4">
+        <div className="min-h-0 flex-1 overflow-y-auto overscroll-contain">
+          <div className="flex min-h-full flex-col">
+            <div className="flex-1 py-4 pl-[calc(1rem+env(safe-area-inset-left,0px))] pr-[calc(1rem+env(safe-area-inset-right,0px))]">
           <div className="flex flex-col gap-0.5">
             {MAIN_NAV.map((it) => (
               <NavLink
@@ -465,7 +476,7 @@ function MobileMenu({
           <p className="mb-2 mt-6 px-4 text-[11px] uppercase tracking-[0.24em] text-muted-foreground">快速入口</p>
           <div className="flex flex-col gap-0.5">
             {QUICK_LINKS.map((it) => (
-              <Link key={it.to} to={it.to} className="flex items-center gap-3 rounded-2xl px-4 py-2.5 text-[13px] text-foreground/80 transition-colors duration-150 hover:bg-white/[0.06]">
+              <Link key={it.to} to={it.to} className="flex min-h-11 items-center gap-3 rounded-2xl px-4 py-2.5 text-[13px] text-foreground/80 transition-colors duration-150 hover:bg-white/[0.06]">
                 <it.icon className="h-4 w-4 text-primary" />
                 {it.label}
               </Link>
@@ -475,7 +486,7 @@ function MobileMenu({
           <p className="mb-2 mt-6 px-4 text-[11px] uppercase tracking-[0.24em] text-muted-foreground">其他链接</p>
           <div className="flex flex-col gap-0.5">
             {OTHER_LINKS.map((it) => (
-              <Link key={it.to} to={it.to} className="flex items-center gap-3 rounded-2xl px-4 py-2.5 text-[13px] text-foreground/80 transition-colors duration-150 hover:bg-white/[0.06]">
+              <Link key={it.to} to={it.to} className="flex min-h-11 items-center gap-3 rounded-2xl px-4 py-2.5 text-[13px] text-foreground/80 transition-colors duration-150 hover:bg-white/[0.06]">
                 <it.icon className="h-4 w-4 text-muted-foreground" />
                 {it.label}
               </Link>
@@ -483,35 +494,37 @@ function MobileMenu({
           </div>
         </div>
 
-        <div className="border-t border-white/8 p-4">
+        <div className="shrink-0 border-t border-white/8 pb-[calc(1rem+env(safe-area-inset-bottom,0px))] pl-[calc(1rem+env(safe-area-inset-left,0px))] pr-[calc(1rem+env(safe-area-inset-right,0px))] pt-4">
           {user ? (
             <div className="flex flex-col gap-2">
               <div className="flex items-center gap-3 rounded-2xl bg-white/[0.045] px-4 py-3">
                 <Avatar name={user.name} src={user.avatar} size={36} />
                 <div className="min-w-0">
                   <p className="truncate text-sm font-medium">{user.name}</p>
-                  <p className="mono text-[11px] text-muted-foreground">@{user.username}</p>
+                  <p className="mono truncate text-[11px] text-muted-foreground">@{user.username}</p>
                 </div>
               </div>
               <div className="grid grid-cols-2 gap-2">
-                <LinkButton to="/account" size="sm" variant="glass" className="w-full">
+                <LinkButton to="/account" size="sm" variant="glass" className="min-h-11 w-full">
                   用户中心
                 </LinkButton>
                 {isAdmin && (
-                  <LinkButton to="/admin" size="sm" variant="primary" className="w-full">
+                  <LinkButton to="/admin" size="sm" variant="primary" className="min-h-11 w-full">
                     后台管理
                   </LinkButton>
                 )}
-                <Button size="sm" variant="glass" className={isAdmin ? 'col-span-2' : 'w-full'} onClick={() => { onLogout(); onClose(); }}>
+                <Button size="sm" variant="glass" className={cn('min-h-11', isAdmin ? 'col-span-2' : 'w-full')} onClick={() => { onLogout(); onClose(); }}>
                   退出登录
                 </Button>
               </div>
             </div>
           ) : (
-            <LinkButton to="/login" size="sm" variant="primary" className="w-full">
+            <LinkButton to="/login" size="sm" variant="primary" className="min-h-11 w-full">
               登录
             </LinkButton>
           )}
+        </div>
+          </div>
         </div>
       </div>
     </div>

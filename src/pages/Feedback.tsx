@@ -371,7 +371,7 @@ export default function Feedback() {
       >
         <div ref={formRef} className="scroll-mt-28">
           <div className="grid gap-6 lg:grid-cols-[1.5fr_1fr]">
-            <Glass tone="strong" className="p-6 sm:p-8" data-reveal>
+            <Glass tone="strong" className="min-w-0 p-4 sm:p-8" data-reveal>
               {formError && (
                 <div
                   className="mb-6 flex items-start gap-3 rounded-2xl border border-[hsl(var(--destructive))]/40 bg-[hsl(var(--destructive))]/10 px-4 py-3.5"
@@ -459,7 +459,7 @@ export default function Feedback() {
                 )}
 
                 <div className="flex flex-wrap items-center gap-3 border-t border-white/8 pt-6">
-                  <Button type="submit" variant="primary" size="lg" loading={submitting}>
+                  <Button type="submit" variant="primary" size="lg" loading={submitting} className="w-full sm:w-auto">
                     {submitting ? '提交中…' : '提交留言'}
                     {!submitting && <Send className="h-4 w-4" />}
                   </Button>
@@ -467,6 +467,7 @@ export default function Feedback() {
                     type="button"
                     variant="ghost"
                     disabled={submitting}
+                    className="w-full sm:w-auto"
                     onClick={() => {
                       setForm((f) => ({ ...f, title: '', content: '' }));
                       setErrors({});
@@ -560,11 +561,11 @@ function FeedbackCard({
         <span className="mono ml-auto text-[11px] text-muted-foreground">{fromNow(item.createdAt)}</span>
       </div>
 
-      <h3 className="mt-4 text-[16px] font-semibold leading-snug">{item.title}</h3>
-      <p className="mt-2.5 whitespace-pre-line text-[13.5px] leading-relaxed text-foreground/75">{item.content}</p>
+      <h3 className="mt-4 break-words text-[16px] font-semibold leading-snug">{item.title}</h3>
+      <p className="mt-2.5 whitespace-pre-line break-words text-[13.5px] leading-relaxed text-foreground/75">{item.content}</p>
 
       <div className="mt-5 flex flex-wrap items-center justify-between gap-3">
-        <div className="flex items-center gap-3 text-[11.5px] text-muted-foreground">
+        <div className="flex min-w-0 flex-wrap items-center gap-3 text-[11.5px] text-muted-foreground">
           <span className="flex items-center gap-1.5">
             <UserRound className="h-3.5 w-3.5" />
             {item.anonymous || !item.authorName ? '匿名同学' : item.authorName}

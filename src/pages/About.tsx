@@ -109,7 +109,7 @@ export default function About() {
               </div>
             ) : (
               <div className="grid gap-8 lg:grid-cols-[1.5fr_1fr] lg:gap-12">
-                <Glass tone="soft" className="p-6 sm:p-9" data-reveal="left">
+                <Glass tone="soft" className="min-w-0 p-4 sm:p-9" data-reveal="left">
                   {page?.content ? (
                     <div className="prose-glass" dangerouslySetInnerHTML={{ __html: page.content }} />
                   ) : (
@@ -302,11 +302,11 @@ function CountCard({
 
   return (
     <div ref={ref} data-reveal="scale" style={{ transitionDelay: `${delay}ms` }}>
-      <Glass tone="soft" hover sheen className="flex h-full flex-col p-5 sm:p-6">
+      <Glass tone="soft" hover sheen className="flex h-full min-w-0 flex-col p-4 sm:p-6">
         <span className="flex h-9 w-9 items-center justify-center rounded-xl border border-primary/28 bg-primary/12 text-primary">
           {icon}
         </span>
-        <div className="mono mt-4 flex items-baseline gap-1.5 text-[2rem] font-semibold tabular-nums text-foreground">
+        <div className="mono mt-4 flex flex-wrap items-baseline gap-1.5 text-2xl font-semibold tabular-nums text-foreground sm:text-[2rem]">
           {fnum(Math.round(n))}
           <span className="text-[12px] font-normal text-muted-foreground">{unit}</span>
         </div>
@@ -361,23 +361,23 @@ function MembersSection({ members, loading }: { members: any[]; loading: boolean
       )}
 
       {loading ? (
-        <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4">
+        <div className="grid gap-4 min-[400px]:grid-cols-2 sm:grid-cols-3 lg:grid-cols-4">
           {Array.from({ length: 8 }).map((_, i) => (
             <Skeleton key={i} className="h-[208px]" />
           ))}
         </div>
       ) : items.length ? (
-        <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4">
+        <div className="grid gap-4 min-[400px]:grid-cols-2 sm:grid-cols-3 lg:grid-cols-4">
           {items.map((m, i) => (
             <div key={m.id} data-reveal="scale" style={{ transitionDelay: `${(i % 4) * 60}ms` }}>
-              <Glass tone="soft" hover sheen className="flex h-full flex-col items-center p-5 text-center">
+              <Glass tone="soft" hover sheen className="flex h-full min-w-0 flex-col items-center p-4 text-center sm:p-5">
                 {/* 没传头像就走 Avatar 内置的 identicon —— 原先是拿部门 logo 当底、
                     再把名字最后两个字压在上面，图案和文字互相糊 */}
                 <Avatar name={m.name} src={m.avatar} size={52} />
-                <p className="mt-3.5 text-base font-medium">{m.name}</p>
-                <p className="mt-1 text-sm text-primary">{m.role}</p>
-                {m.group && <p className="mt-1 text-xs text-muted-foreground">{m.group}</p>}
-                {m.bio && <p className="clamp-2 mt-2.5 text-sm leading-relaxed text-muted-foreground">{m.bio}</p>}
+                <p className="mt-3.5 max-w-full break-words text-base font-medium">{m.name}</p>
+                <p className="mt-1 max-w-full break-words text-sm text-primary">{m.role}</p>
+                {m.group && <p className="mt-1 max-w-full break-words text-xs text-muted-foreground">{m.group}</p>}
+                {m.bio && <p className="clamp-2 mt-2.5 max-w-full break-words text-sm leading-relaxed text-muted-foreground">{m.bio}</p>}
                 {Array.isArray(m.tags) && m.tags.length > 0 && (
                   <div className="mt-3 flex flex-wrap justify-center gap-1.5">
                     {m.tags.slice(0, 3).map((t: string) => (

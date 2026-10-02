@@ -41,14 +41,14 @@ export default function Login() {
 
   return (
     <div ref={revealRef}>
-      <section className="relative flex min-h-dvh items-center px-5 pb-20 pt-28 sm:pt-32">
+      <section className="relative flex min-h-svh items-center pb-12 pt-[calc(var(--nav-h)+1.75rem)] sm:px-5 sm:pb-20 sm:pt-[calc(var(--nav-h)+3.75rem)] lg:min-h-dvh">
         <div className="shell">
-          <Glass tone="strong" className="relative overflow-hidden p-6 sm:p-10 lg:p-14" data-reveal="scale">
+          <Glass tone="strong" className="relative overflow-hidden p-4 sm:p-10 lg:p-14" data-reveal="scale">
             <GlowOrb className="-left-24 -top-28" size={520} color="rgba(186,230,253,.11)" />
             <GlowOrb className="-bottom-32 -right-24" size={480} color="rgb(var(--orb) / .055)" />
             <GridTexture className="opacity-40" size={52} />
 
-            <div className="relative grid gap-12 lg:grid-cols-[1fr_minmax(0,430px)] lg:items-center lg:gap-16">
+            <div className="relative grid gap-8 sm:gap-12 lg:grid-cols-[1fr_minmax(0,430px)] lg:items-center lg:gap-16">
               <div className="flex flex-col items-center text-center lg:items-start lg:text-left">
                 <LogoLockup uid="login-brand" stacked size={46} animated />
                 <p className="mt-8 text-[14.5px] leading-[1.9] text-muted-foreground">
@@ -76,7 +76,7 @@ export default function Login() {
                 <LinkButton to="/" size="sm" variant="ghost" className="mt-9">返回首页</LinkButton>
               </div>
 
-              <Glass tone="soft" className="p-6 sm:p-8">
+              <Glass tone="soft" className="min-w-0 p-4 sm:p-8">
                 <div className="mb-6">
                   <div className="eyebrow mb-4">Sign In</div>
                   <h1 className="text-2xl font-semibold tracking-tight sm:text-[1.7rem]">
@@ -126,7 +126,7 @@ export default function Login() {
                     </Button>
                     {redirect !== '/' && (
                       <p className="text-center text-[11.5px] leading-relaxed text-muted-foreground">
-                        登录后将自动跳转到 <span className="mono text-primary/85">{redirect}</span>
+                        登录后将自动跳转到 <span className="mono break-all text-primary/85">{redirect}</span>
                       </p>
                     )}
                   </div>

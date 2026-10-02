@@ -319,7 +319,7 @@ export default function ProjectApply() {
           <div className="grid gap-8 lg:grid-cols-[minmax(0,1fr)_340px]">
             {/* ============================ 表单主列 ============================ */}
             <div ref={formRef} className="min-w-0 scroll-mt-24" data-reveal>
-              <Glass tone="soft" className="p-6 sm:p-8">
+              <Glass tone="soft" className="p-4 sm:p-8">
                 <Steps step={step} onJump={(n) => { setErrors({}); setStep(n); scrollToForm(); }} />
 
                 <div className="mt-8 border-t border-white/8 pt-7">
@@ -586,27 +586,27 @@ export default function ProjectApply() {
                 {/* ---------------------------- 操作区 ---------------------------- */}
                 <div className="mt-8 flex flex-wrap items-center gap-x-4 gap-y-3 border-t border-white/8 pt-6">
                   {step > 1 && (
-                    <Button variant="ghost" onClick={back} disabled={busy}>
+                    <Button variant="ghost" onClick={back} disabled={busy} className="w-full sm:w-auto">
                       <ArrowLeft className="h-4 w-4" />
                       上一步
                     </Button>
                   )}
 
                   {step < 3 ? (
-                    <Button variant="primary" onClick={next}>
+                    <Button variant="primary" onClick={next} className="w-full sm:w-auto">
                       下一步
                       <ArrowRight className="h-4 w-4" />
                     </Button>
                   ) : (
-                    <Button variant="primary" size="lg" onClick={submit} loading={busy}>
+                    <Button variant="primary" size="lg" onClick={submit} loading={busy} className="w-full sm:w-auto">
                       <Send className="h-4 w-4" />
                       {busy ? '提交中…' : '提交申报'}
                     </Button>
                   )}
 
                   <span className="mono text-[11.5px] text-muted-foreground">第 {step} / 3 步</span>
-                  <span className="flex items-center gap-2 text-[11.5px] text-muted-foreground">
-                    <ShieldCheck className="h-3.5 w-3.5" />
+                  <span className="flex min-w-0 items-start gap-2 text-[11.5px] text-muted-foreground sm:items-center">
+                    <ShieldCheck className="mt-0.5 h-3.5 w-3.5 shrink-0 sm:mt-0" />
                     提交后 5 个工作日内反馈初审结果
                   </span>
                 </div>
@@ -664,9 +664,9 @@ export default function ProjectApply() {
                 <div className="mt-6 border-t border-white/8 pt-5">
                   <p className="eyebrow mb-3">联系人</p>
                   <div className="flex flex-col gap-2.5 text-[12px] text-foreground/80">
-                    <span className="flex items-center gap-2.5">
-                      <Mail className="h-3.5 w-3.5 shrink-0 text-primary" />
-                      <span className="mono">{settings.email || 'notpaperxiang@gmail.com'}</span>
+                    <span className="flex min-w-0 items-start gap-2.5 sm:items-center">
+                      <Mail className="mt-0.5 h-3.5 w-3.5 shrink-0 text-primary sm:mt-0" />
+                      <span className="mono min-w-0 break-all">{settings.email || 'notpaperxiang@gmail.com'}</span>
                     </span>
                     <span className="flex items-start gap-2.5">
                       <MapPin className="mt-0.5 h-3.5 w-3.5 shrink-0 text-primary" />
@@ -787,7 +787,7 @@ function SuccessView({
 
   return (
     <div className="grid gap-8 lg:grid-cols-[minmax(0,1fr)_340px]" data-reveal="scale">
-      <Glass tone="strong" className="relative overflow-hidden p-7 sm:p-10">
+      <Glass tone="strong" className="relative overflow-hidden p-4 sm:p-10">
         <GlowOrb className="-right-24 -top-28" size={460} color="rgba(186,230,253,.085)" />
         <GlowOrb className="-bottom-32 -left-24" size={420} color="rgb(var(--orb) / .055)" />
         <div className="relative">
@@ -806,14 +806,14 @@ function SuccessView({
           <div className="mt-6 flex flex-wrap items-center gap-5 rounded-2xl border border-white/10 bg-white/[0.04] px-5 py-4">
             <div>
               <p className="text-[11px] tracking-wide text-muted-foreground">申报编号</p>
-              <p className="mono mt-1.5 text-2xl font-semibold tabular-nums text-primary">{code}</p>
+              <p className="mono mt-1.5 break-all text-xl font-semibold tabular-nums text-primary sm:text-2xl">{code}</p>
             </div>
-            <div className="h-10 w-px bg-white/10" />
+            <div className="hidden h-10 w-px bg-white/10 sm:block" />
             <div>
               <p className="text-[11px] tracking-wide text-muted-foreground">提交时间</p>
               <p className="mono mt-1.5 text-[14px]">{fdate(at)}</p>
             </div>
-            <div className="h-10 w-px bg-white/10" />
+            <div className="hidden h-10 w-px bg-white/10 sm:block" />
             <div>
               <p className="text-[11px] tracking-wide text-muted-foreground">当前状态</p>
               <div className="mt-1.5">
@@ -869,21 +869,21 @@ function SuccessView({
 
           <div className="mt-8 flex flex-wrap items-center gap-3 border-t border-white/8 pt-6">
             {loggedIn ? (
-              <LinkButton to="/account/applications" variant="primary" size="lg">
+              <LinkButton to="/account/applications" variant="primary" size="lg" className="w-full sm:w-auto">
                 <ArrowRight className="h-4 w-4" />
                 查看申报进度
               </LinkButton>
             ) : (
-              <LinkButton to="/login" variant="primary" size="lg">
+              <LinkButton to="/login" variant="primary" size="lg" className="w-full sm:w-auto">
                 <ArrowRight className="h-4 w-4" />
                 登录后查看进度
               </LinkButton>
             )}
-            <Button variant="glass" onClick={onReset}>
+            <Button variant="glass" onClick={onReset} className="w-full sm:w-auto">
               <RotateCcw className="h-4 w-4" />
               再申报一项
             </Button>
-            <LinkButton to="/projects" variant="ghost">
+            <LinkButton to="/projects" variant="ghost" className="w-full sm:w-auto">
               返回项目库
             </LinkButton>
           </div>

@@ -178,7 +178,7 @@ export default function News() {
             {/* 工具栏 */}
             <Glass tone="soft" className="p-4 sm:p-5" data-reveal>
               <div className="flex flex-col gap-4">
-                <div className="flex items-center gap-3">
+                <div className="flex flex-wrap items-center gap-3">
                   <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-xl border border-white/12 bg-white/[0.055] text-primary">
                     <LayoutGrid className="h-3.5 w-3.5" />
                   </span>
@@ -199,7 +199,7 @@ export default function News() {
                 <div className="hairline" />
 
                 <div className="flex flex-wrap items-center justify-between gap-3">
-                  <div className="flex items-center gap-2.5">
+                  <div className="flex min-w-0 max-w-full flex-wrap items-center gap-2.5">
                     <Clock3 className="h-3.5 w-3.5 text-muted-foreground" />
                     <Tabs
                       items={SORTS}

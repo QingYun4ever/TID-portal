@@ -285,14 +285,14 @@ export default function ActivityDetail() {
             {fdatetime(activity.startAt)} {fweek(activity.startAt)}
           </span>
           {activity.location && (
-            <span className="flex items-center gap-2 text-[11.5px] text-muted-foreground">
-              <MapPin className="h-3.5 w-3.5" />
-              {activity.location}
+            <span className="flex min-w-0 max-w-full items-center gap-2 text-[11.5px] text-muted-foreground">
+              <MapPin className="h-3.5 w-3.5 shrink-0" />
+              <span className="min-w-0 break-words">{activity.location}</span>
             </span>
           )}
           {!status.closed && activity.signupEnd && (
-            <span className="flex items-center gap-2 text-[11.5px] text-muted-foreground">
-              <Hourglass className="h-3.5 w-3.5" />
+            <span className="flex max-w-full flex-wrap items-center gap-2 text-[11.5px] text-muted-foreground">
+              <Hourglass className="h-3.5 w-3.5 shrink-0" />
               报名截止倒计时
               <Countdown target={activity.signupEnd} className="text-[12px] font-medium" />
             </span>
@@ -352,7 +352,7 @@ export default function ActivityDetail() {
             )}
 
             {/* 正文 */}
-            <Glass tone="soft" className="p-6 sm:p-8" data-reveal="blur">
+            <Glass tone="soft" className="p-4 sm:p-8" data-reveal="blur">
               <h2 className="mb-6 flex items-center gap-2.5 text-[17px] font-semibold">
                 <FileText className="h-4 w-4 text-primary" />
                 活动介绍
@@ -397,7 +397,7 @@ export default function ActivityDetail() {
             )}
 
             {/* ========================= 在线报名 ========================= */}
-            <Glass id="signup" tone="soft" className="scroll-mt-28 p-6 sm:p-8" data-reveal>
+            <Glass id="signup" tone="soft" className="scroll-mt-28 p-4 sm:p-8" data-reveal>
               <div className="mb-6 flex flex-wrap items-start justify-between gap-4">
                 <div>
                   <h2 className="flex items-center gap-2.5 text-[17px] font-semibold">
@@ -409,7 +409,7 @@ export default function ActivityDetail() {
                   </p>
                 </div>
                 {!user && (
-                  <LinkButton to="/login" size="sm" variant="glass">
+                  <LinkButton to="/login" size="sm" variant="glass" className="w-full sm:w-auto">
                     <LogIn className="h-3.5 w-3.5" />
                     登录后报名
                   </LinkButton>
@@ -452,7 +452,7 @@ export default function ActivityDetail() {
                       {status.reason || '报名通道暂未开放。'}
                       {status.capacityFull && '　可关注门户发布的后续场次，或联系主办方加入候补名单。'}
                     </p>
-                    <LinkButton to="/activities" size="sm" variant="glass" className="mt-4">
+                    <LinkButton to="/activities" size="sm" variant="glass" className="mt-4 w-full sm:w-auto">
                       查看其他活动 <ArrowRight className="h-3.5 w-3.5" />
                     </LinkButton>
                   </div>
@@ -524,7 +524,7 @@ export default function ActivityDetail() {
                   </Field>
 
                   <div className="flex flex-wrap items-center gap-x-5 gap-y-3 border-t border-white/8 pt-5">
-                    <Button type="submit" variant="primary" size="lg" loading={busy}>
+                    <Button type="submit" variant="primary" size="lg" loading={busy} className="w-full sm:w-auto">
                       <Send className="h-4 w-4" />
                       {busy ? '提交中…' : '提交报名'}
                     </Button>
@@ -532,6 +532,7 @@ export default function ActivityDetail() {
                       type="button"
                       variant="ghost"
                       disabled={busy}
+                      className="w-full sm:w-auto"
                       onClick={() => {
                         setTouchedForm(true);
                         setForm(EMPTY_FORM);
@@ -541,8 +542,8 @@ export default function ActivityDetail() {
                     >
                       重置
                     </Button>
-                    <span className="flex items-center gap-2 text-[11.5px] text-muted-foreground">
-                      <ShieldCheck className="h-3.5 w-3.5" />
+                    <span className="flex min-w-0 items-start gap-2 text-[11.5px] text-muted-foreground sm:items-center">
+                      <ShieldCheck className="mt-0.5 h-3.5 w-3.5 shrink-0 sm:mt-0" />
                       信息仅用于活动组织与签到，不做其他用途
                     </span>
                   </div>
@@ -551,7 +552,7 @@ export default function ActivityDetail() {
             </Glass>
 
             {/* ======================== 已报名名单 ======================== */}
-            <Glass tone="soft" className="p-6 sm:p-8" data-reveal>
+            <Glass tone="soft" className="p-4 sm:p-8" data-reveal>
               <div className="mb-5 flex flex-wrap items-center justify-between gap-3">
                 <h2 className="flex items-center gap-2.5 text-[15px] font-semibold">
                   <Users className="h-4 w-4 text-primary" />
@@ -692,7 +693,7 @@ function InfoRow({ icon, label, children }: { icon: React.ReactNode; label: stri
       </span>
       <div className="min-w-0 flex-1">
         <dt className="text-[11px] tracking-wide text-muted-foreground">{label}</dt>
-        <dd className="mt-1 text-[13px] leading-relaxed text-foreground/90">{children}</dd>
+        <dd className="mt-1 break-words text-[13px] leading-relaxed text-foreground/90">{children}</dd>
       </div>
     </div>
   );

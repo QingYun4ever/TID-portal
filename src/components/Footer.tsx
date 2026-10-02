@@ -60,10 +60,10 @@ export function Footer() {
         style={{ background: 'radial-gradient(circle, rgb(var(--orb) / .09), transparent 68%)' }}
       />
 
-      <div className="shell relative py-16 lg:py-20">
-        <div className="grid grid-cols-2 gap-x-8 gap-y-12 lg:grid-cols-6">
+      <div className="shell relative py-12 sm:py-16 lg:py-20">
+        <div className="grid grid-cols-2 gap-x-6 gap-y-8 sm:gap-x-8 sm:gap-y-12 lg:grid-cols-6">
           {/* 品牌区 */}
-          <div className="col-span-2">
+          <div className="col-span-2 min-w-0">
             <LogoLockup uid="foot" size={44} stacked={false} />
             <p className="mt-6 max-w-xs text-[13px] leading-relaxed text-muted-foreground">
               {settings.slogan || '以技术为舟，以创新为帆'}。面向全校开展科技知识科普，策划组织科技比赛与科技活动。
@@ -71,15 +71,15 @@ export function Footer() {
 
             <div className="mt-6 flex flex-col gap-2.5 text-[12px] text-muted-foreground">
               {settings.address && (
-                <span className="flex items-center gap-2.5">
-                  <MapPin className="h-3.5 w-3.5 shrink-0 text-primary/70" />
-                  {settings.address}
+                <span className="flex min-w-0 items-start gap-2.5 sm:items-center">
+                  <MapPin className="mt-0.5 h-3.5 w-3.5 shrink-0 text-primary/70 sm:mt-0" />
+                  <span className="min-w-0 break-words">{settings.address}</span>
                 </span>
               )}
               {settings.email && (
-                <a href={`mailto:${settings.email}`} className="flex items-center gap-2.5 transition hover:text-foreground">
-                  <Mail className="h-3.5 w-3.5 shrink-0 text-primary/70" />
-                  {settings.email}
+                <a href={`mailto:${settings.email}`} className="flex min-w-0 items-start gap-2.5 transition hover:text-foreground sm:items-center">
+                  <Mail className="mt-0.5 h-3.5 w-3.5 shrink-0 text-primary/70 sm:mt-0" />
+                  <span className="min-w-0 break-all">{settings.email}</span>
                 </a>
               )}
             </div>
@@ -87,14 +87,14 @@ export function Footer() {
 
           {/* 链接列 */}
           {COLUMNS.map((col) => (
-            <div key={col.title}>
+            <div key={col.title} className="min-w-0">
               <h4 className="mb-5 text-[11px] font-medium uppercase tracking-[0.22em] text-foreground/70">{col.title}</h4>
-              <ul className="flex flex-col gap-3">
+              <ul className="flex flex-col gap-1 sm:gap-3">
                 {col.links.map((l) => (
                   <li key={l.to + l.label}>
                     <Link
                       to={l.to}
-                      className="group inline-flex items-center gap-1 text-[13px] text-muted-foreground transition-colors hover:text-foreground"
+                      className="group inline-flex min-h-11 items-center gap-1 text-[13px] text-muted-foreground transition-colors hover:text-foreground sm:min-h-0"
                     >
                       {l.label}
                       <ArrowUpRight className="h-3 w-3 opacity-0 transition-all duration-300 group-hover:translate-x-0.5 group-hover:opacity-60" />
@@ -109,17 +109,17 @@ export function Footer() {
         <div className="hairline my-10" />
 
         <div className="flex flex-col items-center justify-between gap-4 text-[12px] text-muted-foreground sm:flex-row">
-          <p>
+          <p className="min-w-0 break-words text-center sm:text-left">
             © {year} 科技创新部 · Technology &amp; Innovation Department
             {settings.icp && <span className="ml-3 opacity-70">{settings.icp}</span>}
             <span className="ml-3">Made by U-235 with love.</span>
           </p>
-          <div className="flex items-center gap-5">
+          <div className="flex shrink-0 items-center gap-5">
             <a
               href="https://github.com/QingYun4ever"
               target="_blank"
               rel="noreferrer noopener"
-              className="transition hover:text-foreground"
+              className="flex h-11 w-11 items-center justify-center transition hover:text-foreground sm:h-auto sm:w-auto"
               aria-label="GitHub"
             >
               <Github className="h-4 w-4" />

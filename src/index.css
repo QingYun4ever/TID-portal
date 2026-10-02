@@ -74,7 +74,7 @@
     --my: 0%;
 
     /* 导航栏高度 */
-    --nav-h: 68px;
+    --nav-h: calc(68px + env(safe-area-inset-top, 0px));
 
     /* ---- 主题翻转通道（RGB 三元组，供 rgb(var(--x) / a) 使用）----
        --tw-white  Tailwind 的 white：深色主题=白，浅色主题=墨色
@@ -161,6 +161,8 @@
   html {
     scroll-behavior: smooth;
     -webkit-text-size-adjust: 100%;
+    -webkit-tap-highlight-color: transparent;
+    scroll-padding-top: calc(var(--nav-h) + 16px);
   }
 
   /* --------------------------------------------------------------------
@@ -247,6 +249,19 @@
   button {
     font: inherit;
     color: inherit;
+  }
+
+  button,
+  a,
+  [role='button'] {
+    touch-action: manipulation;
+  }
+
+  button,
+  [role='button'] {
+    -webkit-user-select: none;
+    user-select: none;
+    -webkit-touch-callout: none;
   }
 
   input::placeholder,
@@ -575,11 +590,13 @@
       inset 0 -1px 0 0 rgba(0, 0, 0, 0.22),
       0 10px 30px -10px hsl(var(--primary) / 0.65);
   }
-  .btn-primary:hover {
-    filter: brightness(1.09);
-    box-shadow:
-      inset 0 1px 0 0 rgba(255, 255, 255, 0.65),
-      0 16px 40px -12px hsl(var(--primary) / 0.8);
+  @media (hover: hover) and (pointer: fine) {
+    .btn-primary:hover {
+      filter: brightness(1.09);
+      box-shadow:
+        inset 0 1px 0 0 rgba(255, 255, 255, 0.65),
+        0 16px 40px -12px hsl(var(--primary) / 0.8);
+    }
   }
 
   /* 玻璃按钮 */
@@ -593,9 +610,11 @@
       inset 0 1px 0 0 rgba(255, 255, 255, 0.24),
       0 12px 30px -16px rgba(0, 0, 0, 0.9);
   }
-  .btn-glass:hover {
-    background: linear-gradient(150deg, rgba(255, 255, 255, 0.2), rgba(255, 255, 255, 0.08));
-    border-color: rgba(255, 255, 255, 0.26);
+  @media (hover: hover) and (pointer: fine) {
+    .btn-glass:hover {
+      background: linear-gradient(150deg, rgba(255, 255, 255, 0.2), rgba(255, 255, 255, 0.08));
+      border-color: rgba(255, 255, 255, 0.26);
+    }
   }
 
   .btn-ghost {
@@ -603,9 +622,11 @@
     background: transparent;
     border: 1px solid transparent;
   }
-  .btn-ghost:hover {
-    color: hsl(var(--foreground));
-    background: rgb(var(--tw-white) / 0.07);
+  @media (hover: hover) and (pointer: fine) {
+    .btn-ghost:hover {
+      color: hsl(var(--foreground));
+      background: rgb(var(--tw-white) / 0.07);
+    }
   }
 
   .btn-danger {
@@ -638,6 +659,7 @@
      ------------------------------------------------------------------ */
   .field {
     @apply w-full rounded-2xl px-4 text-sm;
+    min-width: 0;
     height: 44px;
     color: hsl(var(--foreground));
     background-color: hsl(var(--input) / 0.9);
@@ -750,6 +772,18 @@
   .shell-wide {
     @apply mx-auto w-full max-w-[1560px] px-5 sm:px-8;
   }
+  .shell,
+  .shell-wide {
+    --shell-padding: 1.25rem;
+    padding-left: max(var(--shell-padding), env(safe-area-inset-left, 0px));
+    padding-right: max(var(--shell-padding), env(safe-area-inset-right, 0px));
+  }
+  @media (min-width: 640px) {
+    .shell,
+    .shell-wide {
+      --shell-padding: 2rem;
+    }
+  }
   /* 内页分区的上下留白。
      两个相邻分区之间的空白 = 上一个的 pb + 下一个的 pt，所以这里的数值要按「一半」来读：
      lg 下 py-20 意味着分区之间有 160px 的间隔，已经足够把两块内容读成两件事。
@@ -809,6 +843,8 @@
   /* 正文排版（详情页 / 富文本） */
   .prose-glass {
     @apply text-[15px] leading-[1.95] text-foreground/80;
+    min-width: 0;
+    overflow-wrap: anywhere;
   }
   .prose-glass h2 {
     @apply mb-4 mt-10 text-xl font-semibold text-foreground;
@@ -850,11 +886,20 @@
     @apply mono rounded-md bg-white/8 px-1.5 py-0.5 text-[13px] text-primary;
   }
   .prose-glass table {
-    @apply my-6 w-full overflow-hidden rounded-2xl border border-white/10 text-sm;
+    @apply my-6 w-full rounded-2xl border border-white/10 text-sm;
+    display: block;
+    overflow-x: auto;
+    overscroll-behavior-x: contain;
   }
   .prose-glass th,
   .prose-glass td {
     @apply border-b border-white/8 px-4 py-2.5 text-left;
+  }
+  .prose-glass pre {
+    max-width: 100%;
+    overflow-x: auto;
+    overscroll-behavior-x: contain;
+    overflow-wrap: normal;
   }
   .prose-glass th {
     @apply bg-white/5 font-semibold text-foreground;
@@ -1729,10 +1774,12 @@ html.light .btn-primary {
     inset 0 -1px 0 0 rgba(0, 0, 0, 0.12),
     0 8px 20px -10px hsl(var(--primary) / 0.55);
 }
-html.light .btn-primary:hover {
-  box-shadow:
-    inset 0 1px 0 0 rgba(255, 255, 255, 0.55),
-    0 14px 30px -12px hsl(var(--primary) / 0.6);
+@media (hover: hover) and (pointer: fine) {
+  html.light .btn-primary:hover {
+    box-shadow:
+      inset 0 1px 0 0 rgba(255, 255, 255, 0.55),
+      0 14px 30px -12px hsl(var(--primary) / 0.6);
+  }
 }
 
 html.light .btn-glass {
@@ -1743,9 +1790,11 @@ html.light .btn-glass {
     0 1px 2px -1px rgb(var(--shade) / 0.28),
     0 10px 24px -18px rgb(var(--shade) / 0.5);
 }
-html.light .btn-glass:hover {
-  background: linear-gradient(150deg, rgba(255, 255, 255, 1), rgba(255, 255, 255, 0.84));
-  border-color: rgba(15, 23, 38, 0.18);
+@media (hover: hover) and (pointer: fine) {
+  html.light .btn-glass:hover {
+    background: linear-gradient(150deg, rgba(255, 255, 255, 1), rgba(255, 255, 255, 0.84));
+    border-color: rgba(15, 23, 38, 0.18);
+  }
 }
 
 /* ---- 4. 表单控件 ------------------------------------------------------
@@ -1870,5 +1919,21 @@ html .home-float > .lg-blur {
   html .home-float > .lg-blur {
     backdrop-filter: none;
     -webkit-backdrop-filter: none;
+  }
+}
+
+/* 触屏控件保留可读文字与可点击面积，不禁用页面缩放或原生滚动。 */
+@media (pointer: coarse) {
+  input:not([type='checkbox']):not([type='radio']),
+  textarea,
+  select,
+  [contenteditable='true'] {
+    font-size: 16px;
+  }
+  button,
+  [role='button'],
+  .btn {
+    min-height: 44px;
+    min-width: 44px;
   }
 }

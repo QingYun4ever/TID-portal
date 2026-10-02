@@ -136,8 +136,8 @@ export default function Resources() {
           <div className="min-w-0">
             {/* 筛选栏 */}
             <div className="mb-8 flex flex-col gap-4" data-reveal>
-              <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-                <Tabs items={tabs} value={category} onChange={setCategory} />
+              <div className="flex flex-col gap-4 sm:flex-row sm:flex-wrap sm:items-center sm:justify-between">
+                <Tabs items={tabs} value={category} onChange={setCategory} className="min-w-0 max-w-full" />
                 <SearchInput
                   value={qInput}
                   onChange={setQInput}

@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { Link, NavLink, Outlet, useLocation } from 'react-router';
 import {
   Activity,
@@ -78,6 +78,19 @@ export default function AdminLayout() {
   const [collapsed, setCollapsed] = useState(false);
   const [mobileNav, setMobileNav] = useState(false);
 
+  useEffect(() => {
+    setMobileNav(false);
+  }, [location.pathname, location.search]);
+
+  useEffect(() => {
+    const desktop = window.matchMedia('(min-width: 1024px)');
+    const onChange = () => {
+      if (desktop.matches) setMobileNav(false);
+    };
+    desktop.addEventListener('change', onChange);
+    return () => desktop.removeEventListener('change', onChange);
+  }, []);
+
   const badges = useMemo<Record<string, number>>(
     () => ({
       applicationsPending: stats?.applicationsPending ?? 0,
@@ -96,7 +109,7 @@ export default function AdminLayout() {
     <nav className="flex flex-col gap-6">
       {groups.map((g) => (
         <div key={g.title}>
-          {!collapsed && (
+          {(!collapsed || onNavigate) && (
             <p className="mb-2 px-3 text-[10px] font-medium uppercase tracking-[0.22em] text-muted-foreground/70">
               {g.title}
             </p>
@@ -110,10 +123,10 @@ export default function AdminLayout() {
                   to={it.to}
                   end={it.to === '/admin'}
                   onClick={onNavigate}
-                  title={collapsed ? it.label : undefined}
+                  title={collapsed && !onNavigate ? it.label : undefined}
                   className={({ isActive }) =>
                     cn(
-                      'group relative flex items-center gap-3 rounded-xl px-3 py-2.5 text-[13px] font-medium transition-all duration-300',
+                      'group relative flex min-h-11 items-center gap-3 rounded-xl px-3 py-2.5 text-[13px] font-medium transition-all duration-300 lg:min-h-0',
                       isActive
                         ? 'bg-primary/[0.13] text-primary shadow-[inset_0_1px_0_rgba(255,255,255,.06)]'
                         : 'text-muted-foreground hover:bg-white/[0.055] hover:text-foreground'
@@ -126,8 +139,8 @@ export default function AdminLayout() {
                         <span className="absolute left-0 top-1/2 h-5 w-[2.5px] -translate-y-1/2 rounded-r-full bg-primary" />
                       )}
                       <it.icon className="h-[17px] w-[17px] shrink-0" />
-                      {!collapsed && <span className="truncate">{it.label}</span>}
-                      {!collapsed && !!badge && (
+                      {(!collapsed || onNavigate) && <span className="truncate">{it.label}</span>}
+                      {(!collapsed || onNavigate) && !!badge && (
                         <span className="ml-auto flex h-5 min-w-5 items-center justify-center rounded-full bg-[hsl(var(--warning))]/18 px-1.5 text-[10px] font-semibold text-[hsl(var(--warning))]">
                           {badge}
                         </span>
@@ -144,13 +157,13 @@ export default function AdminLayout() {
   );
 
   return (
-    <div className="relative min-h-dvh pt-[68px]">
+    <div className="relative min-h-dvh pt-[var(--nav-h)]">
       <div className="shell-wide py-6">
         <div className="flex gap-6">
           {/* ---------------- 侧边栏（桌面） ---------------- */}
           <aside
             className={cn(
-              'sticky top-[92px] hidden h-[calc(100dvh-116px)] shrink-0 flex-col transition-all duration-400 ease-[cubic-bezier(.22,1,.36,1)] lg:flex',
+              'sticky top-[calc(var(--nav-h)+24px)] hidden h-[calc(100dvh-var(--nav-h)-48px)] shrink-0 flex-col transition-all duration-400 ease-[cubic-bezier(.22,1,.36,1)] lg:flex',
               collapsed ? 'w-[76px]' : 'w-[248px]'
             )}
           >
@@ -199,7 +212,7 @@ export default function AdminLayout() {
           <div className="min-w-0 flex-1">
             {/* 移动端栏 */}
             <div className="mb-4 flex items-center gap-3 lg:hidden">
-              <Button variant="glass" size="sm" onClick={() => setMobileNav(true)}>
+              <Button variant="glass" size="sm" className="min-h-11" onClick={() => setMobileNav(true)}>
                 <PanelLeftOpen className="h-4 w-4" />
                 菜单
               </Button>
@@ -215,7 +228,7 @@ export default function AdminLayout() {
               <p>
                 科技创新部门户 · 后台管理系统 <span className="mono opacity-70">v3.0.0</span>
               </p>
-              <p className="mono opacity-70">{location.pathname}</p>
+              <p className="mono max-w-full break-all opacity-70">{location.pathname}</p>
             </div>
           </div>
         </div>
@@ -226,28 +239,32 @@ export default function AdminLayout() {
         <div className="fixed inset-0 z-[88] lg:hidden">
           <div className="scrim absolute inset-0 backdrop-blur-md" onClick={() => setMobileNav(false)} />
           <div
-            className="surface-drawer absolute inset-y-0 left-0 flex w-[min(88vw,300px)] flex-col border-r border-white/10 backdrop-blur-2xl"
+            className="surface-drawer absolute left-0 top-0 flex h-dvh w-[min(88vw,300px)] flex-col border-r border-white/10 backdrop-blur-2xl"
             style={{ animation: 'sti-slide-left .32s cubic-bezier(.22,1,.36,1) both' }}
           >
-            <div className="flex items-center justify-between border-b border-white/8 px-5 py-4">
-              <div className="flex items-center gap-2.5">
+            <div className="flex shrink-0 items-center justify-between gap-2 border-b border-white/8 pb-4 pl-[calc(1.25rem+env(safe-area-inset-left,0px))] pr-[calc(1.25rem+env(safe-area-inset-right,0px))] pt-[calc(1rem+env(safe-area-inset-top,0px))]">
+              <div className="flex min-w-0 items-center gap-2.5">
                 <Avatar name={user?.name ?? ''} size={32} />
-                <div>
-                  <p className="text-[13px] font-medium">{user?.name}</p>
-                  <p className="text-[11px] text-primary">{ROLES[user?.role ?? '']}</p>
+                <div className="min-w-0">
+                  <p className="truncate text-[13px] font-medium">{user?.name}</p>
+                  <p className="truncate text-[11px] text-primary">{ROLES[user?.role ?? '']}</p>
                 </div>
               </div>
-              <button onClick={() => setMobileNav(false)} className="rounded-full p-2 text-muted-foreground hover:bg-white/10">
+              <button onClick={() => setMobileNav(false)} className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full text-muted-foreground hover:bg-white/10" aria-label="关闭后台菜单">
                 <ChevronLeft className="h-4 w-4" />
               </button>
             </div>
-            <div className="min-h-0 flex-1 overflow-y-auto p-4">
+            <div className="min-h-0 flex-1 overflow-y-auto overscroll-contain">
+              <div className="flex min-h-full flex-col">
+                <div className="flex-1 py-4 pl-[calc(1rem+env(safe-area-inset-left,0px))] pr-[calc(1rem+env(safe-area-inset-right,0px))]">
               <NavList onNavigate={() => setMobileNav(false)} />
             </div>
-            <div className="border-t border-white/8 p-4">
-              <LinkButton to="/" variant="glass" size="sm" className="w-full">
+            <div className="shrink-0 border-t border-white/8 pb-[calc(1rem+env(safe-area-inset-bottom,0px))] pl-[calc(1rem+env(safe-area-inset-left,0px))] pr-[calc(1rem+env(safe-area-inset-right,0px))] pt-4">
+              <LinkButton to="/" variant="glass" size="sm" className="min-h-11 w-full">
                 <Home className="h-3.5 w-3.5" /> 返回门户
               </LinkButton>
+            </div>
+              </div>
             </div>
           </div>
         </div>

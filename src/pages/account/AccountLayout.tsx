@@ -62,6 +62,15 @@ export default function AccountLayout() {
   }, [location.pathname]);
 
   useEffect(() => {
+    const desktop = window.matchMedia('(min-width: 1024px)');
+    const onChange = () => {
+      if (desktop.matches) setMobileNav(false);
+    };
+    desktop.addEventListener('change', onChange);
+    return () => desktop.removeEventListener('change', onChange);
+  }, []);
+
+  useEffect(() => {
     if (!mobileNav) return;
     const prev = document.body.style.overflow;
     document.body.style.overflow = 'hidden';
@@ -135,7 +144,7 @@ export default function AccountLayout() {
         onClick={onNavigate}
         className={({ isActive }) =>
           cn(
-            'group relative flex items-center gap-3 rounded-xl px-3 py-2.5 text-[13px] font-medium transition-all duration-300',
+            'group relative flex min-h-11 items-center gap-3 rounded-xl px-3 py-2.5 text-[13px] font-medium transition-all duration-300 lg:min-h-0',
             isActive
               ? 'bg-primary/[0.13] text-primary shadow-[inset_0_1px_0_rgba(255,255,255,.06)]'
               : 'text-muted-foreground hover:bg-white/[0.055] hover:text-foreground'
@@ -165,11 +174,11 @@ export default function AccountLayout() {
   );
 
   return (
-    <div className="relative min-h-dvh pt-[68px]">
+    <div className="relative min-h-dvh pt-[var(--nav-h)]">
       <div className="shell-wide py-6 pb-24">
         <div className="flex gap-6">
           {/* ---------------------------- 桌面侧栏 ---------------------------- */}
-          <aside className="sticky top-[92px] hidden h-[calc(100dvh-116px)] w-[264px] shrink-0 flex-col lg:flex">
+          <aside className="sticky top-[calc(var(--nav-h)+24px)] hidden h-[calc(100dvh-var(--nav-h)-48px)] w-[264px] shrink-0 flex-col lg:flex">
             <Glass tone="soft" className="flex min-h-0 flex-1 flex-col p-3.5">
               <IdentityCard />
 
@@ -218,7 +227,7 @@ export default function AccountLayout() {
                   <button
                     type="button"
                     onClick={() => setMobileNav(true)}
-                    className="rounded-full border border-white/10 bg-white/[0.05] p-2.5 text-muted-foreground transition hover:text-foreground"
+                    className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full border border-white/10 bg-white/[0.05] text-muted-foreground transition hover:text-foreground"
                     aria-label="打开用户中心菜单"
                   >
                     <PanelLeftOpen className="h-4 w-4" />
@@ -233,7 +242,7 @@ export default function AccountLayout() {
                       end={it.end}
                       className={({ isActive }) =>
                         cn(
-                          'flex shrink-0 items-center gap-1.5 rounded-full border px-3.5 py-1.5 text-xs font-medium transition-all duration-300',
+                          'flex min-h-11 shrink-0 items-center gap-1.5 rounded-full border px-3.5 py-1.5 text-xs font-medium transition-all duration-300',
                           isActive
                             ? 'border-primary/40 bg-primary/12 text-primary'
                             : 'border-white/10 bg-white/[0.04] text-muted-foreground'
@@ -259,7 +268,7 @@ export default function AccountLayout() {
               <p>
                 科技创新部门户 · 用户中心 <span className="mono opacity-70">v3.0.0</span>
               </p>
-              <p className="mono opacity-70">{location.pathname}</p>
+              <p className="mono max-w-full break-all opacity-70">{location.pathname}</p>
             </div>
           </div>
         </div>
@@ -270,11 +279,11 @@ export default function AccountLayout() {
         <div className="fixed inset-0 z-[88] lg:hidden">
           <div className="scrim absolute inset-0 backdrop-blur-md" onClick={() => setMobileNav(false)} />
           <div
-            className="surface-drawer absolute inset-y-0 left-0 flex w-[min(88vw,304px)] flex-col border-r border-white/10 backdrop-blur-2xl"
+            className="surface-drawer absolute left-0 top-0 flex h-dvh w-[min(88vw,304px)] flex-col border-r border-white/10 backdrop-blur-2xl"
             style={{ animation: 'sti-slide-left .32s cubic-bezier(.22,1,.36,1) both' }}
           >
-            <div className="flex items-center justify-between border-b border-white/8 px-5 py-4">
-              <div className="flex items-center gap-2.5">
+            <div className="flex shrink-0 items-center justify-between gap-2 border-b border-white/8 pb-4 pl-[calc(1.25rem+env(safe-area-inset-left,0px))] pr-[calc(1.25rem+env(safe-area-inset-right,0px))] pt-[calc(1rem+env(safe-area-inset-top,0px))]">
+              <div className="flex min-w-0 items-center gap-2.5">
                 <Avatar name={user?.name ?? ''} src={user?.avatar} size={32} />
                 <div className="min-w-0">
                   <p className="truncate text-[13px] font-medium">{user?.name}</p>
@@ -284,26 +293,30 @@ export default function AccountLayout() {
               <button
                 type="button"
                 onClick={() => setMobileNav(false)}
-                className="rounded-full px-3 py-1.5 text-[11px] text-muted-foreground transition hover:bg-white/10"
+                className="flex min-h-11 min-w-11 shrink-0 items-center justify-center rounded-full px-3 text-[11px] text-muted-foreground transition hover:bg-white/10"
               >
                 关闭
               </button>
             </div>
 
-            <div className="min-h-0 flex-1 overflow-y-auto p-4">
+            <div className="min-h-0 flex-1 overflow-y-auto overscroll-contain">
+              <div className="flex min-h-full flex-col">
+                <div className="flex-1 py-4 pl-[calc(1rem+env(safe-area-inset-left,0px))] pr-[calc(1rem+env(safe-area-inset-right,0px))]">
               <IdentityCard compact />
               <div className="mt-4">
                 <NavList onNavigate={() => setMobileNav(false)} />
               </div>
             </div>
 
-            <div className="flex gap-2 border-t border-white/8 p-4">
-              <LinkButton to="/" variant="glass" size="sm" className="flex-1">
+            <div className="flex shrink-0 flex-wrap gap-2 border-t border-white/8 pb-[calc(1rem+env(safe-area-inset-bottom,0px))] pl-[calc(1rem+env(safe-area-inset-left,0px))] pr-[calc(1rem+env(safe-area-inset-right,0px))] pt-4">
+              <LinkButton to="/" variant="glass" size="sm" className="min-h-11 flex-1">
                 <Home className="h-3.5 w-3.5" /> 返回门户
               </LinkButton>
-              <Button variant="danger" size="sm" onClick={onLogout} loading={loggingOut} className="flex-1">
+              <Button variant="danger" size="sm" onClick={onLogout} loading={loggingOut} className="min-h-11 flex-1">
                 <LogOut className="h-3.5 w-3.5" /> 退出登录
               </Button>
+            </div>
+              </div>
             </div>
           </div>
         </div>

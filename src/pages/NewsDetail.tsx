@@ -207,7 +207,7 @@ export default function NewsDetail() {
               </div>
             )}
 
-            <Glass tone="soft" className="p-6 sm:p-9" data-reveal>
+            <Glass tone="soft" className="p-4 sm:p-9" data-reveal>
               {html ? (
                 <div className="prose-glass" dangerouslySetInnerHTML={{ __html: html }} />
               ) : (
@@ -217,8 +217,8 @@ export default function NewsDetail() {
 
             {/* 附件 */}
             {attachments.length > 0 && (
-              <Glass tone="soft" className="mt-6 p-6" data-reveal>
-                <div className="flex items-center gap-2.5">
+              <Glass tone="soft" className="mt-6 p-4 sm:p-6" data-reveal>
+                <div className="flex flex-wrap items-center gap-2.5">
                   <Paperclip className="h-4 w-4 text-primary" />
                   <h2 className="text-[15px] font-semibold">附件下载</h2>
                   <span className="mono ml-auto text-[11px] text-muted-foreground">{attachments.length} 个文件</span>
@@ -230,16 +230,16 @@ export default function NewsDetail() {
                       href={f.url}
                       target="_blank"
                       rel="noreferrer noopener"
-                      className="group flex items-center gap-3.5 rounded-2xl border border-white/10 bg-white/[0.035] px-4 py-3 transition-all duration-300 hover:border-primary/35 hover:bg-primary/8"
+                      className="group flex min-w-0 items-center gap-2 rounded-2xl border border-white/10 bg-white/[0.035] px-3 py-3 transition-all duration-300 hover:border-primary/35 hover:bg-primary/8 sm:gap-3.5 sm:px-4"
                     >
-                      <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl border border-white/12 bg-white/[0.055] text-primary">
+                      <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-xl border border-white/12 bg-white/[0.055] text-primary sm:h-9 sm:w-9">
                         <FileText className="h-4 w-4" />
                       </span>
                       <span className="min-w-0 flex-1">
                         <span className="clamp-1 block text-[13.5px] font-medium text-foreground/90">{f.name}</span>
                         <span className="mono mt-0.5 block text-[11px] text-muted-foreground">{fbytes(f.size)}</span>
                       </span>
-                      <span className="inline-flex shrink-0 items-center gap-1.5 rounded-full border border-white/12 bg-white/[0.05] px-3.5 py-1.5 text-[11.5px] font-medium transition-all duration-300 group-hover:border-primary/40 group-hover:text-primary">
+                      <span className="inline-flex shrink-0 items-center gap-1.5 rounded-full border border-white/12 bg-white/[0.05] px-2.5 py-1.5 text-[11.5px] font-medium transition-all duration-300 group-hover:border-primary/40 group-hover:text-primary sm:px-3.5">
                         <Download className="h-3 w-3" />
                         下载
                       </span>
@@ -284,7 +284,7 @@ export default function NewsDetail() {
             )}
 
             <div className="mt-8" data-reveal>
-              <LinkButton to="/news">
+              <LinkButton to="/news" className="w-full sm:w-auto">
                 <ArrowLeft className="h-4 w-4" />
                 返回新闻列表
               </LinkButton>
@@ -366,7 +366,7 @@ export default function NewsDetail() {
         {/* ============================ 相关阅读 ============================ */}
         {related.length > 0 && (
           <section className="mt-20">
-            <div className="mb-6 flex items-end justify-between gap-4" data-reveal>
+            <div className="mb-6 flex flex-wrap items-end justify-between gap-4" data-reveal>
               <div>
                 <div className="eyebrow mb-3">Related</div>
                 <h2 className="text-2xl font-semibold">相关阅读</h2>

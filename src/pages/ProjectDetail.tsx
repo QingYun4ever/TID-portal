@@ -125,23 +125,23 @@ export default function ProjectDetail() {
             <CalendarDays className="h-3.5 w-3.5" />
             {project.year} 年
           </span>
-          <span className="flex items-center gap-2 text-[11.5px] text-muted-foreground">
-            <Users className="h-3.5 w-3.5" />
-            {project.team || '未命名团队'}
+          <span className="flex min-w-0 max-w-full flex-wrap items-center gap-2 text-[11.5px] text-muted-foreground">
+            <Users className="h-3.5 w-3.5 shrink-0" />
+            <span className="min-w-0 break-words">{project.team || '未命名团队'}</span>
             {members.length > 0 && <span className="mono">· {members.length + 1} 人</span>}
           </span>
           {project.advisor && (
-            <span className="flex items-center gap-2 text-[11.5px] text-muted-foreground">
-              <Building2 className="h-3.5 w-3.5" />
-              指导老师 {project.advisor}
+            <span className="flex min-w-0 max-w-full items-center gap-2 text-[11.5px] text-muted-foreground">
+              <Building2 className="h-3.5 w-3.5 shrink-0" />
+              <span className="min-w-0 break-words">指导老师 {project.advisor}</span>
             </span>
           )}
         </div>
 
         {project.awards && (
-          <div className="mt-5 inline-flex items-center gap-3 rounded-2xl border border-[hsl(var(--warning))]/30 bg-[hsl(var(--warning))]/10 px-4 py-2.5">
+          <div className="mt-5 inline-flex max-w-full items-center gap-3 rounded-2xl border border-[hsl(var(--warning))]/30 bg-[hsl(var(--warning))]/10 px-4 py-2.5">
             <Trophy className="h-4 w-4 shrink-0 text-[hsl(var(--warning))]" />
-            <span className="text-[12.5px] font-medium text-foreground/90">{project.awards}</span>
+            <span className="min-w-0 break-words text-[12.5px] font-medium text-foreground/90">{project.awards}</span>
           </div>
         )}
 
@@ -154,7 +154,7 @@ export default function ProjectDetail() {
           </div>
         )}
         {demoUrl && (
-          <a href={demoUrl} target="_blank" rel="noopener noreferrer" className="mt-6 inline-flex items-center gap-2 rounded-full border border-primary/40 bg-primary/15 px-5 py-3 text-sm font-medium text-primary transition-colors hover:bg-primary/25">
+          <a href={demoUrl} target="_blank" rel="noopener noreferrer" className="mt-6 inline-flex w-full items-center justify-center gap-2 rounded-full border border-primary/40 bg-primary/15 px-5 py-3 text-sm font-medium text-primary transition-colors hover:bg-primary/25 sm:w-auto">
             访问项目 <ArrowUpRight className="h-4 w-4" />
           </a>
         )}
@@ -194,7 +194,7 @@ export default function ProjectDetail() {
             )}
 
             {/* 正文 */}
-            <Glass tone="soft" className="p-6 sm:p-8" data-reveal="blur">
+            <Glass tone="soft" className="p-4 sm:p-8" data-reveal="blur">
               <h2 className="mb-6 flex items-center gap-2.5 text-[17px] font-semibold">
                 <FileText className="h-4 w-4 text-primary" />
                 项目介绍
@@ -209,7 +209,7 @@ export default function ProjectDetail() {
             </Glass>
 
             {/* 团队成员 */}
-            <Glass tone="soft" className="p-6 sm:p-8" data-reveal>
+            <Glass tone="soft" className="p-4 sm:p-8" data-reveal>
               <h2 className="mb-5 flex items-center gap-2.5 text-[15px] font-semibold">
                 <Users className="h-4 w-4 text-primary" />
                 项目团队
@@ -219,11 +219,11 @@ export default function ProjectDetail() {
                   members.map((m) => (
                     <div
                       key={m}
-                      className="flex items-center gap-3 rounded-2xl border border-white/8 bg-white/[0.03] px-3.5 py-2.5"
+                      className="flex min-w-0 max-w-full items-center gap-3 rounded-2xl border border-white/8 bg-white/[0.03] px-3.5 py-2.5"
                     >
                       <Avatar name={m} size={30} />
-                      <div>
-                        <p className="text-[12.5px] font-medium">{m}</p>
+                      <div className="min-w-0">
+                        <p className="break-words text-[12.5px] font-medium">{m}</p>
                         <p className="text-[10.5px] text-muted-foreground">团队成员</p>
                       </div>
                     </div>
@@ -232,9 +232,9 @@ export default function ProjectDetail() {
                   <p className="text-[13px] text-muted-foreground">该项目未公开成员名单。</p>
                 )}
               </div>
-              <p className="mt-5 flex items-center gap-2 text-[11.5px] text-muted-foreground">
-                <Building2 className="h-3.5 w-3.5" />
-                指导老师：<span className="text-foreground/85">{project.advisor || '未填写'}</span>
+              <p className="mt-5 flex flex-wrap items-center gap-2 text-[11.5px] text-muted-foreground">
+                <Building2 className="h-3.5 w-3.5 shrink-0" />
+                指导老师：<span className="min-w-0 break-words text-foreground/85">{project.advisor || '未填写'}</span>
               </p>
             </Glass>
           </div>
@@ -333,7 +333,7 @@ function InfoRow({ icon, label, children }: { icon: React.ReactNode; label: stri
       </span>
       <div className="min-w-0 flex-1">
         <dt className="text-[11px] tracking-wide text-muted-foreground">{label}</dt>
-        <dd className="mt-1 text-[13px] leading-relaxed text-foreground/90">{children}</dd>
+        <dd className="mt-1 break-words text-[13px] leading-relaxed text-foreground/90">{children}</dd>
       </div>
     </div>
   );

@@ -463,7 +463,7 @@ export function Modal({
   if (!present) return null;
   const widths = { sm: 'max-w-md', md: 'max-w-xl', lg: 'max-w-3xl', xl: 'max-w-5xl', full: 'max-w-[96vw]' };
   return createPortal(
-    <div className="fixed inset-0 z-[90] flex items-center justify-center p-4 sm:p-6" inert={!open}>
+    <div className="fixed inset-0 z-[90] flex items-center justify-center p-3 sm:p-6 [padding-top:max(0.75rem,env(safe-area-inset-top))] [padding-bottom:max(0.75rem,env(safe-area-inset-bottom))] [padding-left:max(0.75rem,env(safe-area-inset-left))] [padding-right:max(0.75rem,env(safe-area-inset-right))]" inert={!open}>
       <div
         className="motion-backdrop scrim absolute inset-0 backdrop-blur-md"
         data-motion-open={active}
@@ -472,29 +472,29 @@ export function Modal({
       <Glass
         tone="strong"
         className={cn(
-          'motion-modal relative z-10 flex max-h-[88dvh] w-full flex-col',
+          'motion-modal relative z-10 flex max-h-[calc(100dvh-1.5rem-env(safe-area-inset-top)-env(safe-area-inset-bottom))] w-full flex-col sm:max-h-[88dvh]',
           widths[size],
           className
         )}
         data-motion-open={active}
       >
         {(content.title || content.description) && (
-          <div className="flex items-start justify-between gap-4 border-b border-white/8 px-6 py-5">
+          <div className="flex shrink-0 items-start justify-between gap-3 border-b border-white/8 px-4 py-4 sm:gap-4 sm:px-6 sm:py-5">
             <div className="min-w-0">
               {content.title && <h3 className="text-lg font-semibold text-foreground">{content.title}</h3>}
               {content.description && <p className="mt-1 text-sm text-muted-foreground">{content.description}</p>}
             </div>
             <button
               onClick={onClose}
-              className="-mr-1 -mt-1 rounded-full p-2 text-muted-foreground transition hover:bg-white/10 hover:text-foreground"
+              className="-mr-1 -mt-1 flex h-11 w-11 shrink-0 items-center justify-center rounded-full text-muted-foreground transition hover:bg-white/10 hover:text-foreground sm:h-8 sm:w-8"
               aria-label="关闭"
             >
               <X className="h-4 w-4" />
             </button>
           </div>
         )}
-        <div className="min-h-0 flex-1 overflow-y-auto px-6 py-5">{content.children}</div>
-        {content.footer && <div className="flex flex-wrap items-center justify-end gap-3 border-t border-white/8 px-6 py-4">{content.footer}</div>}
+        <div className="min-h-0 flex-1 overflow-y-auto overscroll-contain px-4 py-4 sm:px-6 sm:py-5">{content.children}</div>
+        {content.footer && <div className="flex shrink-0 flex-wrap items-center justify-end gap-2 border-t border-white/8 px-4 py-3 sm:gap-3 sm:px-6 sm:py-4">{content.footer}</div>}
       </Glass>
     </div>,
     document.body
@@ -576,25 +576,25 @@ export function Drawer({
       <div className="motion-backdrop scrim absolute inset-0 backdrop-blur-md" data-motion-open={active} onClick={onClose} />
       <div
         className={cn(
-          'motion-drawer surface-drawer relative z-10 ml-auto flex h-full w-full flex-col border-l border-white/10 backdrop-blur-2xl',
+          'motion-drawer surface-drawer relative z-10 ml-auto flex h-dvh w-full flex-col border-l border-white/10 pt-[env(safe-area-inset-top)] pb-[env(safe-area-inset-bottom)] pl-[env(safe-area-inset-left)] pr-[env(safe-area-inset-right)] backdrop-blur-2xl',
           width,
           side === 'left' && 'mr-auto ml-0 border-l-0 border-r'
         )}
         data-motion-open={active}
         data-side={side}
       >
-        <div className="flex items-center justify-between gap-4 border-b border-white/8 px-6 py-5">
+        <div className="flex shrink-0 items-center justify-between gap-3 border-b border-white/8 px-4 py-4 sm:gap-4 sm:px-6 sm:py-5">
           <div className="min-w-0 text-base font-semibold">{content.title}</div>
           <button
             onClick={onClose}
-            className="rounded-full p-2 text-muted-foreground transition hover:bg-white/10 hover:text-foreground"
+            className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full text-muted-foreground transition hover:bg-white/10 hover:text-foreground sm:h-8 sm:w-8"
             aria-label="关闭"
           >
             <X className="h-4 w-4" />
           </button>
         </div>
-        <div className="min-h-0 flex-1 overflow-y-auto px-6 py-5">{content.children}</div>
-        {content.footer && <div className="border-t border-white/8 px-6 py-4">{content.footer}</div>}
+        <div className="min-h-0 flex-1 overflow-y-auto overscroll-contain px-4 py-4 sm:px-6 sm:py-5">{content.children}</div>
+        {content.footer && <div className="shrink-0 border-t border-white/8 px-4 py-3 sm:px-6 sm:py-4">{content.footer}</div>}
       </div>
     </div>,
     document.body
@@ -627,10 +627,8 @@ export function Section({
   container?: 'shell' | 'wide' | 'none';
   /**
    * 「一屏一块」模式（首页用，默认关闭）。
-   * 注意这里给的是 min-h 而不是 h：分区至少占到视口的 68%，内容更高就自然撑开。
-   * 不再用 min-h-dvh —— 一旦某一屏的内容装不满一整屏（比如画廊只有一张图、
-   * 组织架构数据为空），justify-center 就会在上下各留半屏空白，
-   * 相邻两屏叠起来就是一整屏什么都没有的「大段空白」。
+   * 移动端跟随内容自然撑开；桌面分区至少占到视口的 68%。
+   * 内容更高时仍自然增长，不用固定高度裁剪内容或制造大段空白。
    */
   screen?: boolean;
 }) {
@@ -640,7 +638,7 @@ export function Section({
       id={id}
       className={cn(
         'relative scroll-mt-24',
-        screen ? 'flex min-h-[68dvh] flex-col justify-center py-16 sm:py-20' : 'section-pad',
+        screen ? 'flex flex-col py-12 sm:py-16 lg:min-h-[68dvh] lg:justify-center lg:py-20' : 'section-pad',
         className
       )}
     >
@@ -911,7 +909,7 @@ export function Pagination({
   }
 
   return (
-    <div className={cn('flex items-center justify-center gap-2', className)}>
+    <div className={cn('flex max-w-full flex-wrap items-center justify-center gap-1.5 sm:gap-2', className)}>
       <Button size="icon-sm" variant="ghost" disabled={page <= 1} onClick={() => onChange(page - 1)} aria-label="上一页">
         <ChevronLeft className="h-4 w-4" />
       </Button>
@@ -925,7 +923,7 @@ export function Pagination({
             key={n}
             onClick={() => onChange(n)}
             className={cn(
-              'h-8 min-w-8 rounded-full px-2.5 text-xs font-medium transition-all duration-300',
+              'h-8 min-w-8 rounded-full px-2.5 text-xs font-medium tabular-nums transition-all duration-300',
               n === page
                 ? 'bg-primary/90 text-[hsl(var(--primary-foreground))] shadow-[0_0_18px_-4px_hsl(var(--primary)/.7)]'
                 : 'text-muted-foreground hover:bg-white/8 hover:text-foreground'
@@ -1192,7 +1190,7 @@ export function Countdown({ target, className }: { target: string | null | undef
  * ========================================================================== */
 export function TableWrap({ children, className }: { children: React.ReactNode; className?: string }) {
   return (
-    <div className={cn('relative w-full overflow-x-auto rounded-2xl border border-white/8', className)}>{children}</div>
+    <div className={cn('relative min-w-0 max-w-full w-full overflow-x-auto overscroll-x-contain rounded-2xl border border-white/8', className)}>{children}</div>
   );
 }
 
@@ -1231,7 +1229,7 @@ export function ToastViewport() {
     warning: 'border-[hsl(var(--warning))]/40 text-[hsl(var(--warning))]',
   };
   return createPortal(
-    <div className="pointer-events-none fixed bottom-6 right-6 z-[120] flex w-[min(92vw,360px)] flex-col gap-2.5">
+    <div className="pointer-events-none fixed bottom-[max(1rem,env(safe-area-inset-bottom))] right-[max(1rem,env(safe-area-inset-right))] left-[max(1rem,env(safe-area-inset-left))] z-[120] flex flex-col gap-2.5 sm:bottom-[max(1.5rem,env(safe-area-inset-bottom))] sm:right-[max(1.5rem,env(safe-area-inset-right))] sm:left-auto sm:w-[min(92vw,360px)]">
       {toasts.map((t) => (
         <Glass
           key={t.id}

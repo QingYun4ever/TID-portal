@@ -194,7 +194,7 @@ function SectionRail({ sections, active }: { sections: { id: string; label: stri
  * ========================================================================== */
 function Hero({ settings }: { settings: Record<string, string> }) {
   return (
-    <section id="hero" className="relative flex min-h-dvh flex-col items-center justify-center overflow-hidden px-5 pb-10 pt-20">
+    <section id="hero" className="relative flex min-h-svh flex-col items-center justify-center overflow-hidden pb-8 pl-[max(1.25rem,env(safe-area-inset-left,0px))] pr-[max(1.25rem,env(safe-area-inset-right,0px))] pt-[calc(var(--nav-h)+1.5rem)] lg:min-h-dvh lg:pb-10 lg:pt-20">
       <div aria-hidden className="pointer-events-none absolute inset-0">
         <GridTexture className="opacity-70" size={64} />
         <GlowOrb className="left-1/2 top-[14%] -translate-x-1/2" size={780} color="rgba(186,230,253,.12)" />
@@ -218,40 +218,40 @@ function Hero({ settings }: { settings: Record<string, string> }) {
                 'radial-gradient(circle, rgba(186,230,253,.19) 0%, rgba(186,230,253,.10) 30%, rgba(186,230,253,.03) 52%, transparent 72%)',
             }}
           />
-          <LogoMark uid="hero" animated spin spinDuration={28} className="relative h-[172px] w-[172px] sm:h-[214px] sm:w-[214px]" />
+          <LogoMark uid="hero" animated spin spinDuration={28} className="relative h-36 w-36 sm:h-[214px] sm:w-[214px]" />
         </div>
 
         <h1
-          className="st-rise text-balance text-[2.3rem] font-bold leading-[1.06] tracking-tight sm:text-5xl lg:text-6xl"
+          className="st-rise text-balance text-[2.1rem] font-bold leading-[1.06] tracking-tight sm:text-5xl lg:text-6xl"
           style={rise(70)}
         >
           <span className="aurora-text">科技创新部</span>
         </h1>
         <p
-          className="mono st-rise mt-4 text-xs font-medium uppercase text-muted-foreground sm:text-sm"
-          style={{ letterSpacing: '0.34em', ...rise(140) }}
+          className="mono st-rise mt-4 max-w-full text-balance text-xs font-medium uppercase leading-relaxed tracking-[0.14em] text-muted-foreground sm:text-sm sm:leading-normal sm:tracking-[0.34em]"
+          style={rise(140)}
         >
           TECHNOLOGY &amp; INNOVATION DEPARTMENT
         </p>
 
         {/* 标语两侧的规则线各带一道极淡流光 —— 首屏唯一的常驻动效 */}
-        <div className="st-rise mt-5 flex items-center gap-4" style={rise(210)}>
+        <div className="st-rise mt-5 flex max-w-full items-center gap-4" style={rise(210)}>
           <span aria-hidden className="hidden w-14 sm:block">
             <span className="st-rule st-draw block" style={rise(560)} />
           </span>
-          <p className="text-lg font-light text-foreground/80">{settings.slogan || '以技术为舟，以创新为帆'}</p>
+          <p className="min-w-0 break-words text-base font-light text-foreground/80 sm:text-lg">{settings.slogan || '以技术为舟，以创新为帆'}</p>
           {/* 镜像放在外层，避免和 .st-draw 的 transform 打架 */}
           <span aria-hidden className="hidden w-14 -scale-x-100 sm:block">
             <span className="st-rule st-draw block" style={rise(560)} />
           </span>
         </div>
 
-        <div className="st-rise mt-7 flex flex-wrap items-center justify-center gap-3" style={rise(280)}>
-          <LinkButton to="/projects" variant="primary" size="lg">
+        <div className="st-rise mt-7 flex w-full flex-col items-center justify-center gap-3 sm:flex-row sm:flex-wrap" style={rise(280)}>
+          <LinkButton to="/projects" variant="primary" size="lg" className="w-full sm:w-auto">
             <Rocket className="h-4 w-4" />
             浏览科技作品
           </LinkButton>
-          <LinkButton to="/activities" variant="glass" size="lg">
+          <LinkButton to="/activities" variant="glass" size="lg" className="w-full sm:w-auto">
             <CalendarDays className="h-4 w-4" />
             活动报名
           </LinkButton>
@@ -260,7 +260,7 @@ function Hero({ settings }: { settings: Record<string, string> }) {
       {/* 下滑提示 */}
       <div
         aria-hidden
-        className="st-rise absolute bottom-7 left-1/2 flex -translate-x-1/2 flex-col items-center gap-2.5"
+        className="st-rise relative mt-8 flex shrink-0 flex-col items-center gap-2.5 lg:absolute lg:bottom-7 lg:left-1/2 lg:mt-0 lg:-translate-x-1/2"
         style={rise(900)}
       >
         <span className="mono text-xs tracking-[0.3em] text-muted-foreground">SCROLL</span>
@@ -700,7 +700,7 @@ function ProjectCompetition({
                   <ProjectCard project={hero} size="sm" />
                 </div>
               )}
-              <div className="grid grid-cols-2 gap-3.5">
+              <div className="grid gap-3.5 sm:grid-cols-2">
                 {rest.map((p, i) => (
                   <div key={p.id} data-reveal="scale" style={stagger(i)}>
                     <ProjectCard project={p} size="sm" />
@@ -1000,7 +1000,7 @@ function OrgMembers({ members, loading, dens }: { members: any[]; loading: boole
           </div>
 
           {/* 横排卡片：头像在左、姓名职务在右 —— 比居中竖排更好扫，一行也能多塞一个 */}
-          <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 2xl:grid-cols-4">
+          <div className="grid gap-3 min-[400px]:grid-cols-2 sm:grid-cols-3 2xl:grid-cols-4">
             {loading
               ? Array.from({ length: memberCount }).map((_, i) => <Skeleton key={i} className="h-[66px]" />)
               : members.slice(0, memberCount).map((m: any, i: number) => (
@@ -1033,7 +1033,7 @@ function OrgMembers({ members, loading, dens }: { members: any[]; loading: boole
 function JoinBlock({ stats }: { stats: { projects?: number; activities?: number; competitions?: number; galleryImages?: number } }) {
   return (
     <Screen id="join" container="shell">
-      <Glass tone="strong" className="relative overflow-hidden p-8 sm:p-12 lg:p-14" data-reveal="scale">
+      <Glass tone="strong" className="relative overflow-hidden p-5 sm:p-12 lg:p-14" data-reveal="scale">
         {/* 尾屏留一对错相位的呼吸光晕 —— 14s 一次、只动 opacity/scale，纯合成 */}
         <GlowOrb className="st-breathe -left-24 -top-24" size={520} color="rgba(186,230,253,.11)" />
         <GlowOrb className="st-breathe -bottom-32 -right-20" size={480} color="rgb(var(--orb) / .06)" style={{ animationDelay: '-7s' }} />
@@ -1047,10 +1047,10 @@ function JoinBlock({ stats }: { stats: { projects?: number; activities?: number;
               查看科技创新部录取名单，了解最新录取信息。
             </p>
             <div className="mt-7 flex flex-wrap items-center gap-3.5">
-              <LinkButton to="/join" variant="primary" size="lg">
+              <LinkButton to="/join" variant="primary" size="lg" className="w-full sm:w-auto">
                 查看录取名单 <ArrowRight className="h-4 w-4" />
               </LinkButton>
-              <LinkButton to="/feedback" variant="glass" size="lg">
+              <LinkButton to="/feedback" variant="glass" size="lg" className="w-full sm:w-auto">
                 <MessageSquare className="h-4 w-4" />
                 有问题想问
               </LinkButton>
@@ -1064,7 +1064,7 @@ function JoinBlock({ stats }: { stats: { projects?: number; activities?: number;
               { k: '竞赛信息', v: stats.competitions ?? 0, icon: Trophy },
               { k: '画廊影像', v: stats.galleryImages ?? 0, icon: Eye },
             ].map((it) => (
-              <Glass key={it.k} tone="thin" hover refract={false} className="home-float flex flex-col items-center p-5 text-center">
+              <Glass key={it.k} tone="thin" hover refract={false} className="home-float flex min-w-0 flex-col items-center p-3 text-center sm:p-5">
                 <it.icon className="h-4 w-4 text-primary/80" />
                 <span className="mono mt-3 text-2xl font-semibold text-foreground">{fnum(it.v)}</span>
                 <span className="mt-1 text-sm text-muted-foreground">{it.k}</span>

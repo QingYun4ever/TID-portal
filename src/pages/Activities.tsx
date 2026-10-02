@@ -119,7 +119,7 @@ export default function Activities() {
               size="sm"
               className="w-full lg:w-auto"
             />
-            <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
+            <div className="flex min-w-0 flex-col gap-3 sm:flex-row sm:flex-wrap sm:items-center">
               <SearchInput
                 value={q}
                 onChange={setQ}
@@ -223,19 +223,19 @@ export default function Activities() {
         )}
 
         {/* ---------------------------- 底部引导 ---------------------------- */}
-        <Glass tone="soft" className="mt-12 flex flex-wrap items-center justify-between gap-4 p-6" data-reveal="blur">
-          <div className="flex items-center gap-4">
-            <span className="flex h-11 w-11 items-center justify-center rounded-2xl border border-white/12 bg-white/[0.06] text-primary">
+        <Glass tone="soft" className="mt-12 flex flex-wrap items-center justify-between gap-4 p-4 sm:p-6" data-reveal="blur">
+          <div className="flex min-w-0 items-center gap-4">
+            <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl border border-white/12 bg-white/[0.06] text-primary">
               <CalendarRange className="h-5 w-5" />
             </span>
-            <div>
+            <div className="min-w-0">
               <p className="text-[14px] font-medium">想了解后续活动？</p>
               <p className="mt-1 text-[12.5px] text-muted-foreground">竞赛信息与活动报名入口同样在门户开放。</p>
             </div>
           </div>
-          <div className="flex flex-wrap gap-3">
-            <LinkButton to="/competitions">浏览竞赛信息</LinkButton>
-            <LinkButton to="/projects/apply" variant="primary">
+          <div className="flex w-full flex-col gap-3 sm:w-auto sm:flex-row sm:flex-wrap">
+            <LinkButton to="/competitions" className="w-full sm:w-auto">浏览竞赛信息</LinkButton>
+            <LinkButton to="/projects/apply" variant="primary" className="w-full sm:w-auto">
               项目在线申报
             </LinkButton>
           </div>
@@ -292,7 +292,7 @@ function CalendarView() {
 
   return (
     <div className="mt-8">
-      <Glass tone="soft" className="p-5 sm:p-6" data-reveal>
+      <Glass tone="soft" className="p-3 sm:p-6" data-reveal>
         <div className="mb-5 flex flex-wrap items-center justify-between gap-3">
           <div className="flex items-center gap-2">
             <Button size="icon-sm" variant="ghost" onClick={() => shift(-1)} aria-label="上个月">
@@ -431,7 +431,7 @@ function CalendarMonth({ year, month }: { year: number; month: number }) {
               onClick={() => setSelected(key)}
               aria-pressed={isActive}
               className={cn(
-                'group relative flex min-h-[74px] flex-col items-start gap-1.5 rounded-2xl border p-2 text-left transition-all duration-300 sm:min-h-[92px] sm:p-2.5',
+                'group relative flex min-h-[74px] min-w-0 flex-col items-start gap-1.5 rounded-xl border p-1.5 text-left transition-all duration-300 sm:min-h-[92px] sm:rounded-2xl sm:p-2.5',
                 isActive
                   ? 'border-primary/50 bg-primary/12 shadow-[0_0_22px_-12px_hsl(var(--primary)/.85)]'
                   : 'border-white/8 bg-white/[0.025] hover:border-white/20 hover:bg-white/[0.05]'
