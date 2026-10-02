@@ -291,8 +291,8 @@ export function ActivityCard({ activity, className }: { activity: any; className
 /* =============================================================================
  * 项目卡片
  * ========================================================================== */
-export function projectDemoUrl(project: { category?: string; demoUrl?: string | null }): string | null {
-  if (project.category !== 'frontend' && project.category !== 'service' || !project.demoUrl) return null;
+export function projectDemoUrl(project: { demoUrl?: string | null }): string | null {
+  if (!project.demoUrl) return null;
   try {
     const url = new URL(project.demoUrl);
     return url.protocol === 'https:' || url.protocol === 'http:' ? url.href : null;
@@ -314,8 +314,9 @@ export function ProjectCard({
   const cat = PROJECT_CATEGORIES[project.category] ?? project.category;
   const demoUrl = projectDemoUrl(project);
   const modelUrl = project.modelUrl?.startsWith('/models/') && project.modelUrl.endsWith('.obj') ? project.modelUrl : null;
+  const canOpen = Boolean(demoUrl || modelUrl || project.content?.trim());
   const featured = size === 'lg';
-  const media = (
+  const media = project.cover || modelUrl ? (
     <div className={cn('card-media aspect-[16/10] shrink-0', featured && 'md:aspect-auto md:min-h-[260px] md:w-[46%]')}>
       {project.cover ? (
         <img src={project.cover} alt="" loading="lazy" />
@@ -328,13 +329,13 @@ export function ProjectCard({
       <span className="absolute left-3 top-3 z-10 rounded-full border border-white/20 bg-black/45 px-3 py-1 text-[10px] font-medium tracking-[0.12em] text-white backdrop-blur-md">
         {cat}
       </span>
-      <span className="absolute right-3 top-3 z-10 flex h-8 w-8 items-center justify-center rounded-full border border-white/20 bg-black/45 text-white backdrop-blur-md transition-colors group-hover:border-primary/60 group-hover:bg-primary/30">
+      {canOpen && <span className="absolute right-3 top-3 z-10 flex h-8 w-8 items-center justify-center rounded-full border border-white/20 bg-black/45 text-white backdrop-blur-md transition-colors group-hover:border-primary/60 group-hover:bg-primary/30">
         {demoUrl ? <ArrowUpRight className="h-4 w-4" /> : modelUrl ? <Box className="h-4 w-4" /> : <ArrowRight className="h-4 w-4" />}
-      </span>
+      </span>}
       <span aria-hidden className="card-scrim" />
       <span className="card-cap mono absolute bottom-3 left-3 text-[11px] tracking-[0.16em]">{project.year} / {modelUrl ? '3D OBJECT' : project.category === 'frontend' ? 'DIGITAL' : project.category === 'service' ? 'SERVICE' : 'INNOVATION'}</span>
     </div>
-  );
+  ) : null;
   const card = (
     <div className={cn('card h-full', featured && 'md:flex-row')}>
       {media}
@@ -351,9 +352,9 @@ export function ProjectCard({
         </p>
         <CardFoot className="mt-4">
           <span className="clamp-1 min-w-0">{project.awards || project.team || cat}</span>
-          <span className="flex shrink-0 items-center gap-1 text-primary">
+          {canOpen && <span className="flex shrink-0 items-center gap-1 text-primary">
             {modelUrl ? <><Box className="h-3.5 w-3.5" /> 查看 3D</> : demoUrl ? <><ExternalLink className="h-3.5 w-3.5" /> 访问项目</> : <>查看详情 <ArrowRight className="h-3.5 w-3.5" /></>}
-          </span>
+          </span>}
         </CardFoot>
       </div>
     </div>
@@ -365,6 +366,7 @@ export function ProjectCard({
       {viewerOpen && <React.Suspense fallback={null}><ProjectModelViewer modelUrl={modelUrl} title={project.title} onClose={() => setViewerOpen(false)} /></React.Suspense>}
     </>
   );
+  if (!canOpen) return <div className={cn('block h-full', className)}>{card}</div>;
 
   return demoUrl ? (
     <a href={demoUrl} target="_blank" rel="noopener noreferrer" aria-label={`访问作品：${project.title}（新窗口打开）`} className={cn('group block h-full', className)}>{card}</a>
