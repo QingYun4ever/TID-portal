@@ -1225,6 +1225,35 @@ main section[id] {
 }
 .gallery-tile:focus-visible .gallery-tile-action { opacity: 1; }
 
+.home-crt {
+  width: 720px;
+  max-width: 100%;
+  min-width: 0;
+  justify-self: center;
+}
+
+.home-crt-screen {
+  pointer-events: none;
+  overflow: hidden;
+  border: 1px solid rgb(163 255 176 / 0.22);
+  border-radius: 24px;
+  background: #020705;
+  box-shadow: 0 20px 44px -20px rgb(0 0 0 / 0.65), 0 0 24px -12px rgb(163 255 176 / 0.18);
+}
+
+@media (min-width: 1024px) {
+  .home-crt {
+    justify-self: end;
+  }
+  .home-crt-screen {
+    transform: perspective(1000px) rotateX(2deg) rotateY(-4deg);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .home-crt-screen { transform: none; }
+}
+
 /* 首页画廊：主图在前，邻图退到左右后方；仅 transform / opacity 参与切换。 */
 .home-gallery { --glass-blur: 30px; --glass-sat: 125%; }
 .home-gallery-stage {

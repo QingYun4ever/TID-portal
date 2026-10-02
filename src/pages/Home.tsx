@@ -280,6 +280,113 @@ const QUICK = [
   { icon: Users, title: '加入我们', desc: '查看录取名单 · 联系部门', to: '/join' },
 ];
 
+function CrtPanel() {
+  const hostRef = useRef<HTMLDivElement>(null);
+  const screenRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const host = hostRef.current;
+    const screen = screenRef.current;
+    if (!host || !screen) return;
+    const media = window.matchMedia('(min-width: 1024px) and (hover: hover) and (pointer: fine) and (prefers-reduced-motion: no-preference)');
+    let bounds: DOMRect | null = null;
+    let frame = 0;
+    let lastTime = 0;
+    let x = 2;
+    let y = -4;
+    let targetX = x;
+    let targetY = y;
+    let velocityX = 0;
+    let velocityY = 0;
+
+    const paint = () => {
+      screen.style.transform = `perspective(1000px) rotateX(${x}deg) rotateY(${y}deg)`;
+    };
+    const tick = (time: number) => {
+      frame = 0;
+      const dt = Math.min((time - lastTime) / 1000, 1 / 30);
+      lastTime = time;
+      // Unit-mass spring: stiffness 100, damping 10. No React renders per frame.
+      velocityX += ((targetX - x) * 100 - velocityX * 10) * dt;
+      velocityY += ((targetY - y) * 100 - velocityY * 10) * dt;
+      x += velocityX * dt;
+      y += velocityY * dt;
+      if (Math.abs(targetX - x) + Math.abs(targetY - y) + Math.abs(velocityX) + Math.abs(velocityY) < 0.02) {
+        x = targetX;
+        y = targetY;
+        velocityX = velocityY = 0;
+        paint();
+        return;
+      }
+      paint();
+      frame = requestAnimationFrame(tick);
+    };
+    const start = () => {
+      if (!frame && media.matches && !document.hidden) {
+        lastTime = performance.now();
+        frame = requestAnimationFrame(tick);
+      }
+    };
+    const move = (event: PointerEvent) => {
+      if (!media.matches || event.pointerType === 'touch') return;
+      bounds ??= host.getBoundingClientRect();
+      const px = Math.max(-1, Math.min(1, ((event.clientX - bounds.left) / (bounds.width || 1)) * 2 - 1));
+      const py = Math.max(-1, Math.min(1, ((event.clientY - bounds.top) / (bounds.height || 1)) * 2 - 1));
+      targetX = -py * 10;
+      targetY = px * 14;
+      start();
+    };
+    const leave = () => {
+      bounds = null;
+      targetX = 2;
+      targetY = -4;
+      start();
+    };
+    const reset = () => {
+      if (frame) cancelAnimationFrame(frame);
+      frame = 0;
+      bounds = null;
+      x = targetX = 2;
+      y = targetY = -4;
+      velocityX = velocityY = 0;
+      screen.style.removeProperty('transform');
+    };
+    const visibility = () => { if (document.hidden) reset(); };
+    host.addEventListener('pointermove', move, { passive: true });
+    host.addEventListener('pointerleave', leave);
+    host.addEventListener('pointercancel', leave);
+    window.addEventListener('scroll', leave, { passive: true });
+    window.addEventListener('resize', leave);
+    document.addEventListener('visibilitychange', visibility);
+    media.addEventListener('change', reset);
+    return () => {
+      reset();
+      host.removeEventListener('pointermove', move);
+      host.removeEventListener('pointerleave', leave);
+      host.removeEventListener('pointercancel', leave);
+      window.removeEventListener('scroll', leave);
+      window.removeEventListener('resize', leave);
+      document.removeEventListener('visibilitychange', visibility);
+      media.removeEventListener('change', reset);
+    };
+  }, []);
+
+  return (
+    <div ref={hostRef} className="home-crt">
+      <div ref={screenRef} className="home-crt-screen">
+        <img
+          src="/tid-crt.svg"
+          alt="TID — Technology Innovation DEPT. 部门介绍终端"
+          width={720}
+          height={405}
+          loading="lazy"
+          className="block h-auto w-full object-contain"
+        />
+      </div>
+    </div>
+  );
+}
+
 function QuickAbout({ stats, intro }: { stats: { projects?: number; members?: number }; intro?: string }) {
   const items = [
     { label: '在展项目', value: String(stats.projects ?? 0), unit: '项' },
@@ -304,8 +411,9 @@ function QuickAbout({ stats, intro }: { stats: { projects?: number; members?: nu
         </LinkButton>
       }
     >
-      <div className="grid gap-4 lg:grid-cols-[1.05fr_1fr]">
+      <div className="grid items-center gap-4 lg:grid-cols-[minmax(0,1fr)_minmax(0,1.6fr)] xl:grid-cols-[minmax(0,1fr)_720px]">
         {/* 快速入口 */}
+        <div className="flex min-w-0 flex-col gap-3.5">
         <div className="grid grid-cols-2 gap-3.5">
           {QUICK.map((q, i) => (
             <Link key={q.to} to={q.to} data-reveal="scale" style={stagger(i)} className="group block">
@@ -324,9 +432,6 @@ function QuickAbout({ stats, intro }: { stats: { projects?: number; members?: nu
             </Link>
           ))}
         </div>
-
-        {/* 部门概况 */}
-        <div className="flex flex-col gap-3.5">
           <div className="grid grid-cols-2 gap-3.5">
             {items.map((it, i) => (
               <Glass key={it.label} tone="thin" hover refract={false} className="home-float p-4" data-reveal="scale" style={stagger(i)}>
@@ -336,7 +441,11 @@ function QuickAbout({ stats, intro }: { stats: { projects?: number; members?: nu
               </Glass>
             ))}
           </div>
-          <Glass tone="soft" className="p-4" data-reveal style={stagger(4)}>
+        </div>
+
+        {/* 部门概况 */}
+        <CrtPanel />
+          <Glass tone="soft" className="p-4 lg:col-span-2" data-reveal style={stagger(4)}>
             <h3 className="text-base font-medium">核心职责</h3>
             <ul className="mt-3 grid gap-2 sm:grid-cols-2">
               {duties.map((t) => (
@@ -347,7 +456,6 @@ function QuickAbout({ stats, intro }: { stats: { projects?: number; members?: nu
               ))}
             </ul>
           </Glass>
-        </div>
       </div>
     </Screen>
   );
