@@ -445,7 +445,7 @@ function seedDepartmentCard() {
         category: 'hardware',
         summary: '部门 NFC 卡片 PCB 三维设计，可拖拽旋转、滚轮放大查看。',
         modelUrl: '/models/nfc-card.obj',
-        cover: '/models/nfc-card-cover.svg',
+        cover: '/models/nfc-card-front.png',
         year: new Date().getFullYear(),
         status: 'published',
       });

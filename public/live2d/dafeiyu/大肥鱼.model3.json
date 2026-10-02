@@ -1,0 +1,32 @@
+{
+  "Version": 3,
+  "FileReferences": {
+    "Moc": "大肥鱼.moc3",
+    "Textures": ["大肥鱼.4096/texture_00.png", "大肥鱼.4096/texture_01.png", "大肥鱼.4096/texture_02.png"],
+    "Physics": "大肥鱼.physics3.json",
+    "DisplayInfo": "大肥鱼.cdi3.json",
+    "Motions": {"Idle": [{"File": "motion/idle.motion3.json"}]},
+    "Expressions": [
+      {"Name": "默认", "File": "exp/默认.exp3.json"},
+      {"Name": "星星眼", "File": "exp/星星眼.exp3.json"},
+      {"Name": "爱心眼", "File": "exp/爱心眼.exp3.json"},
+      {"Name": "用户彻底怒了", "File": "exp/用户彻底怒了.exp3.json"},
+      {"Name": "钢盆", "File": "exp/钢盆.exp3.json"},
+      {"Name": "token", "File": "exp/token.exp3.json"},
+      {"Name": "气泡", "File": "exp/气泡.exp3.json"},
+      {"Name": "气泡滑动", "File": "exp/气泡滑动.exp3.json"},
+      {"Name": "滑动变阻器", "File": "exp/滑动变阻器.exp3.json"},
+      {"Name": "滑动变阻器2", "File": "exp/滑动变阻器2.exp3.json"},
+      {"Name": "滑动变阻器3", "File": "exp/滑动变阻器3.exp3.json"},
+      {"Name": "滑动变阻器4", "File": "exp/滑动变阻器4.exp3.json"},
+      {"Name": "滑动变阻器5", "File": "exp/滑动变阻器5.exp3.json"},
+      {"Name": "滑动变阻器6", "File": "exp/滑动变阻器6.exp3.json"},
+      {"Name": "滑动变阻器气泡", "File": "exp/滑动变阻器气泡.exp3.json"},
+      {"Name": "滑动变阻器开关", "File": "exp/滑动变阻器开关.exp3.json"}
+    ]
+  },
+  "Groups": [
+    {"Target": "Parameter", "Name": "EyeBlink", "Ids": ["ParamEyeLOpen", "ParamEyeROpen"]},
+    {"Target": "Parameter", "Name": "LipSync", "Ids": ["ParamMouthOpenY"]}
+  ]
+}

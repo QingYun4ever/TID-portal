@@ -43,6 +43,8 @@ export default function ProjectModelViewer({ modelUrl, title, onClose }: Props) 
     let disposed = false;
     let frame = 0;
     let object: THREE.Group | null = null;
+    const ownedMaterials = new Set<THREE.Material>();
+    const ownedTextures = new Set<THREE.Texture>();
     let renderer: THREE.WebGLRenderer;
     try {
       renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
@@ -101,9 +103,16 @@ export default function ProjectModelViewer({ modelUrl, title, onClose }: Props) 
       materials.preload();
       Object.values(materials.materials).forEach((material) => {
         material.side = THREE.DoubleSide;
+        ownedMaterials.add(material);
+        if (material.map) ownedTextures.add(material.map);
       });
       new OBJLoader().setMaterials(materials).load(modelUrl, (loaded) => {
-        if (disposed) return;
+        if (disposed) {
+          loaded.traverse((child) => {
+            if (child instanceof THREE.Mesh) child.geometry.dispose();
+          });
+          return;
+        }
         object = loaded;
         const bounds = new THREE.Box3().setFromObject(loaded);
         const size = bounds.getSize(new THREE.Vector3());
@@ -112,7 +121,7 @@ export default function ProjectModelViewer({ modelUrl, title, onClose }: Props) 
         scene.add(loaded);
         const halfFov = THREE.MathUtils.degToRad(camera.fov / 2);
         const distance = Math.max(size.y / 2 / Math.tan(halfFov), size.x / 2 / (Math.tan(halfFov) * camera.aspect)) * 1.25;
-        camera.position.set(distance * 0.12, distance * 0.08, -distance);
+        camera.position.set(distance * 0.12, distance * 0.08, distance);
         controls.minDistance = distance * 0.55;
         controls.maxDistance = distance * 3;
         controls.update();
@@ -128,8 +137,10 @@ export default function ProjectModelViewer({ modelUrl, title, onClose }: Props) 
         if (!(child instanceof THREE.Mesh)) return;
         child.geometry.dispose();
         const materials = Array.isArray(child.material) ? child.material : [child.material];
-        materials.forEach((material) => material.dispose());
+        materials.forEach((material) => ownedMaterials.add(material));
       });
+      ownedMaterials.forEach((material) => material.dispose());
+      ownedTextures.forEach((texture) => texture.dispose());
       renderer.dispose();
       renderer.forceContextLoss();
       renderer.domElement.remove();

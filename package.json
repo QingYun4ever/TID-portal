@@ -21,6 +21,7 @@
     "date-fns": "^4.1.0",
     "dotenv": "^16.6.1",
     "hono": "^4.8.3",
+    "live2d-widgets": "^1.0.1",
     "lucide-react": "^0.562.0",
     "openid-client": "^6.8.8",
     "react": "^19.2.0",

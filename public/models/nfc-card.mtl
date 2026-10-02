@@ -17,10 +17,20 @@ Kd 1.00 1.00 1.00
 Ks 0.88 0.88 0.88
 d 1.00
 endmtl
-newmtl mtl4
-Ka 0.03 0.03 0.03
-Kd 0.03 0.03 0.03
-Ks 0.02 0.02 0.02
+newmtl nfc_print_front
+Ka 1.00 1.00 1.00
+Kd 1.00 1.00 1.00
+Ks 0.06 0.06 0.06
+Ns 40
+map_Kd nfc-card-front.png
+d 1.00
+endmtl
+newmtl nfc_print_back
+Ka 1.00 1.00 1.00
+Kd 1.00 1.00 1.00
+Ks 0.06 0.06 0.06
+Ns 40
+map_Kd nfc-card-back.png
 d 1.00
 endmtl
 newmtl mtl5
