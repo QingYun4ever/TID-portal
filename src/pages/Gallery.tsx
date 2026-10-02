@@ -459,7 +459,7 @@ function GalleryTile({ image, onOpen }: { image: GalleryImage; onOpen: () => voi
   return (
     <button
       onClick={onOpen}
-      className="group relative block w-full break-inside-avoid overflow-hidden rounded-3xl border border-white/8 bg-white/[0.045] text-left transition-all duration-500 hover:border-primary/30"
+      className="gallery-tile group relative block w-full break-inside-avoid overflow-hidden rounded-3xl border border-white/8 bg-white/[0.045] text-left hover:border-primary/30"
       style={{ aspectRatio: ratioOf(image) }}
       aria-label={`查看图片：${image.title}`}
     >
@@ -470,7 +470,7 @@ function GalleryTile({ image, onOpen }: { image: GalleryImage; onOpen: () => voi
         decoding="async"
         onLoad={() => setLoaded(true)}
         className={cn(
-          'absolute inset-0 h-full w-full object-cover transition-all duration-700 group-hover:scale-[1.055]',
+          'gallery-tile-image absolute inset-0 h-full w-full object-cover',
           loaded ? 'opacity-100' : 'opacity-0'
         )}
       />
@@ -488,15 +488,15 @@ function GalleryTile({ image, onOpen }: { image: GalleryImage; onOpen: () => voi
 
       <span
         aria-hidden
-        className="pointer-events-none absolute inset-0 bg-gradient-to-t from-black/80 via-black/10 to-transparent opacity-70 transition-opacity duration-500 group-hover:opacity-95"
+        className="gallery-tile-scrim pointer-events-none absolute inset-0 bg-gradient-to-t from-black/80 via-black/10 to-transparent opacity-70"
       />
-      <span className="absolute inset-x-0 bottom-0 translate-y-1.5 p-3.5 transition-transform duration-500 group-hover:translate-y-0">
+      <span className="absolute inset-x-0 bottom-0 p-3.5">
         <span className="clamp-1 block text-[12.5px] font-medium text-white/95">{image.title}</span>
         {image.areaName && (
           <span className="mono mt-1 block text-[10px] text-white/55">{image.areaName}</span>
         )}
       </span>
-      <span className="lg-thin backdrop-blur-md absolute right-3 top-3 flex h-7 w-7 items-center justify-center rounded-full text-white/85 opacity-0 transition-opacity duration-400 group-hover:opacity-100">
+      <span className="gallery-tile-action lg-thin backdrop-blur-md absolute right-3 top-3 flex h-7 w-7 items-center justify-center rounded-full text-white/85">
         <Plus className="h-3.5 w-3.5" />
       </span>
     </button>
@@ -736,7 +736,7 @@ function Lightbox({
         <div
           key={item.id}
           className="flex h-full w-full items-center justify-center"
-          style={{ animation: 'sti-pop .4s cubic-bezier(.22,1,.36,1) both' }}
+          style={{ animation: document.documentElement.dataset.motionInput === 'keyboard' ? 'none' : 'sti-fade 200ms var(--ease-out) both' }}
         >
           <img
             ref={imgRef}

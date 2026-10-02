@@ -13,8 +13,9 @@ import { Link, useLocation } from 'react-router';
 import { createPortal } from 'react-dom';
 import { Check, ChevronDown, ChevronLeft, ChevronRight, Loader2, Search, X } from 'lucide-react';
 import { cn } from '@/lib/utils';
-import { useBodyLock, useEscape } from '@/lib/hooks';
+import { useBodyLock, useEscape, useMediaQuery } from '@/lib/hooks';
 import { useToast } from '@/lib/store';
+import { useMotionPresence } from '@/hooks/useMotionPresence';
 
 /* =============================================================================
  * 1. 玻璃容器
@@ -61,8 +62,14 @@ export const Glass = forwardRef<HTMLDivElement, GlassProps>(function Glass(
      避免每个 pointermove 都触发一次强制同步布局（getBoundingClientRect）。 */
   const rect = useRef<{ left: number; top: number; w: number; h: number } | null>(null);
   const frame = useRef(0);
+  const sheenAllowed = useMediaQuery('(hover: hover) and (pointer: fine) and (prefers-reduced-motion: no-preference)');
+  const sheenActive = sheen && sheenAllowed;
 
-  const measure = useCallback(() => {
+  const measure = useCallback((e: React.PointerEvent<HTMLDivElement>) => {
+    if (e.pointerType === 'touch') {
+      rect.current = null;
+      return;
+    }
     const el = inner.current;
     if (!el) return;
     const r = el.getBoundingClientRect();
@@ -70,6 +77,7 @@ export const Glass = forwardRef<HTMLDivElement, GlassProps>(function Glass(
   }, []);
 
   const onMove = useCallback((e: React.PointerEvent<HTMLDivElement>) => {
+    if (e.pointerType === 'touch') return;
     const el = inner.current;
     const r = rect.current;
     if (!el || !r || frame.current) return;
@@ -89,6 +97,15 @@ export const Glass = forwardRef<HTMLDivElement, GlassProps>(function Glass(
     []
   );
 
+  useEffect(() => {
+    if (sheenActive) return;
+    cancelAnimationFrame(frame.current);
+    frame.current = 0;
+    rect.current = null;
+    inner.current?.style.removeProperty('--mx');
+    inner.current?.style.removeProperty('--my');
+  }, [sheenActive]);
+
   return (
     <As
       ref={(n: any) => {
@@ -96,8 +113,8 @@ export const Glass = forwardRef<HTMLDivElement, GlassProps>(function Glass(
         if (typeof ref === 'function') ref(n);
         else if (ref) (ref as any).current = n;
       }}
-      onPointerEnter={sheen ? measure : undefined}
-      onPointerMove={sheen ? onMove : undefined}
+      onPointerEnter={sheenActive ? measure : undefined}
+      onPointerMove={sheenActive ? onMove : undefined}
       className={cn(
         TONE[tone],
         refract && 'lg-refract',
@@ -355,17 +372,18 @@ export function Switch({
         aria-checked={checked}
         onClick={() => onChange(!checked)}
         className={cn(
-          'relative h-[24px] w-[44px] shrink-0 rounded-full border transition-all duration-300',
+          'relative h-[24px] w-[44px] shrink-0 rounded-full border',
           checked
             ? 'border-primary/60 bg-primary/80 shadow-[inset_0_1px_0_rgba(255,255,255,.3),0_0_18px_-4px_hsl(var(--primary)/.7)]'
             : 'border-white/15 bg-white/8'
         )}
       >
         <span
-          className={cn(
-            'absolute top-[3px] h-[16px] w-[16px] rounded-full bg-white shadow-md transition-all duration-300',
-            checked ? 'left-[24px]' : 'left-[3px]'
-          )}
+          className="motion-switch-thumb absolute left-[3px] top-[3px] h-[16px] w-[16px] rounded-full bg-white shadow-md"
+          style={{
+            transform: `translateX(${checked ? 21 : 0}px)`,
+            transition: 'transform 160ms var(--ease-out)',
+          }}
         />
       </button>
       {label && <span className="text-foreground/80">{label}</span>}
@@ -433,31 +451,38 @@ export function Modal({
   size?: 'sm' | 'md' | 'lg' | 'xl' | 'full';
   className?: string;
 }) {
-  useBodyLock(open);
+  const { present, active } = useMotionPresence(open);
+  useBodyLock(present);
   useEscape(onClose, open);
-  if (!open) return null;
+  const lastOpenContent = useRef({ title, description, children, footer });
+  const content = open ? { title, description, children, footer } : lastOpenContent.current;
+  useLayoutEffect(() => {
+    if (open) lastOpenContent.current = content;
+    else if (!present) lastOpenContent.current = { title: undefined, description: undefined, children: undefined, footer: undefined };
+  }, [open, present, content]);
+  if (!present) return null;
   const widths = { sm: 'max-w-md', md: 'max-w-xl', lg: 'max-w-3xl', xl: 'max-w-5xl', full: 'max-w-[96vw]' };
   return createPortal(
-    <div className="fixed inset-0 z-[90] flex items-center justify-center p-4 sm:p-6">
+    <div className="fixed inset-0 z-[90] flex items-center justify-center p-4 sm:p-6" inert={!open}>
       <div
-        className="scrim absolute inset-0 backdrop-blur-md"
-        style={{ animation: 'sti-fade .25s ease both' }}
+        className="motion-backdrop scrim absolute inset-0 backdrop-blur-md"
+        data-motion-open={active}
         onClick={onClose}
       />
       <Glass
         tone="strong"
         className={cn(
-          'relative z-10 flex max-h-[88dvh] w-full flex-col',
+          'motion-modal relative z-10 flex max-h-[88dvh] w-full flex-col',
           widths[size],
           className
         )}
-        style={{ animation: 'sti-pop .34s cubic-bezier(.22,1,.36,1) both' }}
+        data-motion-open={active}
       >
-        {(title || description) && (
+        {(content.title || content.description) && (
           <div className="flex items-start justify-between gap-4 border-b border-white/8 px-6 py-5">
             <div className="min-w-0">
-              {title && <h3 className="text-lg font-semibold text-foreground">{title}</h3>}
-              {description && <p className="mt-1 text-sm text-muted-foreground">{description}</p>}
+              {content.title && <h3 className="text-lg font-semibold text-foreground">{content.title}</h3>}
+              {content.description && <p className="mt-1 text-sm text-muted-foreground">{content.description}</p>}
             </div>
             <button
               onClick={onClose}
@@ -468,8 +493,8 @@ export function Modal({
             </button>
           </div>
         )}
-        <div className="min-h-0 flex-1 overflow-y-auto px-6 py-5">{children}</div>
-        {footer && <div className="flex flex-wrap items-center justify-end gap-3 border-t border-white/8 px-6 py-4">{footer}</div>}
+        <div className="min-h-0 flex-1 overflow-y-auto px-6 py-5">{content.children}</div>
+        {content.footer && <div className="flex flex-wrap items-center justify-end gap-3 border-t border-white/8 px-6 py-4">{content.footer}</div>}
       </Glass>
     </div>,
     document.body
@@ -536,22 +561,30 @@ export function Drawer({
   side?: 'right' | 'left';
   width?: string;
 }) {
-  useBodyLock(open);
+  const { present, active } = useMotionPresence(open);
+  useBodyLock(present);
   useEscape(onClose, open);
-  if (!open) return null;
+  const lastOpenContent = useRef({ title, children, footer });
+  const content = open ? { title, children, footer } : lastOpenContent.current;
+  useLayoutEffect(() => {
+    if (open) lastOpenContent.current = content;
+    else if (!present) lastOpenContent.current = { title: undefined, children: undefined, footer: undefined };
+  }, [open, present, content]);
+  if (!present) return null;
   return createPortal(
-    <div className="fixed inset-0 z-[90] flex">
-      <div className="scrim absolute inset-0 backdrop-blur-md" onClick={onClose} style={{ animation: 'sti-fade .25s ease both' }} />
+    <div className="fixed inset-0 z-[90] flex" inert={!open}>
+      <div className="motion-backdrop scrim absolute inset-0 backdrop-blur-md" data-motion-open={active} onClick={onClose} />
       <div
         className={cn(
-          'surface-drawer relative z-10 ml-auto flex h-full w-full flex-col border-l border-white/10 backdrop-blur-2xl',
+          'motion-drawer surface-drawer relative z-10 ml-auto flex h-full w-full flex-col border-l border-white/10 backdrop-blur-2xl',
           width,
           side === 'left' && 'mr-auto ml-0 border-l-0 border-r'
         )}
-        style={{ animation: `sti-slide-${side} .38s cubic-bezier(.22,1,.36,1) both` }}
+        data-motion-open={active}
+        data-side={side}
       >
         <div className="flex items-center justify-between gap-4 border-b border-white/8 px-6 py-5">
-          <div className="min-w-0 text-base font-semibold">{title}</div>
+          <div className="min-w-0 text-base font-semibold">{content.title}</div>
           <button
             onClick={onClose}
             className="rounded-full p-2 text-muted-foreground transition hover:bg-white/10 hover:text-foreground"
@@ -560,8 +593,8 @@ export function Drawer({
             <X className="h-4 w-4" />
           </button>
         </div>
-        <div className="min-h-0 flex-1 overflow-y-auto px-6 py-5">{children}</div>
-        {footer && <div className="border-t border-white/8 px-6 py-4">{footer}</div>}
+        <div className="min-h-0 flex-1 overflow-y-auto px-6 py-5">{content.children}</div>
+        {content.footer && <div className="border-t border-white/8 px-6 py-4">{content.footer}</div>}
       </div>
     </div>,
     document.body
@@ -724,7 +757,7 @@ export function Tabs({
   size?: 'sm' | 'md';
 }) {
   const listRef = useRef<HTMLDivElement>(null);
-  const [indicator, setIndicator] = useState({ left: 0, width: 0, ready: false });
+  const [indicator, setIndicator] = useState({ left: 0, width: 0, ready: false, animate: false });
 
   /* 指示器位置必须在布局阶段量，否则首帧会先闪一下错位的高亮。
      标签宽度在挂载后还会继续变：异步计数落位（「全部项目」→「全部项目 2」）、
@@ -739,7 +772,12 @@ export function Tabs({
       if (!el) return;
       const p = list.getBoundingClientRect();
       const r = el.getBoundingClientRect();
-      setIndicator({ left: r.left - p.left + list.scrollLeft, width: r.width, ready: true });
+      setIndicator((previous) => ({
+        left: r.left - p.left + list.scrollLeft,
+        width: r.width,
+        ready: r.width > 0,
+        animate: previous.ready,
+      }));
     };
     measure();
     if (typeof ResizeObserver === 'undefined') return;
@@ -755,11 +793,12 @@ export function Tabs({
         className="no-scrollbar flex gap-1 overflow-x-auto rounded-full border border-white/10 bg-white/[0.045] p-1 backdrop-blur-xl"
       >
         <span
-          className="absolute top-1 h-[calc(100%-8px)] rounded-full bg-white/12 shadow-[inset_0_1px_0_rgba(255,255,255,.22)] transition-all duration-400 ease-[cubic-bezier(.22,1,.36,1)]"
+          className="motion-tab-indicator absolute left-0 top-1 h-[calc(100%-8px)] rounded-full bg-white/12 shadow-[inset_0_1px_0_rgba(255,255,255,.22)]"
           style={{
-            left: indicator.left,
+            transform: `translateX(${indicator.left}px)`,
             width: indicator.width,
             opacity: indicator.ready ? 1 : 0,
+            transition: indicator.animate ? 'transform 200ms var(--ease-in-out)' : 'none',
           }}
         />
         {items.map((it) => (
@@ -768,7 +807,7 @@ export function Tabs({
             data-tab={it.value}
             onClick={() => onChange(it.value)}
             className={cn(
-              'relative z-10 shrink-0 rounded-full font-medium transition-colors duration-300',
+              'relative z-10 shrink-0 rounded-full font-medium',
               size === 'sm' ? 'px-3.5 py-1.5 text-sm' : 'px-5 py-2 text-base',
               value === it.value ? 'text-foreground' : 'text-muted-foreground hover:text-foreground/85'
             )}
@@ -974,8 +1013,8 @@ export function ProgressBar({
   return (
     <div className={cn('w-full overflow-hidden rounded-full bg-white/8', className)} style={{ height }}>
       <div
-        className={cn('h-full rounded-full transition-all duration-700 ease-out', tones[tone])}
-        style={{ width: `${pct}%` }}
+        className={cn('motion-progress-fill h-full w-full origin-left rounded-full', tones[tone])}
+        style={{ transform: `scaleX(${pct / 100})`, transition: 'transform 200ms var(--ease-out)' }}
       />
     </div>
   );

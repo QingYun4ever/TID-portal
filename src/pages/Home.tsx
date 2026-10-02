@@ -629,7 +629,8 @@ function GalleryBlock({ images, loading }: { images: any[]; loading: boolean }) 
     if (!el) return;
     const next = Math.max(0, Math.min(images.length - 1, active + direction));
     setActive(next);
-    el.scrollTo({ left: next * el.clientWidth, behavior: 'smooth' });
+    const instant = window.matchMedia('(prefers-reduced-motion: reduce)').matches || document.documentElement.dataset.motionInput === 'keyboard';
+    el.scrollTo({ left: next * el.clientWidth, behavior: instant ? 'instant' : 'smooth' });
   };
 
   return (

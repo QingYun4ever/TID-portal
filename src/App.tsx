@@ -71,6 +71,17 @@ function RouteEffects() {
   useRevealScan(pathname + search);
   /** 异步渲染出来的 [data-reveal] 区块也需要被揭示 */
   useRevealObserver();
+  useEffect(() => {
+    const root = document.documentElement;
+    const onKey = () => { root.dataset.motionInput = 'keyboard'; };
+    const onPointer = () => { root.dataset.motionInput = 'pointer'; };
+    document.addEventListener('keydown', onKey, true);
+    document.addEventListener('pointerdown', onPointer, true);
+    return () => {
+      document.removeEventListener('keydown', onKey, true);
+      document.removeEventListener('pointerdown', onPointer, true);
+    };
+  }, []);
 
   // 全站使用原生滚动：不劫持 wheel、不做整屏吸附。
   // 首页的「分区节奏」由 CSS scroll-margin + 右侧导航轨道的锚点跳转承担，

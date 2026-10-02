@@ -212,9 +212,9 @@
 
 | 名称 | 用途 |
 |------|------|
-| `sti-pop` | 元素入场（上浮 + 微缩放），弹窗、Hero 逐级进场 |
-| `sti-fade` | 淡入，遮罩、抽屉背景 |
-| `sti-slide-left/right` | 抽屉滑入 |
+| `sti-rise` | 首页分级入场，仅上浮与淡入，600ms |
+| `sti-fade` | 淡入与画廊图片切换 |
+| `.motion-modal / .motion-drawer / .motion-popover` | CSS transition 进出场；分别 240 / 240 / 200ms，快速反向操作从当前状态接续 |
 | `sti-pulse` | 状态点、Logo 核心呼吸环 |
 | `sti-trace` | Logo 环上流光 |
 | `sti-drift` | 深海光雾漂移 |
@@ -224,14 +224,18 @@
 
 ### 滚动揭示 `[data-reveal]`
 
-`IntersectionObserver` + 全局单例（`useRevealScan`）。变体：`up`(默认) / `left` / `right` / `scale` / `blur`。
-进入视口加 `.is-in`，`rootMargin: 0 0 -8% 0`，`threshold: 0.06`。用 `transition-delay` 做错位级联。
+`IntersectionObserver` 扫描静态与异步内容。变体：默认上浮 / `left` / `right` / `scale`；不再使用模糊滤镜。
+进入视口加 `.is-in`，`rootMargin: 0 0 -8% 0`，`threshold: 0.06`。12px / 280ms，沿用各页面的错位级联。
 
 ### 下滑式首页
 
 首页是连续滚动（**不是**全屏分页）：顶部 2px 进度条 + 右侧分区导航轨道（hover 展开标签）+ 首屏随滚动淡出缩放 + 各分区依次揭示。
 
-`prefers-reduced-motion: reduce` 时关闭全部动画、显示全部内容。
+统一曲线：`--ease-out: cubic-bezier(0.23, 1, 0.32, 1)`、`--ease-in-out: cubic-bezier(0.77, 0, 0.175, 1)`、`--ease-drawer: cubic-bezier(0.32, 0.72, 0, 1)`。
+
+按钮按压 160ms、卡片悬浮 160ms、图片轻缩放 200ms；悬浮位移仅在精细指针设备启用。开关、标签指示器和进度条使用 transform，避免对 left / width 做动画。
+
+`useMotionPresence` 保留关闭中的节点，弹窗与抽屉退出时保留内容并锁定滚动，退出完成再卸载。键盘操作立即切换；`prefers-reduced-motion: reduce` 下去除空间移动，弹层保留 160ms 透明度反馈，滚动内容直接显示。
 
 ---
 
